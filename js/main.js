@@ -20,6 +20,7 @@ const Hex = Honeycomb.extendHex({
       .fill('none')
       .stroke({ width: 1, color: '#D3D3D3' })
       .translate(x, y)
+      .attr('class', 'hex')
   },
 
   highlight () {
@@ -27,7 +28,7 @@ const Hex = Honeycomb.extendHex({
     	// stop running animation
       .stop(true, true)
       .fill({ opacity: 1, color: 'aquamarine' })
-      .animate(1000)
+      .animate(150)
       .fill({ opacity: 0, color: 'none' })
   }
 })
@@ -43,22 +44,40 @@ const grid = Grid.rectangle({
   }
 })
 
-document.addEventListener('mousedown', ({ offsetX, offsetY }) => {
-  const hexCoordinates = Grid.pointToHex([offsetX, offsetY])
-  const hex = grid.get(hexCoordinates)
+document.addEventListener('mousedown', (e) => {
+  console.log(e)
+  if (e.target.tagName === 'svg' && e.button === 0) {
+    const hexCoordinates = Grid.pointToHex([e.offsetX, e.offsetY])
+    const hex = grid.get(hexCoordinates)
 
-  if (hex) {
-    createMilSymbol('SHGPUCIL---C---',
-      { size: hexSize * 0.8,
-        uniqueDesignation: 'dingo',
-        additionalInformation: 'Jones',
-        infoFields: false
-      }, hex.screenCoords)
-    hex.highlight()
+    if (hex) {
+      createMilSymbol('SHGPUCIL---C---',
+        { size: hexSize * 0.8,
+          uniqueDesignation: 'dingo',
+          additionalInformation: 'Jones',
+          infoFields: false
+        }, hex)
+      hex.highlight()
+    }
   }
 })
 
-function createMilSymbol (sidc, options, screenCoords) {
+document.addEventListener('contextmenu', (e) => {
+  e.preventDefault()
+  if (e.target.tagName !== 'svg') {
+    console.log(e.target)
+    return false
+  }
+}, false)
+
+document.addEventListener('keypress', (event) => {
+  if (event.keyCode !== 13) {
+    // tests
+    console.log(getSymbolPoint('dingo'))
+  }
+}, false)
+
+function createMilSymbol (sidc, options, hex) {
   let icon
   let div = document.createElement('div')
   let render = ''
@@ -66,8 +85,10 @@ function createMilSymbol (sidc, options, screenCoords) {
   div.setAttribute('id', options.uniqueDesignation)
   icon = document.getElementById(options.uniqueDesignation)
 
-  let symbol = new ms.Symbol(sidc, options)
+  // store the hex point in the div's data for easy retreval later
+  $('#' + options.uniqueDesignation).data('key', hex.coordinates())
 
+  let symbol = new ms.Symbol(sidc, options)
   render += symbol.asSVG()
 
   // calculate the correct offset to center the symbol in the hex
@@ -77,7 +98,15 @@ function createMilSymbol (sidc, options, screenCoords) {
 
   // position the symbol on the screen over the correct hex
   icon.style.position = 'absolute'
-  icon.style.left = (screenCoords.x + offsetX) + 'px'
-  icon.style.top = (screenCoords.y + offsetY) + 'px'
+  icon.style.left = (hex.screenCoords.x + offsetX) + 'px'
+  icon.style.top = (hex.screenCoords.y + offsetY) + 'px'
+  icon.style.zIndex = -1
+
   icon.innerHTML = render
+}
+
+function getSymbolPoint (uniqueDesignation) {
+  var point = $('#' + uniqueDesignation).data('key')
+
+  return point
 }
