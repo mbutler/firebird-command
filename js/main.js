@@ -1,9 +1,9 @@
 const width = window.innerWidth
 const height = window.innerHeight
-var hexSize = 25
-var hexDiagonal = hexSize * 2
-var hexesHorizontal = width / (hexSize + hexSize * 0.5)
-var hexesVertical = height / (hexSize + hexSize * 0.5)
+let hexSize = 25
+let hexDiagonal = hexSize * 2
+let hexesHorizontal = width / (hexSize + hexSize * 0.5)
+let hexesVertical = height / (hexSize + hexSize * 0.5)
 const draw = SVG(document.body)
 
 const Hex = Honeycomb.extendHex({
@@ -20,7 +20,6 @@ const Hex = Honeycomb.extendHex({
       .fill('none')
       .stroke({ width: 1, color: '#D3D3D3' })
       .translate(x, y)
-      .attr('class', 'hex')
   },
 
   highlight () {
@@ -30,7 +29,9 @@ const Hex = Honeycomb.extendHex({
       .fill({ opacity: 1, color: 'aquamarine' })
       .animate(150)
       .fill({ opacity: 0, color: 'none' })
-  }
+  },
+
+  currentSymbol: {}
 })
 
 const Grid = Honeycomb.defineGrid(Hex)
@@ -45,18 +46,18 @@ const grid = Grid.rectangle({
 })
 
 document.addEventListener('mousedown', (e) => {
-  console.log(e)
   if (e.target.tagName === 'svg' && e.button === 0) {
     const hexCoordinates = Grid.pointToHex([e.offsetX, e.offsetY])
     const hex = grid.get(hexCoordinates)
 
     if (hex) {
-      createMilSymbol('SHGPUCIL---C---',
+      createUnit(hex, 'SHGPUCIL---C---',
         { size: hexSize * 0.8,
           uniqueDesignation: 'dingo',
           additionalInformation: 'Jones',
           infoFields: false
-        }, hex)
+        })
+
       hex.highlight()
     }
   }
@@ -77,36 +78,48 @@ document.addEventListener('keypress', (event) => {
   }
 }, false)
 
-function createMilSymbol (sidc, options, hex) {
-  let icon
-  let div = document.createElement('div')
-  let render = ''
-  let size, offsetX, offsetY
-  div.setAttribute('id', options.uniqueDesignation)
+function createUnit (hex, sidc, options) {
+  let icon, symbol
+
+  createSymbolContainer(options.uniqueDesignation)
+
   icon = document.getElementById(options.uniqueDesignation)
 
-  // store the hex point in the div's data for easy retreval later
-  $('#' + options.uniqueDesignation).data('key', hex.coordinates())
+  setSymbolPoint(hex, options.uniqueDesignation)
 
-  let symbol = new ms.Symbol(sidc, options)
-  render += symbol.asSVG()
+  symbol = new ms.Symbol(sidc, options)
 
-  // calculate the correct offset to center the symbol in the hex
-  size = symbol.getSize()
-  offsetX = (hexDiagonal - size.width) / 2
-  offsetY = (hexDiagonal - size.height) / 4
+  hex.currentSymbol = symbol
 
-  // position the symbol on the screen over the correct hex
-  icon.style.position = 'absolute'
-  icon.style.left = (hex.screenCoords.x + offsetX) + 'px'
-  icon.style.top = (hex.screenCoords.y + offsetY) + 'px'
-  icon.style.zIndex = -1
+  positionIcon(hex, symbol.getSize(), icon)
 
-  icon.innerHTML = render
+  icon.innerHTML = symbol.asSVG()
+
 }
 
 function getSymbolPoint (uniqueDesignation) {
   var point = $('#' + uniqueDesignation).data('key')
 
   return point
+}
+
+function setSymbolPoint (hex, uniqueDesignation) {
+  $('#' + uniqueDesignation).data('key', hex.coordinates())
+}
+
+function createSymbolContainer (uniqueDesignation) {
+  $('<div/>', {
+    id: uniqueDesignation
+  })
+}
+
+function positionIcon (hex, symbolSize, icon) {
+  let marker = icon
+  let offsetX = (hexDiagonal - symbolSize.width) / 2
+  let offsetY = (hexDiagonal - symbolSize.height) / 4
+  // position the symbol on the screen over the correct hex
+  marker.style.position = 'absolute'
+  marker.style.left = (hex.screenCoords.x + offsetX) + 'px'
+  marker.style.top = (hex.screenCoords.y + offsetY) + 'px'
+  marker.style.zIndex = -1
 }
