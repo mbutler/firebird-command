@@ -63,13 +63,13 @@ document.addEventListener('mousedown', (e) => {
   }
 })
 
-document.addEventListener('contextmenu', (e) => {
+/* document.addEventListener('contextmenu', (e) => {
   e.preventDefault()
   if (e.target.tagName !== 'svg') {
     console.log(e.target)
     return false
   }
-}, false)
+}, false) */
 
 document.addEventListener('keypress', (event) => {
   if (event.keyCode !== 13) {
@@ -79,21 +79,21 @@ document.addEventListener('keypress', (event) => {
 }, false)
 
 function createUnit (hex, sidc, options) {
-  let icon, symbol
+  let container, symbol
 
   createSymbolContainer(options.uniqueDesignation)
 
-  icon = document.getElementById(options.uniqueDesignation)
-
-  setSymbolPoint(hex, options.uniqueDesignation)
+  container = document.getElementById(options.uniqueDesignation)
 
   symbol = new ms.Symbol(sidc, options)
 
+  setSymbolPoint(hex, options.uniqueDesignation)  
+
   hex.currentSymbol = symbol
 
-  positionIcon(hex, symbol.getSize(), icon)
+  positionUnit(hex, symbol.getSize(), container)
 
-  icon.innerHTML = symbol.asSVG()
+  container.innerHTML = symbol.asSVG()
 
 }
 
@@ -108,12 +108,12 @@ function setSymbolPoint (hex, uniqueDesignation) {
 }
 
 function createSymbolContainer (uniqueDesignation) {
-  $('<div/>', {
+  return $('<div/>', {
     id: uniqueDesignation
   })
 }
 
-function positionIcon (hex, symbolSize, icon) {
+function positionUnit (hex, symbolSize, icon) {
   let marker = icon
   let offsetX = (hexDiagonal - symbolSize.width) / 2
   let offsetY = (hexDiagonal - symbolSize.height) / 4
