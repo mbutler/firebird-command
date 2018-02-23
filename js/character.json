@@ -48,5 +48,6 @@
         "infoFields": false
       }
     },
-    "startingHex": []
+    "startingHex": [],
+    "currentMovementType": ""
   }

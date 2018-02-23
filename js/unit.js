@@ -24,7 +24,7 @@ function removeUnitById (uniqueDesignation) {
   let unit = document.getElementById(uniqueDesignation)
   // clear the hex
   let hex = getUnitHex(uniqueDesignation)
-  hex.currentUnit = {}
+  hex.currentUnit = undefined
   unit.parentNode.removeChild(unit)
 }
 
@@ -50,6 +50,7 @@ function setUnitCoords (hex, uniqueDesignation) {
 function createSymbolContainer (uniqueDesignation) {
   let div = document.createElement('div')
   div.setAttribute('id', uniqueDesignation)
+  div.setAttribute('class', 'unit')
 
   return div
 }
@@ -63,7 +64,7 @@ function positionUnit (hex, unit) {
   unit.style.position = 'absolute'
   unit.style.left = (hex.screenCoords.x + offsetX) + 'px'
   unit.style.top = (hex.screenCoords.y + offsetY) + 'px'
-  unit.style.zIndex = -1
+  //unit.style.zIndex = -1
 
   return unit
 }
@@ -76,7 +77,7 @@ function animateUnitToHex (hex, uniqueDesignation) {
 
   // clear the previous hex
   let previousHex = getUnitHex(uniqueDesignation)
-  previousHex.currentUnit = {}
+  previousHex.currentUnit = undefined
 
   $('#' + uniqueDesignation).animate({
     'top': (hex.screenCoords.y + offsetY) + 'px',

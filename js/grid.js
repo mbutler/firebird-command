@@ -35,7 +35,7 @@ const Hex = Honeycomb.extendHex({
       .fill({ opacity: 0, color: 'none' })
   },
 
-  currentUnit: {}
+  currentUnit: undefined
 })
 
 const Grid = Honeycomb.defineGrid(Hex)
