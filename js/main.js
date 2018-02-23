@@ -33,7 +33,7 @@ const Hex = Honeycomb.extendHex({
       .fill({ opacity: 0, color: 'none' })
   },
 
-  currentSymbol: {}
+  currentUnit: {}
 })
 
 const Grid = Honeycomb.defineGrid(Hex)
@@ -76,43 +76,60 @@ document.addEventListener('mousedown', (e) => {
 document.addEventListener('keypress', (event) => {
   if (event.keyCode !== 13) {
     // tests
+    const hex = grid.get(Hex(14, 14))
+    animateUnitToHex(hex, 'dingo')
     removeUnitById('panther')
   }
 }, false)
 
 function createUnit (hex, sidc, options) {
-  console.log(options.uniqueDesignation)
   let container, symbol
+  let size
 
   // create div container and svg symbol and set position
   symbol = new ms.Symbol(sidc, options)
-  container = createSymbolContainer(options.uniqueDesignation)  
+  size = symbol.getSize()
+  container = createSymbolContainer(options.uniqueDesignation)
+  $(container).data('size', size) 
   container.innerHTML = symbol.asSVG()
-  container = positionUnit(hex, symbol.getSize(), container)
+  container = positionUnit(hex, container)
 
-  //store the coordinates of the hex in the unit
-  setUnitPoint(hex, options.uniqueDesignation)
-   
   //store the symbol in the hex
-  hex.currentSymbol = symbol
-  
+  hex.currentUnit = container
+
   //add the unit to the DOM
   document.body.appendChild(container)
+
+  //store the coordinates of the hex in the unit
+  setUnitCoords(hex, options.uniqueDesignation) 
+  
 }
 
 function removeUnitById (uniqueDesignation) {
   let unit = document.getElementById(uniqueDesignation)
+  //clear the hex  
+  let hex = getUnitHex(uniqueDesignation)
+  hex.currentUnit = {} 
   unit.parentNode.removeChild(unit)
 }
 
-function getSymbolPoint (uniqueDesignation) {
-  var point = $('#' + uniqueDesignation).data('key')
+function getUnitCoords (uniqueDesignation) {
+  let unit = document.getElementById(uniqueDesignation)
+  let point = $.data(unit, "coords" )
 
   return point
 }
 
-function setUnitPoint (hex, uniqueDesignation) {
-  $('#' + uniqueDesignation).data('key', hex.coordinates())
+function getUnitHex (uniqueDesignation) {
+  let coords = getUnitCoords(uniqueDesignation)
+  let hex = grid.get(Hex(coords))
+
+  return hex
+}
+
+function setUnitCoords (hex, uniqueDesignation) {
+  let unit = document.getElementById(uniqueDesignation)
+  $(unit).data('coords', hex.coordinates())
 }
 
 function createSymbolContainer (uniqueDesignation) {
@@ -122,22 +139,45 @@ function createSymbolContainer (uniqueDesignation) {
   return div
 }
 
-function positionUnit (hex, symbolSize, container) {
-  let marker = container
+function positionUnit (hex, unit) {
+  let symbolSize = $.data(unit, 'size')
   let offsetX = (hexDiagonal - symbolSize.width) / 2
   let offsetY = (hexDiagonal - symbolSize.height) / 4
-  // position the symbol on the screen over the correct hex
-  marker.style.position = 'absolute'
-  marker.style.left = (hex.screenCoords.x + offsetX) + 'px'
-  marker.style.top = (hex.screenCoords.y + offsetY) + 'px'
-  marker.style.zIndex = -1
+  
+  //need to center it based on symbol's irregular size
+  unit.style.position = 'absolute'
+  unit.style.left = (hex.screenCoords.x + offsetX) + 'px'
+  unit.style.top = (hex.screenCoords.y + offsetY) + 'px'
+  unit.style.zIndex = -1
 
-  return marker
+  return unit
+}
+
+function animateUnitToHex (hex, uniqueDesignation) {
+  let unit = document.getElementById(uniqueDesignation)
+  let symbolSize = $.data(unit, 'size')
+  let offsetX = (hexDiagonal - symbolSize.width) / 2
+  let offsetY = (hexDiagonal - symbolSize.height) / 4
+
+  //clear the previous hex
+  let previousHex = getUnitHex(uniqueDesignation)
+  previousHex.currentUnit = {}  
+
+  $("#" + uniqueDesignation).animate({ 
+    'top': (hex.screenCoords.y + offsetY) + 'px', 
+    'left': (hex.screenCoords.x + offsetX) + 'px'
+  }, {
+    duration: 500,
+    complete: function () {
+      setUnitCoords(hex, uniqueDesignation)
+      hex.currentUnit = unit
+    }
+  })
 }
 
 const hex = grid.get(Hex(0, 1))
 
-createUnit(hex, 'SHGPUCIL---C---',
+createUnit(hex, 'SHG-UCFM-------',
         { size: hexSize * 0.8,
           uniqueDesignation: 'panther',
           additionalInformation: 'Barnes',
