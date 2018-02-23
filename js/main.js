@@ -6,6 +6,8 @@ let hexesHorizontal = width / (hexSize + hexSize * 0.5)
 let hexesVertical = height / (hexSize + hexSize * 0.5)
 const draw = SVG(document.body)
 
+
+
 const Hex = Honeycomb.extendHex({
   size: hexSize,
   orientation: 'flat',
@@ -74,27 +76,33 @@ document.addEventListener('mousedown', (e) => {
 document.addEventListener('keypress', (event) => {
   if (event.keyCode !== 13) {
     // tests
-    console.log(getSymbolPoint('dingo'))
+    removeUnitById('panther')
   }
 }, false)
 
 function createUnit (hex, sidc, options) {
+  console.log(options.uniqueDesignation)
   let container, symbol
 
-  createSymbolContainer(options.uniqueDesignation)
-
-  container = document.getElementById(options.uniqueDesignation)
-
+  // create div container and svg symbol and set position
   symbol = new ms.Symbol(sidc, options)
-
-  setSymbolPoint(hex, options.uniqueDesignation)  
-
-  hex.currentSymbol = symbol
-
-  positionUnit(hex, symbol.getSize(), container)
-
+  container = createSymbolContainer(options.uniqueDesignation)  
   container.innerHTML = symbol.asSVG()
+  container = positionUnit(hex, symbol.getSize(), container)
 
+  //store the coordinates of the hex in the unit
+  setUnitPoint(hex, options.uniqueDesignation)
+   
+  //store the symbol in the hex
+  hex.currentSymbol = symbol
+  
+  //add the unit to the DOM
+  document.body.appendChild(container)
+}
+
+function removeUnitById (uniqueDesignation) {
+  let unit = document.getElementById(uniqueDesignation)
+  unit.parentNode.removeChild(unit)
 }
 
 function getSymbolPoint (uniqueDesignation) {
@@ -103,18 +111,19 @@ function getSymbolPoint (uniqueDesignation) {
   return point
 }
 
-function setSymbolPoint (hex, uniqueDesignation) {
+function setUnitPoint (hex, uniqueDesignation) {
   $('#' + uniqueDesignation).data('key', hex.coordinates())
 }
 
 function createSymbolContainer (uniqueDesignation) {
-  return $('<div/>', {
-    id: uniqueDesignation
-  })
+  let div = document.createElement('div')
+  div.setAttribute('id', uniqueDesignation)
+  
+  return div
 }
 
-function positionUnit (hex, symbolSize, icon) {
-  let marker = icon
+function positionUnit (hex, symbolSize, container) {
+  let marker = container
   let offsetX = (hexDiagonal - symbolSize.width) / 2
   let offsetY = (hexDiagonal - symbolSize.height) / 4
   // position the symbol on the screen over the correct hex
@@ -122,4 +131,15 @@ function positionUnit (hex, symbolSize, icon) {
   marker.style.left = (hex.screenCoords.x + offsetX) + 'px'
   marker.style.top = (hex.screenCoords.y + offsetY) + 'px'
   marker.style.zIndex = -1
+
+  return marker
 }
+
+const hex = grid.get(Hex(0, 1))
+
+createUnit(hex, 'SHGPUCIL---C---',
+        { size: hexSize * 0.8,
+          uniqueDesignation: 'panther',
+          additionalInformation: 'Barnes',
+          infoFields: false
+        })
