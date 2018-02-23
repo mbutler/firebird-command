@@ -6,6 +6,9 @@ let hexesHorizontal = width / (hexSize + hexSize * 0.5)
 let hexesVertical = height / (hexSize + hexSize * 0.5)
 const draw = SVG(document.body)
 
+function getHexSize () {
+  return hexSize
+}
 
 const Hex = Honeycomb.extendHex({
   size: hexSize,

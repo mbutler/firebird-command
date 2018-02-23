@@ -1,4 +1,10 @@
-$(document).mousedown( (e) => {
+$.getJSON('../js/dingo.json', (dingo) => {
+  const hex = grid.get(Hex(dingo.startingHex))
+  dingo.symbol.options.size = hexSize * 0.8
+  createUnit(hex, dingo.symbol.sidc, dingo.symbol.options)
+})
+
+$(document).mousedown((e) => {
   if (e.which === 1) {
     const hexCoordinates = Grid.pointToHex([e.offsetX, e.offsetY])
     const hex = grid.get(hexCoordinates)
@@ -6,7 +12,7 @@ $(document).mousedown( (e) => {
     if (hex) {
       createUnit(hex, 'SHGPUCIL---C---',
         { size: hexSize * 0.8,
-          uniqueDesignation: 'dingo',          
+          uniqueDesignation: 'dingo',
           infoFields: false
         })
 
@@ -15,7 +21,7 @@ $(document).mousedown( (e) => {
   }
 })
 
-$(document).on("contextmenu", function(e){
+$(document).on('contextmenu', function (e) {
   const hexCoordinates = Grid.pointToHex([e.offsetX, e.offsetY])
   const hex = grid.get(hexCoordinates)
   const unit = hex.currentUnit
@@ -23,7 +29,7 @@ $(document).on("contextmenu", function(e){
   return false
 })
 
-$(document).keypress( (e) => {
+$(document).keypress((e) => {
   if (e.which === 32) {
     // tests
     const hex = grid.get(Hex(14, 14))
@@ -31,12 +37,3 @@ $(document).keypress( (e) => {
     removeUnitById('panther')
   }
 })
-
-const hex = grid.get(Hex(0, 1))
-
-createUnit(hex, 'SHG-UCFM-------',
-        { size: hexSize * 0.8,
-          uniqueDesignation: 'panther',
-          additionalInformation: 'Barnes',
-          infoFields: true
-        })

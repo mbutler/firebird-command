@@ -6,32 +6,31 @@ function createUnit (hex, sidc, options) {
   symbol = new ms.Symbol(sidc, options)
   size = symbol.getSize()
   container = createSymbolContainer(options.uniqueDesignation)
-  $(container).data('size', size) 
+  $(container).data('size', size)
   container.innerHTML = symbol.asSVG()
   container = positionUnit(hex, container)
 
-  //store the symbol in the hex
+  // store the symbol in the hex
   hex.currentUnit = container
 
-  //add the unit to the DOM
+  // add the unit to the DOM
   document.body.appendChild(container)
 
-  //store the coordinates of the hex in the unit
-  setUnitCoords(hex, options.uniqueDesignation) 
-  
+  // store the coordinates of the hex in the unit
+  setUnitCoords(hex, options.uniqueDesignation)
 }
 
 function removeUnitById (uniqueDesignation) {
   let unit = document.getElementById(uniqueDesignation)
-  //clear the hex  
+  // clear the hex
   let hex = getUnitHex(uniqueDesignation)
-  hex.currentUnit = {} 
+  hex.currentUnit = {}
   unit.parentNode.removeChild(unit)
 }
 
 function getUnitCoords (uniqueDesignation) {
   let unit = document.getElementById(uniqueDesignation)
-  let point = $.data(unit, "coords" )
+  let point = $.data(unit, 'coords')
 
   return point
 }
@@ -51,7 +50,7 @@ function setUnitCoords (hex, uniqueDesignation) {
 function createSymbolContainer (uniqueDesignation) {
   let div = document.createElement('div')
   div.setAttribute('id', uniqueDesignation)
-  
+
   return div
 }
 
@@ -59,8 +58,8 @@ function positionUnit (hex, unit) {
   let symbolSize = $.data(unit, 'size')
   let offsetX = (hexDiagonal - symbolSize.width) / 2
   let offsetY = (hexDiagonal - symbolSize.height) / 4
-  
-  //need to center it based on symbol's irregular size
+
+  // need to center it based on symbol's irregular size
   unit.style.position = 'absolute'
   unit.style.left = (hex.screenCoords.x + offsetX) + 'px'
   unit.style.top = (hex.screenCoords.y + offsetY) + 'px'
@@ -75,12 +74,12 @@ function animateUnitToHex (hex, uniqueDesignation) {
   let offsetX = (hexDiagonal - symbolSize.width) / 2
   let offsetY = (hexDiagonal - symbolSize.height) / 4
 
-  //clear the previous hex
+  // clear the previous hex
   let previousHex = getUnitHex(uniqueDesignation)
-  previousHex.currentUnit = {}  
+  previousHex.currentUnit = {}
 
-  $("#" + uniqueDesignation).animate({ 
-    'top': (hex.screenCoords.y + offsetY) + 'px', 
+  $('#' + uniqueDesignation).animate({
+    'top': (hex.screenCoords.y + offsetY) + 'px',
     'left': (hex.screenCoords.x + offsetX) + 'px'
   }, {
     duration: 500,
