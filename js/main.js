@@ -2,6 +2,7 @@ $.getJSON('../js/dingo.json', (dingo) => {
   const hex = grid.get(Hex(dingo.startingHex))
   dingo.symbol.options.size = hexSize * 0.8
   createUnit(hex, dingo.symbol.sidc, dingo.symbol.options)
+  hex.facing(dingo.facing)
 })
 
 $(document).mousedown((e) => {
@@ -20,6 +21,8 @@ $(document).mousedown((e) => {
           })
 
         hex.highlight()
+        console.log(hex)
+        hex.facing(3)
       }
     }
   }
@@ -109,3 +112,5 @@ $.contextMenu({
     }
   }
 })
+
+

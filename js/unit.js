@@ -78,6 +78,7 @@ function animateUnitToHex (hex, uniqueDesignation) {
   // clear the previous hex
   let previousHex = getUnitHex(uniqueDesignation)
   previousHex.currentUnit = undefined
+  previousHex.facing(999)
 
   $('#' + uniqueDesignation).animate({
     'top': (hex.screenCoords.y + offsetY) + 'px',
@@ -89,4 +90,8 @@ function animateUnitToHex (hex, uniqueDesignation) {
       hex.currentUnit = unit
     }
   })
+}
+
+function createFacing (id) {
+
 }

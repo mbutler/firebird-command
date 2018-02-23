@@ -49,5 +49,6 @@
       }
     },
     "startingHex": [5, 5],
-    "currentMovementType": ""
+    "currentMovementType": "",
+    "facing": 0
   }
