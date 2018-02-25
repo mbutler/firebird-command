@@ -1,5 +1,5 @@
 
-const draw = SVG(document.body)
+const draw = SVG('container')
 
 const Hex = Honeycomb.extendHex({
   size: hexSize,
@@ -98,8 +98,8 @@ const Hex = Honeycomb.extendHex({
 const Grid = Honeycomb.defineGrid(Hex)
 
 const grid = Grid.rectangle({
-  width: hexesHorizontal,
-  height: hexesVertical,
+  width: 100,
+  height: 100,
   // render each hex, passing the draw instance
   onCreate (hex) {
     hex.render(draw)

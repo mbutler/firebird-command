@@ -6,19 +6,6 @@ _.forEach(unitList, (unit) => {
   hex.facing(unit.facing, unit.name)
 })
 
-console.log(units)
-
-$(document).mousedown((e) => {
-  // check to make sure it's a left button
-  if (e.which === 1) {
-    let hex = getHexFromCoords(e.pageX, e.pageY)
-    if (hex.currentUnit !== undefined) {
-      selectedUnit = hex.currentUnit
-      toggleHexSelection(hex)      
-    }   
-  }
-})
-
 $(document).keypress((e) => {
   if (e.which === 32) {
     // tests

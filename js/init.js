@@ -1,3 +1,11 @@
+$( document ).ready(function() {
+    const draw = SVG('container')
+    var area = document.querySelector('#container')
+    panzoom(area, {
+        smoothScroll: false
+    })
+})
+
 const width = window.innerWidth
 const height = window.innerHeight
 let hexSize = 25
@@ -6,6 +14,8 @@ let hexesHorizontal = width / (hexSize * 1.5)
 let hexesVertical = height / (hexSize * 1.5)
 let units = []
 let selectedUnit
+
+
 
 let unitList = [
     {

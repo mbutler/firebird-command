@@ -14,11 +14,23 @@ function createUnit (hex, sidc, options) {
   hex.currentUnit = container
 
   // add the unit to the DOM and units list
-  document.body.appendChild(container)
+  //document.body.appendChild(container)
+  $('#container').append(container)
   units.push(options.uniqueDesignation)
 
   // store the coordinates of the hex in the unit
   setUnitCoords(hex, options.uniqueDesignation)
+
+  $(container).mousedown((e) => {
+    // check to make sure it's a left button
+    if (e.which === 1) {
+      let hex = getUnitHex(e.currentTarget.id)
+      if (hex.currentUnit !== undefined) {
+        selectedUnit = hex.currentUnit
+        toggleHexSelection(hex)      
+      }   
+    }
+  })
 }
 
 function removeUnitById (uniqueDesignation) {
