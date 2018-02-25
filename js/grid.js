@@ -2,13 +2,10 @@ const width = window.innerWidth
 const height = window.innerHeight
 let hexSize = 25
 let hexDiagonal = hexSize * 2
-let hexesHorizontal = width / (hexSize + hexSize * 0.5)
-let hexesVertical = height / (hexSize + hexSize * 0.5)
+let hexesHorizontal = width / (hexSize * 1.5)
+let hexesVertical = height / (hexSize * 1.5)
 const draw = SVG(document.body)
-
-function getHexSize () {
-  return hexSize
-}
+let units = []
 
 const Hex = Honeycomb.extendHex({
   size: hexSize,
@@ -29,15 +26,15 @@ const Hex = Honeycomb.extendHex({
 
   highlight () {
     this.draw
-    	// stop running animation
-      //.stop(true, true)
       .fill({ opacity: 1, color: 'aquamarine' })
       .animate(150)
       .fill({ opacity: 0, color: 'none' })
   },
 
-  facing (direction) {
-    let faceStart, faceEnd
+  facing (direction, uniqueDesignation) {
+    
+    let faceStart, faceEnd, x1, x2, y1, y2, lines
+
     switch (direction) {
       case 0:
       // top
@@ -70,31 +67,27 @@ const Hex = Honeycomb.extendHex({
         faceEnd = 4
         break
       default:
-        faceStart = 999
-          //
-    }
+      faceStart = 4
+      faceEnd = 5
+    }   
     // 1-2 bottom
     // 2-3 bottom left
     // 3-4 top left
     // 4-5 top
     // 5-0 top right
     // 0-1 bottom right
+    x1 = this.cornerList[faceStart].x
+    y1 = this.cornerList[faceStart].y
+    x2 = this.cornerList[faceEnd].x
+    y2 = this.cornerList[faceEnd].y
+ 
+    lines = _.toString([x1, y1, x2, y2, (x1 + x2) / 2, (y1 + y2) / 2, this.cornerList[3].x + hexSize, this.cornerList[3].y])
 
-    /*
-    0: {x: 50, y: 21.650635094610966}
-    1: {x: 37.5, y: 43.30127018922193}
-    2: {x: 12.5, y: 43.30127018922193}
-    3: {x: 0, y: 21.650635094610966}
-    4: {x: 12.5, y: 0}
-    5: {x: 37.5, y: 0}
-    */
-
-    if (faceStart !== 999) {
-      this.draw = draw
-      .stop(true, true)
-    .line(this.cornerList[faceStart].x, this.cornerList[faceStart].y, this.cornerList[faceEnd].x, this.cornerList[faceEnd].y)
+    this.draw = draw
+    .polyline(lines)
     .stroke({ color: '#f06', width: 1})
-    }
+    .fill('none')
+    .attr('id', uniqueDesignation + '-facing')
   },
 
   currentUnit: undefined

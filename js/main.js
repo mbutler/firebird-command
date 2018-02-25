@@ -2,7 +2,7 @@ $.getJSON('../js/dingo.json', (dingo) => {
   const hex = grid.get(Hex(dingo.startingHex))
   dingo.symbol.options.size = hexSize * 0.8
   createUnit(hex, dingo.symbol.sidc, dingo.symbol.options)
-  hex.facing(dingo.facing)
+  hex.facing(dingo.facing, dingo.name)
 })
 
 $(document).mousedown((e) => {
@@ -16,31 +16,25 @@ $(document).mousedown((e) => {
       if (hex.currentUnit === undefined) {
         createUnit(hex, 'SHGPUCIL---C---',
           { size: hexSize * 0.8,
-            uniqueDesignation: 'dingo',
+            uniqueDesignation: 'panther',
             infoFields: false
           })
 
         hex.highlight()
-        console.log(hex)
-        hex.facing(3)
+        hex.facing(_.random(0, 6), 'panther')
+        console.log(units)
       }
     }
   }
 })
 
-/* $(document).on('contextmenu', function (e) {
-  const hexCoordinates = Grid.pointToHex([e.offsetX, e.offsetY])
-  const hex = grid.get(hexCoordinates)
-  const unit = hex.currentUnit
-  console.log(unit.id)
-  return false
-}) */
-
 $(document).keypress((e) => {
   if (e.which === 32) {
     // tests
-    const hex = grid.get(Hex(14, 14))
+    const hex = grid.get(Hex(14, 14))    
     animateUnitToHex(hex, 'dingo')
+    removeUnitById('panther')
+    console.log(units)
   }
 })
 

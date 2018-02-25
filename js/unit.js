@@ -1,20 +1,21 @@
 function createUnit (hex, sidc, options) {
   let container, symbol
-  let size
-
+  let size, drawLine
+  
   // create div container and svg symbol and set position
   symbol = new ms.Symbol(sidc, options)
   size = symbol.getSize()
   container = createSymbolContainer(options.uniqueDesignation)
   $(container).data('size', size)
   container.innerHTML = symbol.asSVG()
-  container = positionUnit(hex, container)
+  container = positionUnit(hex, container)  
 
   // store the symbol in the hex
   hex.currentUnit = container
 
-  // add the unit to the DOM
+  // add the unit to the DOM and units list
   document.body.appendChild(container)
+  units.push(options.uniqueDesignation)
 
   // store the coordinates of the hex in the unit
   setUnitCoords(hex, options.uniqueDesignation)
@@ -26,6 +27,8 @@ function removeUnitById (uniqueDesignation) {
   let hex = getUnitHex(uniqueDesignation)
   hex.currentUnit = undefined
   unit.parentNode.removeChild(unit)
+  $('#' + uniqueDesignation + '-facing').remove()
+  _.pull(units, uniqueDesignation)
 }
 
 function getUnitCoords (uniqueDesignation) {
@@ -64,7 +67,6 @@ function positionUnit (hex, unit) {
   unit.style.position = 'absolute'
   unit.style.left = (hex.screenCoords.x + offsetX) + 'px'
   unit.style.top = (hex.screenCoords.y + offsetY) + 'px'
-  //unit.style.zIndex = -1
 
   return unit
 }
@@ -78,7 +80,7 @@ function animateUnitToHex (hex, uniqueDesignation) {
   // clear the previous hex
   let previousHex = getUnitHex(uniqueDesignation)
   previousHex.currentUnit = undefined
-  previousHex.facing(999)
+  $('#' + uniqueDesignation + '-facing').remove()
 
   $('#' + uniqueDesignation).animate({
     'top': (hex.screenCoords.y + offsetY) + 'px',
@@ -88,10 +90,10 @@ function animateUnitToHex (hex, uniqueDesignation) {
     complete: function () {
       setUnitCoords(hex, uniqueDesignation)
       hex.currentUnit = unit
+      hex.highlight()
+      hex.facing(unit.facing, uniqueDesignation)      
     }
   })
 }
 
-function createFacing (id) {
 
-}
