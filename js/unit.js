@@ -81,6 +81,8 @@ function animateUnitToHex (hex, uniqueDesignation) {
   let previousHex = getUnitHex(uniqueDesignation)
   previousHex.currentUnit = undefined
   $('#' + uniqueDesignation + '-facing').remove()
+  previousHex.selected = false
+  previousHex.highlight()
 
   $('#' + uniqueDesignation).animate({
     'top': (hex.screenCoords.y + offsetY) + 'px',
@@ -90,10 +92,23 @@ function animateUnitToHex (hex, uniqueDesignation) {
     complete: function () {
       setUnitCoords(hex, uniqueDesignation)
       hex.currentUnit = unit
-      hex.highlight()
-      hex.facing(unit.facing, uniqueDesignation)      
+      hex.facing(unit.facing, uniqueDesignation)
+      selectedUnit = hex.currentUnit
+      toggleHexSelection(hex)      
     }
   })
+}
+
+function changeFacing (face, uniqueDesignation) {
+  let hex = getUnitHex(uniqueDesignation)
+  let unit = document.getElementById(uniqueDesignation)
+  $('#' + uniqueDesignation + '-facing').remove()
+  hex.facing(face, uniqueDesignation)
+  sheet(uniqueDesignation).facing = face
+}
+
+function sheet (uniqueDesignation) {
+  return _.find(unitList, (unit) => {return unit.name === uniqueDesignation})
 }
 
 

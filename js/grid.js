@@ -1,11 +1,5 @@
-const width = window.innerWidth
-const height = window.innerHeight
-let hexSize = 25
-let hexDiagonal = hexSize * 2
-let hexesHorizontal = width / (hexSize * 1.5)
-let hexesVertical = height / (hexSize * 1.5)
+
 const draw = SVG(document.body)
-let units = []
 
 const Hex = Honeycomb.extendHex({
   size: hexSize,
@@ -16,6 +10,8 @@ const Hex = Honeycomb.extendHex({
     const corners = this.corners()
     this.screenCoords = {'x': x, 'y': y}
     this.cornerList = this.corners().map(corner => this.toPoint().add(corner))
+    this.currentUnit = undefined
+    this.selected = false
 
     this.draw = draw
     	.polygon(corners.map(({ x, y }) => `${x},${y}`))
@@ -25,17 +21,23 @@ const Hex = Honeycomb.extendHex({
   },
 
   highlight () {
-    this.draw
-      .fill({ opacity: 1, color: 'aquamarine' })
-      .animate(150)
-      .fill({ opacity: 0, color: 'none' })
+    
+    if (this.selected === true) {
+      this.selected = true
+      this.draw
+      .fill({ opacity: 1, color: 'aquamarine' })      
+    } else {
+      this.selected = false
+      this.draw
+      .fill({ opacity: 0, color: 'none' })      
+    }
   },
 
-  facing (direction, uniqueDesignation) {
+  facing (face, uniqueDesignation) {
     
     let faceStart, faceEnd, x1, x2, y1, y2, lines
 
-    switch (direction) {
+    switch (face) {
       case 0:
       // top
         faceStart = 4
@@ -83,7 +85,7 @@ const Hex = Honeycomb.extendHex({
  
     lines = _.toString([x1, y1, x2, y2, (x1 + x2) / 2, (y1 + y2) / 2, this.cornerList[3].x + hexSize, this.cornerList[3].y])
 
-    this.draw = draw
+    draw
     .polyline(lines)
     .stroke({ color: '#f06', width: 1})
     .fill('none')
@@ -103,3 +105,20 @@ const grid = Grid.rectangle({
     hex.render(draw)
   }
 })
+
+function getHexFromCoords (pageX, pageY) {
+  let hexCoordinates = Grid.pointToHex([pageX, pageY])
+  let hex = grid.get(hexCoordinates)
+
+  return hex
+}
+
+function toggleHexSelection (hex) {
+  _.forEach(units, (name) => {
+    let h = getUnitHex(name)
+    h.selected = false
+    h.highlight()            
+  })
+  hex.selected = true
+  hex.highlight()
+}

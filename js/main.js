@@ -1,40 +1,30 @@
-$.getJSON('../js/dingo.json', (dingo) => {
-  const hex = grid.get(Hex(dingo.startingHex))
-  dingo.symbol.options.size = hexSize * 0.8
-  createUnit(hex, dingo.symbol.sidc, dingo.symbol.options)
-  hex.facing(dingo.facing, dingo.name)
+//create starting units
+_.forEach(unitList, (unit) => {
+  const hex = grid.get(Hex(unit.startingHex))
+  unit.symbol.options.size = hexSize * 0.8
+  createUnit(hex, unit.symbol.sidc, unit.symbol.options)
+  hex.facing(unit.facing, unit.name)
 })
+
+console.log(units)
 
 $(document).mousedown((e) => {
   // check to make sure it's a left button
   if (e.which === 1) {
-    // check to make sure we're clicking a hex and not a symbol
-    if (_.includes(e.target.id, 'Svgjs')) {
-      const hexCoordinates = Grid.pointToHex([e.offsetX, e.offsetY])
-      var hex = grid.get(hexCoordinates)
-
-      if (hex.currentUnit === undefined) {
-        createUnit(hex, 'SHGPUCIL---C---',
-          { size: hexSize * 0.8,
-            uniqueDesignation: 'panther',
-            infoFields: false
-          })
-
-        hex.highlight()
-        hex.facing(_.random(0, 6), 'panther')
-        console.log(units)
-      }
-    }
+    let hex = getHexFromCoords(e.pageX, e.pageY)
+    if (hex.currentUnit !== undefined) {
+      selectedUnit = hex.currentUnit
+      toggleHexSelection(hex)      
+    }   
   }
 })
 
 $(document).keypress((e) => {
   if (e.which === 32) {
     // tests
-    const hex = grid.get(Hex(14, 14))    
-    animateUnitToHex(hex, 'dingo')
-    removeUnitById('panther')
-    console.log(units)
+    const hex = grid.get(Hex(4, 4))    
+    changeFacing(3, 'dingo')     
+    animateUnitToHex(hex, 'panther')
   }
 })
 
