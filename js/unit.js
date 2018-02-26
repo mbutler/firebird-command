@@ -14,8 +14,7 @@ function createUnit (hex, sidc, options) {
   hex.currentUnit = container
 
   // add the unit to the DOM and units list
-  //document.body.appendChild(container)
-  $('#container').append(container)
+  $('#stage').append(container)
   units.push(options.uniqueDesignation)
 
   // store the coordinates of the hex in the unit
@@ -83,44 +82,60 @@ function positionUnit (hex, unit) {
   return unit
 }
 
-function animateUnitToHex (hex, uniqueDesignation) {
-  let unit = document.getElementById(uniqueDesignation)
-  let symbolSize = $.data(unit, 'size')
-  let offsetX = (hexDiagonal - symbolSize.width) / 2
-  let offsetY = (hexDiagonal - symbolSize.height) / 4
+function animateUnitToHex (point, uniqueDesignation) {
+  
+  //need to query Firebase for the hex that was updated then perform
+  //animation and view updates in the callback
+  //
+  unitsDB.child(uniqueDesignation).once('value', (data) => {
+    let facing
+    let val = data.val()
+    facing = val.facing
 
-  // clear the previous hex
-  let previousHex = getUnitHex(uniqueDesignation)
-  previousHex.currentUnit = undefined
-  $('#' + uniqueDesignation + '-facing').remove()
-  previousHex.selected = false
-  previousHex.highlight()
-
-  $('#' + uniqueDesignation).animate({
-    'top': (hex.screenCoords.y + offsetY) + 'px',
-    'left': (hex.screenCoords.x + offsetX) + 'px'
-  }, {
-    duration: 500,
-    complete: function () {
-      setUnitCoords(hex, uniqueDesignation)
-      hex.currentUnit = unit
-      hex.facing(unit.facing, uniqueDesignation)
-      selectedUnit = hex.currentUnit
-      toggleHexSelection(hex)      
-    }
+    const hex = grid.get(point)
+    
+    let unit = document.getElementById(uniqueDesignation)
+  
+    let symbolSize = $.data(unit, 'size')
+    let offsetX = (hexDiagonal - symbolSize.width) / 2
+    let offsetY = (hexDiagonal - symbolSize.height) / 4
+  
+    // clear the previous hex
+    let previousHex = getUnitHex(uniqueDesignation)
+    previousHex.currentUnit = undefined
+    $('#' + uniqueDesignation + '-facing').remove()
+    previousHex.selected = false
+    previousHex.highlight()
+  
+    $('#' + uniqueDesignation).animate({
+      'top': (hex.screenCoords.y + offsetY) + 'px',
+      'left': (hex.screenCoords.x + offsetX) + 'px'
+    }, {
+      duration: 500,
+      complete: function () {
+        $('#' + uniqueDesignation + '-facing').remove()
+        setUnitCoords(hex, uniqueDesignation)
+        hex.currentUnit = unit
+        hex.facing(facing, uniqueDesignation)
+        selectedUnit = hex.currentUnit    
+      }
+    })
   })
 }
 
-function changeFacing (face, uniqueDesignation) {
+function changeFacing (face, uniqueDesignation) {  
   let hex = getUnitHex(uniqueDesignation)
   let unit = document.getElementById(uniqueDesignation)
   $('#' + uniqueDesignation + '-facing').remove()
   hex.facing(face, uniqueDesignation)
-  sheet(uniqueDesignation).facing = face
 }
 
-function sheet (uniqueDesignation) {
-  return _.find(unitList, (unit) => {return unit.name === uniqueDesignation})
+function updateUnit (update, uniqueDesignation) {
+  //return _.find(unitList, (unit) => {return unit.name === uniqueDesignation})
+  unitsDB.child(uniqueDesignation).update(update)
 }
+
+
+
 
 

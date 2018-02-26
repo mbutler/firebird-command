@@ -1,10 +1,16 @@
-$( document ).ready(function() {
-    const draw = SVG('container')
-    var area = document.querySelector('#container')
-    panzoom(area, {
-        smoothScroll: false
-    })
-})
+/*
+Data is stored in a Firebase instance. All changes to unit data should happen via the updateUnit
+function. Changes to the units are listened for and appropriate funtions to change the view are invoked.
+*/
+
+let appPath = "https://flickering-fire-8187.firebaseio.com/";
+let appName = "Firebird"
+let Firebird = new Firebase(appPath + appName)
+let gameID = '-L6D8cz625nLzyargSEO' // set from some selection in UI
+let gameDB = new Firebase(appPath + appName + '/Games/' + gameID)
+let gridDB = new Firebase(appPath + appName + '/Games/' + gameID + '/Grid')
+let unitsDB = new Firebase(appPath + appName + '/Games/' + gameID + '/Units')
+let newGame = false // simulating coming from a setup screen or not
 
 const width = window.innerWidth
 const height = window.innerHeight
@@ -14,8 +20,9 @@ let hexesHorizontal = width / (hexSize * 1.5)
 let hexesVertical = height / (hexSize * 1.5)
 let units = []
 let selectedUnit
+let area = document.querySelector('#stage')
 
-
+panzoom(area, { smoothScroll: false })
 
 let unitList = [
     {
@@ -68,8 +75,8 @@ let unitList = [
         "infoFields": false
       }
     },
-    "startingHex": [12, 9],
     "currentMovementType": "",
+    "currentHex": [12, 9],
     "facing": 4
   },
   {
@@ -122,8 +129,8 @@ let unitList = [
         "infoFields": false
       }
     },
-    "startingHex": [7, 7],
     "currentMovementType": "",
+    "currentHex": [7, 7],
     "facing": 0
   },
   {
@@ -176,8 +183,17 @@ let unitList = [
         "infoFields": false
       }
     },
-    "startingHex": [15, 5],
     "currentMovementType": "",
+    "currentHex": [15, 15],
     "facing": 2
   }
 ]
+
+if (newGame === true) {
+    _.forEach(unitList, (unit) => {
+        let unitObj = {}
+        let name = unit.symbol.options.uniqueDesignation
+        unitObj[name] = unit
+        unitsDB.update(unitObj)
+    })    
+}

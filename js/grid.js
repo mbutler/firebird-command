@@ -1,5 +1,5 @@
 
-const draw = SVG('container')
+const draw = SVG('stage')
 
 const Hex = Honeycomb.extendHex({
   size: hexSize,

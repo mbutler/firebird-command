@@ -1,18 +1,50 @@
-//create starting units
-_.forEach(unitList, (unit) => {
-  const hex = grid.get(Hex(unit.startingHex))
-  unit.symbol.options.size = hexSize * 0.8
-  createUnit(hex, unit.symbol.sidc, unit.symbol.options)
-  hex.facing(unit.facing, unit.name)
+
+// load units from Firebase
+unitsDB.once('value', (snapshot) => {
+  snapshot.forEach( (childSnapshot) => {
+    var unitName = childSnapshot.key()
+    var unit = childSnapshot.val()
+    let face = unit.facing
+    let name = unit.symbol.options.uniqueDesignation
+
+    //create starting units
+    const hex = grid.get(Hex(unit.currentHex))
+    unit.symbol.options.size = hexSize * 0.8
+    createUnit(hex, unit.symbol.sidc, unit.symbol.options)
+    changeFacing(face, name)    
+  })
 })
 
-$(document).keypress((e) => {
+$(document).keypress( (e) => {
   if (e.which === 32) {
     // tests
     const hex = grid.get(Hex(4, 4))    
-    changeFacing(3, 'dingo')     
-    animateUnitToHex(hex, 'panther')
+    //updateUnit({facing: 4}, 'dingo')     
+    updateUnit({currentHex: [14, 7]}, 'panther')
+    updateUnit({currentHex: [14, 5]}, 'dingo')
+    //updateUnit({facing: 1}, 'panther')
+/*     updateUnit({
+      agility: 33,
+      strength: 18,
+      health: 34
+    }, 'snake') */
   }
+})
+
+unitsDB.on("child_changed", (data) => {
+  let unit = data.val()
+  let face = unit.facing
+  let name = unit.name
+  let hex = unit.currentHex
+
+  /* 
+  Whenever the data model of the unit changes in Firebase via our updateUnit function, 
+  we change the view, whether it needs it or not.
+  animationUnitToHex is async, changeFacing is sync
+  Therefore, there are some minor animation timing issues if performing both at once.
+  */
+  changeFacing(face, name)  
+  animateUnitToHex(hex, name)
 })
 
 $.contextMenu({
