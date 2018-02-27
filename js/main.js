@@ -1,17 +1,17 @@
 
 // load units from Firebase
-unitsDB.once('value', (snapshot) => {
-  snapshot.forEach( (childSnapshot) => {
-    var unitName = childSnapshot.key()
-    var unit = childSnapshot.val()
-    let face = unit.facing
+unitsDB.once('value').then((snapshot) => {
+  let units = snapshot.val()
+
+  _.forEach(units, (unit) => {
     let name = unit.symbol.options.uniqueDesignation
+    let face = unit.facing
 
     //create starting units
     const hex = grid.get(Hex(unit.currentHex))
     unit.symbol.options.size = hexSize * 0.8
     createUnit(hex, unit.symbol.sidc, unit.symbol.options)
-    changeFacing(face, name)    
+    changeFacing(face, name)
   })
 })
 
@@ -19,32 +19,27 @@ $(document).keypress( (e) => {
   if (e.which === 32) {
     // tests
     const hex = grid.get(Hex(4, 4))    
-    //updateUnit({facing: 4}, 'dingo')     
-    updateUnit({currentHex: [14, 7]}, 'panther')
-    updateUnit({currentHex: [14, 5]}, 'dingo')
-    //updateUnit({facing: 1}, 'panther')
+    updateUnit({currentHex: [6, 14]}, 'panther')
+    updateUnit({currentHex: [4, 9]}, 'dingo')
+    updateUnit({facing: 5}, 'panther')
+     
 /*     updateUnit({
       agility: 33,
       strength: 18,
       health: 34
-    }, 'snake') */
+    }, 'snake')  */
   }
 })
 
-unitsDB.on("child_changed", (data) => {
-  let unit = data.val()
-  let face = unit.facing
-  let name = unit.name
-  let hex = unit.currentHex
+unitsDB.on('child_changed', (snapshot) => {
 
-  /* 
-  Whenever the data model of the unit changes in Firebase via our updateUnit function, 
-  we change the view, whether it needs it or not.
-  animationUnitToHex is async, changeFacing is sync
-  Therefore, there are some minor animation timing issues if performing both at once.
-  */
-  changeFacing(face, name)  
-  animateUnitToHex(hex, name)
+  let unit = snapshot.val()
+  let face = unit.facing
+  let hex = unit.currentHex
+  let uniqueDesignation = snapshot.key
+ 
+  changeFacing(face, uniqueDesignation)
+  animateUnitToHex(hex, uniqueDesignation)  
 })
 
 $.contextMenu({

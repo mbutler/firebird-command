@@ -3,13 +3,20 @@ Data is stored in a Firebase instance. All changes to unit data should happen vi
 function. Changes to the units are listened for and appropriate funtions to change the view are invoked.
 */
 
-let appPath = "https://flickering-fire-8187.firebaseio.com/";
+/* let appPath = "https://flickering-fire-8187.firebaseio.com/";
 let appName = "Firebird"
 let Firebird = new Firebase(appPath + appName)
 let gameID = '-L6D8cz625nLzyargSEO' // set from some selection in UI
 let gameDB = new Firebase(appPath + appName + '/Games/' + gameID)
 let gridDB = new Firebase(appPath + appName + '/Games/' + gameID + '/Grid')
-let unitsDB = new Firebase(appPath + appName + '/Games/' + gameID + '/Units')
+let unitsDB = new Firebase(appPath + appName + '/Games/' + gameID + '/Units') */
+
+let gameID = '-L6D8cz625nLzyargSEO' // set from some selection in UI
+
+firebase.initializeApp(config)
+
+let unitsDB = firebase.database().ref('/Games/' + gameID + '/Units')
+
 let newGame = false // simulating coming from a setup screen or not
 
 const width = window.innerWidth
@@ -131,7 +138,7 @@ let unitList = [
     },
     "currentMovementType": "",
     "currentHex": [7, 7],
-    "facing": 0
+    "facing": 5
   },
   {
     "name": "snake",

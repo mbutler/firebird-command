@@ -87,7 +87,7 @@ function animateUnitToHex (point, uniqueDesignation) {
   //need to query Firebase for the hex that was updated then perform
   //animation and view updates in the callback
   //
-  unitsDB.child(uniqueDesignation).once('value', (data) => {
+  firebase.database().ref('/Games/' + gameID + '/Units/' + uniqueDesignation).once('value').then((data) => {
     let facing
     let val = data.val()
     facing = val.facing
@@ -123,16 +123,22 @@ function animateUnitToHex (point, uniqueDesignation) {
   })
 }
 
-function changeFacing (face, uniqueDesignation) {  
+function changeFacing (face, uniqueDesignation) { 
   let hex = getUnitHex(uniqueDesignation)
   let unit = document.getElementById(uniqueDesignation)
   $('#' + uniqueDesignation + '-facing').remove()
   hex.facing(face, uniqueDesignation)
 }
 
-function updateUnit (update, uniqueDesignation) {
-  //return _.find(unitList, (unit) => {return unit.name === uniqueDesignation})
-  unitsDB.child(uniqueDesignation).update(update)
+function updateUnit (updates, uniqueDesignation) {
+  let changedValue = {}
+  let keys = _.keys(updates)
+
+  for (var i=0; i <= keys.length - 1; i++) {    
+    changedValue['/' + uniqueDesignation + '/' + keys[i]] = updates[keys[i]]
+  }
+
+  unitsDB.update(changedValue)   
 }
 
 
