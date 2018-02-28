@@ -12,45 +12,42 @@ require('./js/listeners.js')
 let area = document.querySelector('#' + config.divContainer)
 panzoom(area, { smoothScroll: false })
 
-unitList.selectedUnit
-unitList.unitsToggleList = []
-
 firebase.unitsDB.once('value').then((snapshot) => {
-    let units = snapshot.val()
-  
-    _.forEach(units, (unit) => {
-      let name = unit.symbol.options.uniqueDesignation
-      let face = unit.facing
-  
-      //create starting units
-      const hex = Map.grid.get(Map.Hex(unit.currentHex))
-      unit.symbol.options.size = config.hexSize * 0.8
-      Unit.createUnit(hex, unit.symbol.sidc, unit.symbol.options)
-      Unit.changeFacing(face, name)
-    })
-})
+  let units = snapshot.val()
 
-  
+  _.forEach(units, (unit) => {
+    let name = unit.symbol.options.uniqueDesignation
+    let face = unit.facing
+
+      // create starting units
+    const hex = Map.grid.get(Map.Hex(unit.currentHex))
+    unit.symbol.options.size = config.hexSize * 0.8
+    Unit.createUnit(hex, unit.symbol.sidc, unit.symbol.options)
+    Unit.changeFacing(face, name)
+    unitList.unitsToggleList.push(name)
+  })
+})
 
 },{"./js/config.js":2,"./js/database.js":3,"./js/listeners.js":4,"./js/map.js":5,"./js/unit-list.js":6,"./js/unit.js":7,"jquery":173,"lodash":174,"panzoom":176}],2:[function(require,module,exports){
 let config = {
-    mapWidth: 100,
-    mapHeight: 100,
-    hexSize: 25,
-    divContainer: 'stage',
-    gameID: '-L6D8cz625nLzyargSEO',
-    newGame: false,
-    firebase: {
-        apiKey: "AIzaSyBKxAP8VRE18XIqhkZlI6z3xbCgaPCwVc0",
-        authDomain: "firebird-f30dc.firebaseapp.com",
-        databaseURL: "https://firebird-f30dc.firebaseio.com",
-        projectId: "firebird-f30dc",
-        storageBucket: "firebird-f30dc.appspot.com",
-        messagingSenderId: "274623842874"
-      }
+  mapWidth: 100,
+  mapHeight: 100,
+  hexSize: 25,
+  divContainer: 'stage',
+  gameID: '-L6D8cz625nLzyargSEO',
+  newGame: false,
+  firebase: {
+    apiKey: 'AIzaSyBKxAP8VRE18XIqhkZlI6z3xbCgaPCwVc0',
+    authDomain: 'firebird-f30dc.firebaseapp.com',
+    databaseURL: 'https://firebird-f30dc.firebaseio.com',
+    projectId: 'firebird-f30dc',
+    storageBucket: 'firebird-f30dc.appspot.com',
+    messagingSenderId: '274623842874'
+  }
 }
 
 module.exports = config
+
 },{}],3:[function(require,module,exports){
 let firebase = require('firebase')
 let config = require('./config')
@@ -60,10 +57,11 @@ let unitsDB = firebase.database().ref('/Games/' + config.gameID + '/Units')
 let firebaseRef = firebase.database().ref
 
 module.exports = {
-    unitsDB: unitsDB,
-    firebaseRef: firebaseRef,
-    firebaseRoot: firebase
+  unitsDB: unitsDB,
+  firebaseRef: firebaseRef,
+  firebaseRoot: firebase
 }
+
 },{"./config":2,"firebase":168}],4:[function(require,module,exports){
 let $ = require('jquery')
 let firebase = require('./database.js')
@@ -72,100 +70,99 @@ let Map = require('./map.js')
 require('jquery-contextmenu')
 
 firebase.unitsDB.on('child_changed', (snapshot) => {
-
   let unit = snapshot.val()
   let face = unit.facing
   let hex = unit.currentHex
   let uniqueDesignation = snapshot.key
- 
+
   Unit.changeFacing(face, uniqueDesignation)
-  Unit.animateUnitToHex(hex, uniqueDesignation)  
+  Unit.animateUnitToHex(hex, uniqueDesignation)
 })
 
-$(document).keypress( (e) => {
-    if (e.which === 32) {
+$(document).keypress((e) => {
+  if (e.which === 32) {
       // tests
-      const hex = Map.grid.get(Map.Hex(4, 4))    
-      Unit.updateUnit({currentHex: [9, 13]}, 'panther')
-      //Unit.updateUnit({currentHex: [8, 3]}, 'dingo')
-      Unit.updateUnit({facing: 5}, 'panther')
-       
+    Unit.updateUnit({currentHex: [12, 13]}, 'panther')
+    Unit.updateUnit({currentHex: [2, 13]}, 'dingo')
+    Unit.updateUnit({facing: 2}, 'panther')
+
       /* Unit.updateUnit({
         agility: 69,
         strength: 20,
         health: 100
       }, 'snake') */
-    }
+  }
 })
 
 $.contextMenu({
-    selector: '.unit',
-    build: function ($trigger, e) {
-      console.log(e.currentTarget.id)
+  selector: '.unit',
+  build: function ($trigger, e) {
+    console.log(e.currentTarget.id)
         // this callback is executed every time the menu is to be shown
         // its results are destroyed every time the menu is hidden
         // e is the original contextmenu event, containing e.pageX and e.pageY (amongst other data)
-      return {
-        callback: function (key, options) {
-          var m = 'clicked: ' + key
-          console.log(m)
-        },
+    return {
+      callback: function (key, options) {
+        var m = 'clicked: ' + key
+        console.log(m)
+      },
         // items object here
-        items: {
-          'change-facing-moving': {'name': '(0) Change facing 1 hexside while moving, per hex',
-            'items': {
-              'face-1-left-moving': {'name': '(0) Turn 1 hexside left'},
-              'face-1-right-moving': {'name': '(0) Turn 1 hexside right'}
-            }
-          },
-          'change-facing-immobile': {'name': '(1) Change facing by 1 or 2 hexsides while immobile',
-            'items': {
-              'face-1-left-immobile': {'name': '(0) Turn 1 hexside left'},
-              'face-2-left-immobile': {'name': '(0) Turn 2 hexsides left'},
-              'face-1-right-immobile': {'name': '(0) Turn 1 hexside right'},
-              'face-2-right-immobile': {'name': '(0) Turn 2 hexsides right'}
-            }
-          },
-          'assume-firing-stance': {'name': '(2) Assume a firing stance'},
-          'look-over-cover': {'name': '(1) Look over/around cover'},
-          'throw-grenade': {'name': '(2) Throw a grenade'},
-          'open-door': {'name': '(3) Open a door'},
-          'open-window': {'name': '(6) Open a window (two hands)'},
-          'reload-weapon': {'name': '(8) Reload a weapon'},
-          'load-magazine': {'name': '(4) Load a magazine, per round'},
-          'drop-weapon': {'name': '(4) Pick up or set down a weapon'},
-          'deploy-bipod': {'name': '(8) Deploy bipod for weapon'},
-          'climb-window': {'name': '(6) Climb through a window'},
-          'draw-pistol-shoulder': {'name': '(3) Draw a pistol - shoulder holster'},
-          'draw-pistol-hip': {'name': '(2) Draw a pistol - hip holster'},
-          'draw-hand-weapon': {'name': '(2) Draw a hand-to-hand weapon'},
-          'access-backpack': {'name': '(7) Get out of military backpack'},
-          'sep1': '---------',
-          'running-stance': {
-            'name': 'Running Stance',
-            'items': {
-              'running-forward': {'name': '(1) Move forward one hex'},
-              'running-backward': {'name': '(2) Move backwards one hex'}
-            }
-          },
-          'low-crouch': {
-            'name': 'Low Crouch',
-            'items': {
-              'crouching-forward': {'name': '(2) Move forward one hex'},
-              'crouching-backward': {'name': '(4) Move backwards one hex'}
-            }
-          },
-          'hands-and-knees': {
-            'name': 'Hands and Knees',
-            'items': {
-              'crawling-forward': {'name': '(3) Move forward one hex'},
-              'crawling-backward': {'name': '(5) Move backwards one hex'}
-            }
+      items: {
+        'change-facing-moving': {'name': '(0) Change facing 1 hexside while moving, per hex',
+          'items': {
+            'face-1-left-moving': {'name': '(0) Turn 1 hexside left'},
+            'face-1-right-moving': {'name': '(0) Turn 1 hexside right'}
+          }
+        },
+        'change-facing-immobile': {'name': '(1) Change facing by 1 or 2 hexsides while immobile',
+          'items': {
+            'face-1-left-immobile': {'name': '(0) Turn 1 hexside left'},
+            'face-2-left-immobile': {'name': '(0) Turn 2 hexsides left'},
+            'face-1-right-immobile': {'name': '(0) Turn 1 hexside right'},
+            'face-2-right-immobile': {'name': '(0) Turn 2 hexsides right'}
+          }
+        },
+        'assume-firing-stance': {'name': '(2) Assume a firing stance'},
+        'look-over-cover': {'name': '(1) Look over/around cover'},
+        'throw-grenade': {'name': '(2) Throw a grenade'},
+        'open-door': {'name': '(3) Open a door'},
+        'open-window': {'name': '(6) Open a window (two hands)'},
+        'reload-weapon': {'name': '(8) Reload a weapon'},
+        'load-magazine': {'name': '(4) Load a magazine, per round'},
+        'drop-weapon': {'name': '(4) Pick up or set down a weapon'},
+        'deploy-bipod': {'name': '(8) Deploy bipod for weapon'},
+        'climb-window': {'name': '(6) Climb through a window'},
+        'draw-pistol-shoulder': {'name': '(3) Draw a pistol - shoulder holster'},
+        'draw-pistol-hip': {'name': '(2) Draw a pistol - hip holster'},
+        'draw-hand-weapon': {'name': '(2) Draw a hand-to-hand weapon'},
+        'access-backpack': {'name': '(7) Get out of military backpack'},
+        'sep1': '---------',
+        'running-stance': {
+          'name': 'Running Stance',
+          'items': {
+            'running-forward': {'name': '(1) Move forward one hex'},
+            'running-backward': {'name': '(2) Move backwards one hex'}
+          }
+        },
+        'low-crouch': {
+          'name': 'Low Crouch',
+          'items': {
+            'crouching-forward': {'name': '(2) Move forward one hex'},
+            'crouching-backward': {'name': '(4) Move backwards one hex'}
+          }
+        },
+        'hands-and-knees': {
+          'name': 'Hands and Knees',
+          'items': {
+            'crawling-forward': {'name': '(3) Move forward one hex'},
+            'crawling-backward': {'name': '(5) Move backwards one hex'}
           }
         }
       }
     }
-  })
+  }
+})
+
 },{"./database.js":3,"./map.js":5,"./unit.js":7,"jquery":173,"jquery-contextmenu":172}],5:[function(require,module,exports){
 let SVG = require('svg.js')
 let Honeycomb = require('honeycomb-grid')
@@ -194,20 +191,18 @@ const Hex = Honeycomb.extendHex({
   },
 
   highlight () {
-    
     if (this.selected === true) {
       this.selected = true
       this.draw
-      .fill({ opacity: 1, color: 'aquamarine' })      
+      .fill({ opacity: 1, color: 'aquamarine' })
     } else {
       this.selected = false
       this.draw
-      .fill({ opacity: 0, color: 'none' })      
+      .fill({ opacity: 0, color: 'none' })
     }
   },
 
   facing (face, uniqueDesignation) {
-    
     let faceStart, faceEnd, x1, x2, y1, y2, lines
 
     switch (face) {
@@ -242,9 +237,9 @@ const Hex = Honeycomb.extendHex({
         faceEnd = 4
         break
       default:
-      faceStart = 4
-      faceEnd = 5
-    }   
+        faceStart = 4
+        faceEnd = 5
+    }
     // 1-2 bottom
     // 2-3 bottom left
     // 3-4 top left
@@ -255,7 +250,7 @@ const Hex = Honeycomb.extendHex({
     y1 = this.cornerList[faceStart].y
     x2 = this.cornerList[faceEnd].x
     y2 = this.cornerList[faceEnd].y
- 
+
     lines = _.toString([x1, y1, x2, y2, (x1 + x2) / 2, (y1 + y2) / 2, this.cornerList[3].x + config.hexSize, this.cornerList[3].y])
 
     draw
@@ -286,359 +281,355 @@ function getHexFromCoords (pageX, pageY) {
   return hex
 }
 
-function toggleHexSelection (hex) {
-  _.forEach(['dingo', 'snake', 'panther'], (name) => {
-    let h = getUnitHex(name)
-    h.selected = false
-    h.highlight()            
-  })
-  hex.selected = true
-  hex.highlight()
-}
-
 module.exports = {
   Hex: Hex,
   Grid: Grid,
   grid: grid,
-  getHexFromCoords: getHexFromCoords,
-  toggleHexSelection: toggleHexSelection
+  getHexFromCoords: getHexFromCoords
 }
+
 },{"./config.js":2,"honeycomb-grid":171,"lodash":174,"svg.js":185}],6:[function(require,module,exports){
 let unitsToggleList = []
 
 let unitList = [
-    {
-    "name": "dingo",
-    "skillLevel": 1,
-    "strength": 0,
-    "intelligence": 0,
-    "will": 0,
-    "health": 0,
-    "agility": 0,
-    "baseSpeed": 0,
-    "maximumSpeed": 0,
-    "skillAccuracyLevel": 0,
-    "intSkillFactor": 0,
-    "combatActions": 0,
-    "combatActionsPerImpulse": {
-      "1": 0,
-      "2": 0,
-      "3": 0,
-      "4": 0
+  {
+    'name': 'dingo',
+    'skillLevel': 1,
+    'strength': 0,
+    'intelligence': 0,
+    'will': 0,
+    'health': 0,
+    'agility': 0,
+    'baseSpeed': 0,
+    'maximumSpeed': 0,
+    'skillAccuracyLevel': 0,
+    'intSkillFactor': 0,
+    'combatActions': 0,
+    'combatActionsPerImpulse': {
+      '1': 0,
+      '2': 0,
+      '3': 0,
+      '4': 0
     },
-    "knockoutValue": 0,
-    "weapons": [],
-    "bodyArmor": {
-      "helm": {
-        "protectionFactor": 0,
-        "weight": 0
+    'knockoutValue': 0,
+    'weapons': [],
+    'bodyArmor': {
+      'helm': {
+        'protectionFactor': 0,
+        'weight': 0
       },
-      "visor": {
-        "protectionFactor": 0,
-        "weight": 0
+      'visor': {
+        'protectionFactor': 0,
+        'weight': 0
       },
-      "body": {
-        "protectionFactor": 0,
-        "weight": 0
+      'body': {
+        'protectionFactor': 0,
+        'weight': 0
       },
-      "limbs": {
-        "protectionFactor": 0,
-        "weight": 0
+      'limbs': {
+        'protectionFactor': 0,
+        'weight': 0
       }
     },
-    "equipment": [],
-    "encumbrance": 0,
-    "symbol": {
-      "sidc": "SHG-UCFM-------",
-      "options": { 
-        "size": 0,
-        "uniqueDesignation": "dingo",
-        "additionalInformation": "",
-        "infoFields": false
+    'equipment': [],
+    'encumbrance': 0,
+    'symbol': {
+      'sidc': 'SHG-UCFM-------',
+      'options': {
+        'size': 0,
+        'uniqueDesignation': 'dingo',
+        'additionalInformation': '',
+        'infoFields': false
       }
     },
-    "currentMovementType": "",
-    "currentHex": [12, 9],
-    "facing": 4
+    'currentMovementType': '',
+    'currentHex': [12, 9],
+    'facing': 4
   },
   {
-    "name": "panther",
-    "skillLevel": 0,
-    "strength": 0,
-    "intelligence": 0,
-    "will": 0,
-    "health": 0,
-    "agility": 0,
-    "baseSpeed": 0,
-    "maximumSpeed": 0,
-    "skillAccuracyLevel": 0,
-    "intSkillFactor": 0,
-    "combatActions": 0,
-    "combatActionsPerImpulse": {
-      "1": 0,
-      "2": 0,
-      "3": 0,
-      "4": 0
+    'name': 'panther',
+    'skillLevel': 0,
+    'strength': 0,
+    'intelligence': 0,
+    'will': 0,
+    'health': 0,
+    'agility': 0,
+    'baseSpeed': 0,
+    'maximumSpeed': 0,
+    'skillAccuracyLevel': 0,
+    'intSkillFactor': 0,
+    'combatActions': 0,
+    'combatActionsPerImpulse': {
+      '1': 0,
+      '2': 0,
+      '3': 0,
+      '4': 0
     },
-    "knockoutValue": 0,
-    "weapons": [],
-    "bodyArmor": {
-      "helm": {
-        "protectionFactor": 0,
-        "weight": 0
+    'knockoutValue': 0,
+    'weapons': [],
+    'bodyArmor': {
+      'helm': {
+        'protectionFactor': 0,
+        'weight': 0
       },
-      "visor": {
-        "protectionFactor": 0,
-        "weight": 0
+      'visor': {
+        'protectionFactor': 0,
+        'weight': 0
       },
-      "body": {
-        "protectionFactor": 0,
-        "weight": 0
+      'body': {
+        'protectionFactor': 0,
+        'weight': 0
       },
-      "limbs": {
-        "protectionFactor": 0,
-        "weight": 0
+      'limbs': {
+        'protectionFactor': 0,
+        'weight': 0
       }
     },
-    "equipment": [],
-    "encumbrance": 0,
-    "symbol": {
-      "sidc": "SHG-UCFM-------",
-      "options": { 
-        "size": 0,
-        "uniqueDesignation": "panther",
-        "additionalInformation": "",
-        "infoFields": false
+    'equipment': [],
+    'encumbrance': 0,
+    'symbol': {
+      'sidc': 'SHG-UCFM-------',
+      'options': {
+        'size': 0,
+        'uniqueDesignation': 'panther',
+        'additionalInformation': '',
+        'infoFields': false
       }
     },
-    "currentMovementType": "",
-    "currentHex": [7, 7],
-    "facing": 5
+    'currentMovementType': '',
+    'currentHex': [7, 7],
+    'facing': 5
   },
   {
-    "name": "snake",
-    "skillLevel": 0,
-    "strength": 0,
-    "intelligence": 0,
-    "will": 0,
-    "health": 0,
-    "agility": 0,
-    "baseSpeed": 0,
-    "maximumSpeed": 0,
-    "skillAccuracyLevel": 0,
-    "intSkillFactor": 0,
-    "combatActions": 0,
-    "combatActionsPerImpulse": {
-      "1": 0,
-      "2": 0,
-      "3": 0,
-      "4": 0
+    'name': 'snake',
+    'skillLevel': 0,
+    'strength': 0,
+    'intelligence': 0,
+    'will': 0,
+    'health': 0,
+    'agility': 0,
+    'baseSpeed': 0,
+    'maximumSpeed': 0,
+    'skillAccuracyLevel': 0,
+    'intSkillFactor': 0,
+    'combatActions': 0,
+    'combatActionsPerImpulse': {
+      '1': 0,
+      '2': 0,
+      '3': 0,
+      '4': 0
     },
-    "knockoutValue": 0,
-    "weapons": [],
-    "bodyArmor": {
-      "helm": {
-        "protectionFactor": 0,
-        "weight": 0
+    'knockoutValue': 0,
+    'weapons': [],
+    'bodyArmor': {
+      'helm': {
+        'protectionFactor': 0,
+        'weight': 0
       },
-      "visor": {
-        "protectionFactor": 0,
-        "weight": 0
+      'visor': {
+        'protectionFactor': 0,
+        'weight': 0
       },
-      "body": {
-        "protectionFactor": 0,
-        "weight": 0
+      'body': {
+        'protectionFactor': 0,
+        'weight': 0
       },
-      "limbs": {
-        "protectionFactor": 0,
-        "weight": 0
+      'limbs': {
+        'protectionFactor': 0,
+        'weight': 0
       }
     },
-    "equipment": [],
-    "encumbrance": 0,
-    "symbol": {
-      "sidc": "SHG-UCFM-------",
-      "options": { 
-        "size": 0,
-        "uniqueDesignation": "snake",
-        "additionalInformation": "",
-        "infoFields": false
+    'equipment': [],
+    'encumbrance': 0,
+    'symbol': {
+      'sidc': 'SHG-UCFM-------',
+      'options': {
+        'size': 0,
+        'uniqueDesignation': 'snake',
+        'additionalInformation': '',
+        'infoFields': false
       }
     },
-    "currentMovementType": "",
-    "currentHex": [15, 15],
-    "facing": 2
+    'currentMovementType': '',
+    'currentHex': [15, 15],
+    'facing': 2
   }
 ]
 
-let selectedUnit
-
 module.exports = {
   unitsToggleList: unitsToggleList,
-  unitList: unitList,
-  selectedUnit: selectedUnit
+  unitList: unitList
 }
+
 },{}],7:[function(require,module,exports){
 let firebase = require('./database.js')
 let ms = require('milsymbol')
 let $ = require('jquery')
 let config = require('./config.js')
 let _ = require('lodash')
+let unitList = require('./unit-list.js')
 let Map = require('./map.js')
 
 function createUnit (hex, sidc, options) {
-    let container, symbol
-    let size, drawLine
-    
+  let container, symbol, size
+
     // create div container and svg symbol and set position
-    symbol = new ms.Symbol(sidc, options)
-    size = symbol.getSize()
-    container = createSymbolContainer(options.uniqueDesignation)
-    $(container).data('size', size)
-    container.innerHTML = symbol.asSVG()
-    container = positionUnit(hex, container)  
-  
+  symbol = new ms.Symbol(sidc, options)
+  size = symbol.getSize()
+  container = createSymbolContainer(options.uniqueDesignation)
+  $(container).data('size', size)
+  container.innerHTML = symbol.asSVG()
+  container = positionUnit(hex, container)
+
     // store the symbol in the hex
-    hex.currentUnit = container
-  
+  hex.currentUnit = container
+
     // add the unit to the DOM and units list
-    $('#' + config.divContainer).append(container)
-  
+  $('#' + config.divContainer).append(container)
+
     // store the coordinates of the hex in the unit
-    setUnitCoords(hex, options.uniqueDesignation)
-  
-    $(container).mousedown((e) => {
+  setUnitCoords(hex, options.uniqueDesignation)
+
+  $(container).mousedown((e) => {
       // check to make sure it's a left button
-      if (e.which === 1) {
-        let hex = getUnitHex(e.currentTarget.id)
-        if (hex.currentUnit !== undefined) {
-          selectedUnit = hex.currentUnit
-          toggleHexSelection(hex)      
-        }   
+    if (e.which === 1) {
+      let hex = getUnitHex(e.currentTarget.id)
+      if (hex.currentUnit !== undefined) {
+        toggleHexSelection(hex)
       }
-    })    
+    }
+  })
 }
 
 function removeUnitById (uniqueDesignation) {
-    let unit = document.getElementById(uniqueDesignation)
+  let unit = document.getElementById(uniqueDesignation)
     // clear the hex
-    let hex = getUnitHex(uniqueDesignation)
-    hex.currentUnit = undefined
-    unit.parentNode.removeChild(unit)
-    $('#' + uniqueDesignation + '-facing').remove()
+  let hex = getUnitHex(uniqueDesignation)
+  hex.currentUnit = undefined
+  unit.parentNode.removeChild(unit)
+  $('#' + uniqueDesignation + '-facing').remove()
+  _.pull(unitList.unitsToggleList, uniqueDesignation)
 }
 
 function getUnitCoords (uniqueDesignation) {
-    let unit = document.getElementById(uniqueDesignation)
-    let point = $.data(unit, 'coords')
+  let unit = document.getElementById(uniqueDesignation)
+  let point = $.data(unit, 'coords')
 
-    return point
+  return point
 }
 
 function getUnitHex (uniqueDesignation) {
-    let coords = getUnitCoords(uniqueDesignation)
-    let hex = Map.grid.get(Map.Hex(coords))
+  let coords = getUnitCoords(uniqueDesignation)
+  let hex = Map.grid.get(Map.Hex(coords))
 
-    return hex
+  return hex
 }
 
 function setUnitCoords (hex, uniqueDesignation) {
-    let unit = document.getElementById(uniqueDesignation)
-    $(unit).data('coords', hex.coordinates())
+  let unit = document.getElementById(uniqueDesignation)
+  $(unit).data('coords', hex.coordinates())
 }
 
 function createSymbolContainer (uniqueDesignation) {
-    let div = document.createElement('div')
-    div.setAttribute('id', uniqueDesignation)
-    div.setAttribute('class', 'unit')
+  let div = document.createElement('div')
+  div.setAttribute('id', uniqueDesignation)
+  div.setAttribute('class', 'unit')
 
-    return div
+  return div
 }
 
 function positionUnit (hex, unit) {
-    let hexDiagonal = config.hexSize * 2
-    let symbolSize = $.data(unit, 'size')
-    let offsetX = (hexDiagonal - symbolSize.width) / 2
-    let offsetY = (hexDiagonal - symbolSize.height) / 4
+  let hexDiagonal = config.hexSize * 2
+  let symbolSize = $.data(unit, 'size')
+  let offsetX = (hexDiagonal - symbolSize.width) / 2
+  let offsetY = (hexDiagonal - symbolSize.height) / 4
 
     // need to center it based on symbol's irregular size
-    unit.style.position = 'absolute'
-    unit.style.left = (hex.screenCoords.x + offsetX) + 'px'
-    unit.style.top = (hex.screenCoords.y + offsetY) + 'px'
+  unit.style.position = 'absolute'
+  unit.style.left = (hex.screenCoords.x + offsetX) + 'px'
+  unit.style.top = (hex.screenCoords.y + offsetY) + 'px'
 
-    return unit
+  return unit
 }
 
 function animateUnitToHex (point, uniqueDesignation) {
-
-    //need to query Firebase for the hex that was updated then perform
-    //animation and view updates in the callback
+    // need to query Firebase for the hex that was updated then perform
+    // animation and view updates in the callback
     //
-    firebase.firebaseRoot.database().ref('/Games/' + config.gameID + '/Units/' + uniqueDesignation).once('value').then((data) => {
-        let facing
-        let val = data.val()
-        facing = val.facing
+  firebase.firebaseRoot.database().ref('/Games/' + config.gameID + '/Units/' + uniqueDesignation).once('value').then((data) => {
+    let facing
+    let val = data.val()
+    facing = val.facing
 
-        const hex = Map.grid.get(point)
-            
-        let unit = document.getElementById(uniqueDesignation)
+    const hex = Map.grid.get(point)
 
-        let symbolSize = $.data(unit, 'size')
-        let offsetX = ((config.hexSize * 2) - symbolSize.width) / 2
-        let offsetY = ((config.hexSize * 2) - symbolSize.height) / 4
+    let unit = document.getElementById(uniqueDesignation)
+
+    let symbolSize = $.data(unit, 'size')
+    let offsetX = ((config.hexSize * 2) - symbolSize.width) / 2
+    let offsetY = ((config.hexSize * 2) - symbolSize.height) / 4
 
         // clear the previous hex
-        let previousHex = getUnitHex(uniqueDesignation)
-        previousHex.currentUnit = undefined
-        $('#' + uniqueDesignation + '-facing').remove()
-        previousHex.selected = false
-        previousHex.highlight()
+    let previousHex = getUnitHex(uniqueDesignation)
+    previousHex.currentUnit = undefined
+    $('#' + uniqueDesignation + '-facing').remove()
+    previousHex.selected = false
+    previousHex.highlight()
 
-        $('#' + uniqueDesignation).animate({
-            'top': (hex.screenCoords.y + offsetY) + 'px',
-            'left': (hex.screenCoords.x + offsetX) + 'px'
-            }, {
-            duration: 500,
-            complete: function () {
-                $('#' + uniqueDesignation + '-facing').remove()
-                setUnitCoords(hex, uniqueDesignation)
-                hex.currentUnit = unit
-                hex.facing(facing, uniqueDesignation)
-                selectedUnit = hex.currentUnit    
-            }
-        })
+    $('#' + uniqueDesignation).animate({
+      'top': (hex.screenCoords.y + offsetY) + 'px',
+      'left': (hex.screenCoords.x + offsetX) + 'px'
+    }, {
+      duration: 500,
+      complete: function () {
+        $('#' + uniqueDesignation + '-facing').remove()
+        setUnitCoords(hex, uniqueDesignation)
+        hex.currentUnit = unit
+        hex.facing(facing, uniqueDesignation)
+      }
     })
+  })
 }
 
-function changeFacing (face, uniqueDesignation) { 
-    let hex = getUnitHex(uniqueDesignation)
-    let unit = document.getElementById(uniqueDesignation)
-    $('#' + uniqueDesignation + '-facing').remove()
-    hex.facing(face, uniqueDesignation)
+function changeFacing (face, uniqueDesignation) {
+  let hex = getUnitHex(uniqueDesignation)
+  $('#' + uniqueDesignation + '-facing').remove()
+  hex.facing(face, uniqueDesignation)
 }
 
 function updateUnit (updates, uniqueDesignation) {
-    let changedValue = {}
-    let keys = _.keys(updates)
+  let changedValue = {}
+  let keys = _.keys(updates)
 
-    for (var i=0; i <= keys.length - 1; i++) {    
-        changedValue['/' + uniqueDesignation + '/' + keys[i]] = updates[keys[i]]
-    }
+  for (var i = 0; i <= keys.length - 1; i++) {
+    changedValue['/' + uniqueDesignation + '/' + keys[i]] = updates[keys[i]]
+  }
 
-    firebase.unitsDB.update(changedValue)   
+  firebase.unitsDB.update(changedValue)
+}
+
+function toggleHexSelection (hex) {
+  _.forEach(unitList.unitsToggleList, (name) => {
+    let h = getUnitHex(name)
+    h.selected = false
+    h.highlight()
+  })
+  hex.selected = true
+  hex.highlight()
 }
 
 module.exports = {
-    createUnit: createUnit,
-    removeUnitById: removeUnitById,
-    getUnitCoords: getUnitCoords,
-    getUnitHex: getUnitHex,
-    setUnitCoords: setUnitCoords,
-    animateUnitToHex: animateUnitToHex,
-    changeFacing: changeFacing,
-    updateUnit: updateUnit
+  createUnit: createUnit,
+  removeUnitById: removeUnitById,
+  getUnitCoords: getUnitCoords,
+  getUnitHex: getUnitHex,
+  setUnitCoords: setUnitCoords,
+  animateUnitToHex: animateUnitToHex,
+  changeFacing: changeFacing,
+  updateUnit: updateUnit
 }
-},{"./config.js":2,"./database.js":3,"./map.js":5,"jquery":173,"lodash":174,"milsymbol":175}],8:[function(require,module,exports){
+
+},{"./config.js":2,"./database.js":3,"./map.js":5,"./unit-list.js":6,"jquery":173,"lodash":174,"milsymbol":175}],8:[function(require,module,exports){
 "use strict";
 /**
  * Copyright 2017 Google Inc.

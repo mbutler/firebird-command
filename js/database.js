@@ -6,7 +6,7 @@ let unitsDB = firebase.database().ref('/Games/' + config.gameID + '/Units')
 let firebaseRef = firebase.database().ref
 
 module.exports = {
-    unitsDB: unitsDB,
-    firebaseRef: firebaseRef,
-    firebaseRoot: firebase
+  unitsDB: unitsDB,
+  firebaseRef: firebaseRef,
+  firebaseRoot: firebase
 }

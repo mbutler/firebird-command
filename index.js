@@ -11,22 +11,18 @@ require('./js/listeners.js')
 let area = document.querySelector('#' + config.divContainer)
 panzoom(area, { smoothScroll: false })
 
-unitList.selectedUnit
-unitList.unitsToggleList = []
-
 firebase.unitsDB.once('value').then((snapshot) => {
-    let units = snapshot.val()
-  
-    _.forEach(units, (unit) => {
-      let name = unit.symbol.options.uniqueDesignation
-      let face = unit.facing
-  
-      //create starting units
-      const hex = Map.grid.get(Map.Hex(unit.currentHex))
-      unit.symbol.options.size = config.hexSize * 0.8
-      Unit.createUnit(hex, unit.symbol.sidc, unit.symbol.options)
-      Unit.changeFacing(face, name)
-    })
-})
+  let units = snapshot.val()
 
-  
+  _.forEach(units, (unit) => {
+    let name = unit.symbol.options.uniqueDesignation
+    let face = unit.facing
+
+      // create starting units
+    const hex = Map.grid.get(Map.Hex(unit.currentHex))
+    unit.symbol.options.size = config.hexSize * 0.8
+    Unit.createUnit(hex, unit.symbol.sidc, unit.symbol.options)
+    Unit.changeFacing(face, name)
+    unitList.unitsToggleList.push(name)
+  })
+})
