@@ -1,12 +1,12 @@
-let firebase = require('./database.js')
+let firebase = require('./database')
 let ms = require('milsymbol')
 let $ = require('jquery')
-let config = require('./config.js')
+let config = require('./config')
 let _ = require('lodash')
-let unitList = require('./unit-list.js')
-let Map = require('./map.js')
+let unitList = require('./unit-list')
+let Map = require('./map')
 
-function createUnit (hex, sidc, options) {
+function create (hex, sidc, options) {
   let container, symbol, size
 
     // create div container and svg symbol and set position
@@ -26,13 +26,10 @@ function createUnit (hex, sidc, options) {
     // store the coordinates of the hex in the unit
   setUnitCoords(hex, options.uniqueDesignation)
 
-  $(container).mousedown((e) => {
-      // check to make sure it's a left button
-    if (e.which === 1) {
-      let hex = getUnitHex(e.currentTarget.id)
-      if (hex.currentUnit !== undefined) {
-        toggleHexSelection(hex)
-      }
+  $(container).click((e) => {
+    let hex = getUnitHex(e.currentTarget.id)
+    if (hex.currentUnit !== undefined) {
+      toggleHexSelection(hex)
     }
   })
 }
@@ -133,7 +130,7 @@ function changeFacing (face, uniqueDesignation) {
   hex.facing(face, uniqueDesignation)
 }
 
-function updateUnit (updates, uniqueDesignation) {
+function update (updates, uniqueDesignation) {
   let changedValue = {}
   let keys = _.keys(updates)
 
@@ -155,12 +152,12 @@ function toggleHexSelection (hex) {
 }
 
 module.exports = {
-  createUnit: createUnit,
+  create: create,
   removeUnitById: removeUnitById,
   getUnitCoords: getUnitCoords,
   getUnitHex: getUnitHex,
   setUnitCoords: setUnitCoords,
   animateUnitToHex: animateUnitToHex,
   changeFacing: changeFacing,
-  updateUnit: updateUnit
+  update: update
 }

@@ -1,7 +1,7 @@
 let SVG = require('svg.js')
 let Honeycomb = require('honeycomb-grid')
 let _ = require('lodash')
-let config = require('./config.js')
+let config = require('./config')
 
 const draw = SVG(config.divContainer)
 
@@ -18,27 +18,25 @@ const Hex = Honeycomb.extendHex({
     this.selected = false
 
     this.draw = draw
-    	.polygon(corners.map(({ x, y }) => `${x},${y}`))
+      .polygon(corners.map(({ x, y }) => `${x},${y}`))
       .fill('none')
       .stroke({ width: 1, color: '#E0E0E0' })
       .translate(x, y)
   },
 
   highlight () {
-    
     if (this.selected === true) {
       this.selected = true
       this.draw
-      .fill({ opacity: 1, color: 'aquamarine' })      
+      .fill({ opacity: 1, color: 'aquamarine' })
     } else {
       this.selected = false
       this.draw
-      .fill({ opacity: 0, color: 'none' })      
+      .fill({ opacity: 0, color: 'none' })
     }
   },
 
   facing (face, uniqueDesignation) {
-    
     let faceStart, faceEnd, x1, x2, y1, y2, lines
 
     switch (face) {
@@ -73,9 +71,9 @@ const Hex = Honeycomb.extendHex({
         faceEnd = 4
         break
       default:
-      faceStart = 4
-      faceEnd = 5
-    }   
+        faceStart = 4
+        faceEnd = 5
+    }
     // 1-2 bottom
     // 2-3 bottom left
     // 3-4 top left
@@ -86,7 +84,7 @@ const Hex = Honeycomb.extendHex({
     y1 = this.cornerList[faceStart].y
     x2 = this.cornerList[faceEnd].x
     y2 = this.cornerList[faceEnd].y
- 
+
     lines = _.toString([x1, y1, x2, y2, (x1 + x2) / 2, (y1 + y2) / 2, this.cornerList[3].x + config.hexSize, this.cornerList[3].y])
 
     draw
@@ -121,5 +119,5 @@ module.exports = {
   Hex: Hex,
   Grid: Grid,
   grid: grid,
-  getHexFromCoords: getHexFromCoords  
+  getHexFromCoords: getHexFromCoords
 }

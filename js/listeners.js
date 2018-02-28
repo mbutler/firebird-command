@@ -1,13 +1,18 @@
 let $ = require('jquery')
-let firebase = require('./database.js')
-let Unit = require('./unit.js')
-let Map = require('./map.js')
-let config = require('./config.js')
+let firebase = require('./database')
+let Unit = require('./unit')
+let Map = require('./map')
+let config = require('./config')
 require('jquery-contextmenu')
-require('jquery.panzoom')
 
+// loading a local version, but keeping the npm module in package.json for now
+// https://github.com/timmywil/jquery.panzoom/issues/351#issuecomment-330924963
+require('./jquery.panzoom')
+
+//listen for panzooming
 $('#' + config.divContainer).panzoom({cursor: 'default'})
 
+//listen for any units changing
 firebase.unitsDB.on('child_changed', (snapshot) => {
   let unit = snapshot.val()
   let face = unit.facing
@@ -18,12 +23,13 @@ firebase.unitsDB.on('child_changed', (snapshot) => {
   Unit.animateUnitToHex(hex, uniqueDesignation)
 })
 
+//testing with the space bar
 $(document).keypress((e) => {
   if (e.which === 32) {
-      // tests
-    Unit.updateUnit({currentHex: [12, 13]}, 'panther')
-    Unit.updateUnit({currentHex: [2, 13]}, 'dingo')
-    Unit.updateUnit({facing: 2}, 'panther')
+
+    Unit.update({currentHex: [6, 13]}, 'panther')
+    Unit.update({currentHex: [2, 13]}, 'dingo')
+    Unit.update({facing: 2}, 'panther')
 
       /* Unit.updateUnit({
         agility: 69,
@@ -33,14 +39,12 @@ $(document).keypress((e) => {
   }
 })
 
+//listen for contextmenu
 $.contextMenu({
   selector: '.unit',
-  trigger: 'left',
+  trigger: 'right',
   build: function ($trigger, e) {
     console.log(e.currentTarget.id)
-        // this callback is executed every time the menu is to be shown
-        // its results are destroyed every time the menu is hidden
-        // e is the original contextmenu event, containing e.pageX and e.pageY (amongst other data)
     return {
       callback: function (key, options) {
         var m = 'clicked: ' + key
