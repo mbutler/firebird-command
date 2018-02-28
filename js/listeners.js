@@ -2,7 +2,11 @@ let $ = require('jquery')
 let firebase = require('./database.js')
 let Unit = require('./unit.js')
 let Map = require('./map.js')
+let config = require('./config.js')
 require('jquery-contextmenu')
+require('jquery.panzoom')
+
+$('#' + config.divContainer).panzoom({cursor: 'default'})
 
 firebase.unitsDB.on('child_changed', (snapshot) => {
   let unit = snapshot.val()
@@ -31,6 +35,7 @@ $(document).keypress((e) => {
 
 $.contextMenu({
   selector: '.unit',
+  trigger: 'left',
   build: function ($trigger, e) {
     console.log(e.currentTarget.id)
         // this callback is executed every time the menu is to be shown

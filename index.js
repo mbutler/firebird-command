@@ -5,11 +5,7 @@ let $ = require('jquery')
 let firebase = require('./js/database.js')
 let config = require('./js/config.js')
 let unitList = require('./js/unit-list.js')
-let panzoom = require('panzoom')
 require('./js/listeners.js')
-
-let area = document.querySelector('#' + config.divContainer)
-panzoom(area, { smoothScroll: false })
 
 firebase.unitsDB.once('value').then((snapshot) => {
   let units = snapshot.val()
