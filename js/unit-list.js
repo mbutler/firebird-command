@@ -1,6 +1,9 @@
-  [{
+let unitsToggleList = []
+
+let unitList = [
+    {
     "name": "dingo",
-    "skillLevel": 0,
+    "skillLevel": 1,
     "strength": 0,
     "intelligence": 0,
     "will": 0,
@@ -48,9 +51,9 @@
         "infoFields": false
       }
     },
-    "startingHex": [5, 5],
     "currentMovementType": "",
-    "facing": 0
+    "currentHex": [12, 9],
+    "facing": 4
   },
   {
     "name": "panther",
@@ -102,9 +105,9 @@
         "infoFields": false
       }
     },
-    "startingHex": [5, 5],
     "currentMovementType": "",
-    "facing": 0
+    "currentHex": [7, 7],
+    "facing": 5
   },
   {
     "name": "snake",
@@ -156,10 +159,16 @@
         "infoFields": false
       }
     },
-    "startingHex": [5, 5],
     "currentMovementType": "",
-    "facing": 0
+    "currentHex": [15, 15],
+    "facing": 2
   }
-
-
 ]
+
+let selectedUnit
+
+module.exports = {
+  unitsToggleList: unitsToggleList,
+  unitList: unitList,
+  selectedUnit: selectedUnit
+}

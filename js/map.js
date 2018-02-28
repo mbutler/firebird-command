@@ -1,8 +1,12 @@
+let SVG = require('svg.js')
+let Honeycomb = require('honeycomb-grid')
+let _ = require('lodash')
+let config = require('./config.js')
 
-const draw = SVG('stage')
+const draw = SVG(config.divContainer)
 
 const Hex = Honeycomb.extendHex({
-  size: hexSize,
+  size: config.hexSize,
   orientation: 'flat',
 
   render (draw) {
@@ -83,7 +87,7 @@ const Hex = Honeycomb.extendHex({
     x2 = this.cornerList[faceEnd].x
     y2 = this.cornerList[faceEnd].y
  
-    lines = _.toString([x1, y1, x2, y2, (x1 + x2) / 2, (y1 + y2) / 2, this.cornerList[3].x + hexSize, this.cornerList[3].y])
+    lines = _.toString([x1, y1, x2, y2, (x1 + x2) / 2, (y1 + y2) / 2, this.cornerList[3].x + config.hexSize, this.cornerList[3].y])
 
     draw
     .polyline(lines)
@@ -98,8 +102,8 @@ const Hex = Honeycomb.extendHex({
 const Grid = Honeycomb.defineGrid(Hex)
 
 const grid = Grid.rectangle({
-  width: 100,
-  height: 100,
+  width: config.mapWidth,
+  height: config.mapHeight,
   // render each hex, passing the draw instance
   onCreate (hex) {
     hex.render(draw)
@@ -114,11 +118,19 @@ function getHexFromCoords (pageX, pageY) {
 }
 
 function toggleHexSelection (hex) {
-  _.forEach(units, (name) => {
+  _.forEach(['dingo', 'snake', 'panther'], (name) => {
     let h = getUnitHex(name)
     h.selected = false
     h.highlight()            
   })
   hex.selected = true
   hex.highlight()
+}
+
+module.exports = {
+  Hex: Hex,
+  Grid: Grid,
+  grid: grid,
+  getHexFromCoords: getHexFromCoords,
+  toggleHexSelection: toggleHexSelection
 }
