@@ -2,11 +2,15 @@ let firebase = require('firebase')
 let config = require('./config')
 
 firebase.initializeApp(config.firebase)
-let unitsDB = firebase.database().ref('/Games/' + config.gameID + '/Units')
-let firebaseRef = firebase.database().ref
+let allUnits = firebase.database().ref('/Games/' + config.gameID + '/Units')
+
+function singleUnit (uniqueDesignation) {
+  let path = '/Games/' + config.gameID + '/Units/' + uniqueDesignation
+  return firebase.database().ref(path)
+}
 
 module.exports = {
-  unitsDB: unitsDB,
-  firebaseRef: firebaseRef,
-  firebaseRoot: firebase
+  allUnits: allUnits,
+  firebaseRoot: firebase,
+  singleUnit: singleUnit
 }

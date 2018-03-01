@@ -3,6 +3,7 @@ let Database = require('./database')
 let Unit = require('./unit')
 let Map = require('./map')
 let config = require('./config')
+let actions = require('./actions')
 require('jquery-contextmenu')
 
 // loading a local version, but keeping the npm module in package.json for now
@@ -13,7 +14,7 @@ require('./jquery.panzoom')
 $('#' + config.divContainer).panzoom({cursor: 'default'})
 
 //listen for any units changing
-Database.unitsDB.on('child_changed', (snapshot) => {
+Database.allUnits.on('child_changed', (snapshot) => {
   let unit = snapshot.val()
   let face = unit.facing
   let hex = unit.currentHex
@@ -28,7 +29,7 @@ $(document).keypress((e) => {
   if (e.which === 32) {
 
     Unit.update({currentHex: [6, 9]}, 'panther')
-    Unit.update({currentHex: [10, 13]}, 'dingo')
+    Unit.update({currentHex: [15, 9]}, 'dingo')
     Unit.update({facing: 1}, 'panther')
 
       /* Unit.updateUnit({
@@ -47,6 +48,7 @@ $.contextMenu({
     console.log(e.currentTarget.id)
     return {
       callback: function (key, options) {
+        actions(key, e.currentTarget.id)
         var m = 'clicked: ' + key
         console.log(m)
       },

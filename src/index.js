@@ -7,7 +7,7 @@ let config = require('./config')
 let unitList = require('./unit-list')
 require('./listeners')
 
-Database.unitsDB.once('value').then((snapshot) => {
+Database.allUnits.once('value').then((snapshot) => {
   let units = snapshot.val()
 
   _.forEach(units, (unit) => {

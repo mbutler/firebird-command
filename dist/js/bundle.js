@@ -61125,6 +61125,48 @@ var __importDefault;
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{}],171:[function(require,module,exports){
+let Game = require('./game')
+
+function action (selection, uniqueDesignation) {
+    let actionMap = {
+        'face-1-left-moving': Game.face1LeftMoving,
+        'face-1-right-moving': Game.face1RightMoving,
+        //
+       /* 'change-facing-immobile': Game.changeFacingImmobile(uniqueDesignation),
+        'face-1-left-immobile': Game.face1LeftImmobile(uniqueDesignation),
+        'face-2-left-immobile': Game.face2LeftImmobile(uniqueDesignation),
+        'face-1-right-immobile': Game.face1RightImmobile(uniqueDesignation),
+        'face-2-right-immobile': Game.face2RightImmobile(uniqueDesignation),
+        //
+        'assume-firing-stance': Game.assumeFiringStance(uniqueDesignation),
+        'look-over-cover': Game.lookOverCover(uniqueDesignation),
+        'throw-grenade': Game.throwGrenade(uniqueDesignation),
+        'open-door': Game.openDoor(uniqueDesignation),
+        'open-window': Game.openWindow(uniqueDesignation),
+        'reload-weapon': Game.reloadWeapon(uniqueDesignation),
+        'load-magazine': Game.loadMagazine(uniqueDesignation),
+        'drop-weapon': Game.dropWeapon(uniqueDesignation),
+        'deploy-bipod': Game.deployBipod(uniqueDesignation),
+        'climb-window': Game.climbWindow(uniqueDesignation),
+        'draw-pistol-shoulder': Game.drawPistolShoulder(uniqueDesignation),
+        'draw-pistol-hip': Game.drawPistolHip(uniqueDesignation),
+        'draw-hand-weapon': Game.drawHandWeapon(uniqueDesignation),
+        'access-backpack': Game.accessBackpack(uniqueDesignation),
+        //
+        'running-forward': Game.runningForward(uniqueDesignation),
+        'running-backward': Game.runningBackward(uniqueDesignation),
+        //
+        'crawling-forward': Game.crawlingForward(uniqueDesignation),
+        'crawling-backward': Game.crawlingBackward(uniqueDesignation) */
+
+    }
+
+    let act = actionMap[selection]
+    act(uniqueDesignation)
+}
+
+module.exports = action
+},{"./game":174}],172:[function(require,module,exports){
 let config = {
   mapWidth: 100,
   mapHeight: 100,
@@ -61144,21 +61186,75 @@ let config = {
 
 module.exports = config
 
-},{}],172:[function(require,module,exports){
+},{}],173:[function(require,module,exports){
 let firebase = require('firebase')
 let config = require('./config')
 
 firebase.initializeApp(config.firebase)
-let unitsDB = firebase.database().ref('/Games/' + config.gameID + '/Units')
-let firebaseRef = firebase.database().ref
+let allUnits = firebase.database().ref('/Games/' + config.gameID + '/Units')
 
-module.exports = {
-  unitsDB: unitsDB,
-  firebaseRef: firebaseRef,
-  firebaseRoot: firebase
+function singleUnit (uniqueDesignation) {
+  let path = '/Games/' + config.gameID + '/Units/' + uniqueDesignation
+  return firebase.database().ref(path)
 }
 
-},{"./config":171,"firebase":159}],173:[function(require,module,exports){
+module.exports = {
+  allUnits: allUnits,
+  firebaseRoot: firebase,
+  singleUnit: singleUnit
+}
+
+},{"./config":172,"firebase":159}],174:[function(require,module,exports){
+let Database = require('./database')
+let config = require('./config')
+let Unit = require('./unit')
+let _ = require('lodash')
+
+function findFace (current, direction, amount) {
+    let face
+    if (direction == 'left') {
+        console.log('left')
+        face = current - amount
+        if (face <= -1) {
+            face = 5
+        }
+    }
+
+    if (direction == 'right') {
+        console.log('right')
+        face = current + amount
+        if (face >= 6) {
+            face = 0
+        }
+    }
+
+    return face
+}
+
+function face1LeftMoving (uniqueDesignation) {
+    Database.singleUnit(uniqueDesignation).once('value').then((data) => {
+        let unit = data.val()
+        let newFace = findFace(unit.facing, 'left', 1)
+
+        Unit.update({facing: newFace}, uniqueDesignation)
+    })
+    
+}
+
+function face1RightMoving (uniqueDesignation) {
+    Database.singleUnit(uniqueDesignation).once('value').then((data) => {
+        let unit = data.val()
+        let newFace = findFace(unit.facing, 'right', 1)
+
+        Unit.update({facing: newFace}, uniqueDesignation)
+    })
+}
+
+module.exports = {
+    face1LeftMoving: face1LeftMoving,
+    face1RightMoving: face1RightMoving
+}
+},{"./config":172,"./database":173,"./unit":180,"lodash":165}],175:[function(require,module,exports){
 let Map = require('./map')
 let Unit = require('./unit')
 let _ = require('lodash')
@@ -61168,7 +61264,7 @@ let config = require('./config')
 let unitList = require('./unit-list')
 require('./listeners')
 
-Database.unitsDB.once('value').then((snapshot) => {
+Database.allUnits.once('value').then((snapshot) => {
   let units = snapshot.val()
 
   _.forEach(units, (unit) => {
@@ -61184,7 +61280,7 @@ Database.unitsDB.once('value').then((snapshot) => {
   })
 })
 
-},{"./config":171,"./database":172,"./listeners":175,"./map":176,"./unit":178,"./unit-list":177,"jquery":164,"lodash":165}],174:[function(require,module,exports){
+},{"./config":172,"./database":173,"./listeners":177,"./map":178,"./unit":180,"./unit-list":179,"jquery":164,"lodash":165}],176:[function(require,module,exports){
 /**
  * @license jquery.panzoom.js v3.2.2
  * Updated: Wed Sep 20 2017
@@ -62488,12 +62584,13 @@ Database.unitsDB.once('value').then((snapshot) => {
 	return Panzoom;
 }));
 
-},{"jquery":164}],175:[function(require,module,exports){
+},{"jquery":164}],177:[function(require,module,exports){
 let $ = require('jquery')
 let Database = require('./database')
 let Unit = require('./unit')
 let Map = require('./map')
 let config = require('./config')
+let actions = require('./actions')
 require('jquery-contextmenu')
 
 // loading a local version, but keeping the npm module in package.json for now
@@ -62504,7 +62601,7 @@ require('./jquery.panzoom')
 $('#' + config.divContainer).panzoom({cursor: 'default'})
 
 //listen for any units changing
-Database.unitsDB.on('child_changed', (snapshot) => {
+Database.allUnits.on('child_changed', (snapshot) => {
   let unit = snapshot.val()
   let face = unit.facing
   let hex = unit.currentHex
@@ -62519,7 +62616,7 @@ $(document).keypress((e) => {
   if (e.which === 32) {
 
     Unit.update({currentHex: [6, 9]}, 'panther')
-    Unit.update({currentHex: [10, 13]}, 'dingo')
+    Unit.update({currentHex: [15, 9]}, 'dingo')
     Unit.update({facing: 1}, 'panther')
 
       /* Unit.updateUnit({
@@ -62538,6 +62635,7 @@ $.contextMenu({
     console.log(e.currentTarget.id)
     return {
       callback: function (key, options) {
+        actions(key, e.currentTarget.id)
         var m = 'clicked: ' + key
         console.log(m)
       },
@@ -62598,7 +62696,7 @@ $.contextMenu({
   }
 })
 
-},{"./config":171,"./database":172,"./jquery.panzoom":174,"./map":176,"./unit":178,"jquery":164,"jquery-contextmenu":163}],176:[function(require,module,exports){
+},{"./actions":171,"./config":172,"./database":173,"./jquery.panzoom":176,"./map":178,"./unit":180,"jquery":164,"jquery-contextmenu":163}],178:[function(require,module,exports){
 let SVG = require('svg.js')
 let Honeycomb = require('honeycomb-grid')
 let _ = require('lodash')
@@ -62723,7 +62821,7 @@ module.exports = {
   getHexFromCoords: getHexFromCoords
 }
 
-},{"./config":171,"honeycomb-grid":162,"lodash":165,"svg.js":169}],177:[function(require,module,exports){
+},{"./config":172,"honeycomb-grid":162,"lodash":165,"svg.js":169}],179:[function(require,module,exports){
 let unitsToggleList = []
 
 let unitList = [
@@ -62896,7 +62994,7 @@ module.exports = {
   unitList: unitList
 }
 
-},{}],178:[function(require,module,exports){
+},{}],180:[function(require,module,exports){
 let Database = require('./database')
 let ms = require('milsymbol')
 let $ = require('jquery')
@@ -62988,7 +63086,7 @@ function animateUnitToHex (point, uniqueDesignation) {
     // need to query Firebase for the hex that was updated then perform
     // animation and view updates in the callback
     //
-    Database.firebaseRoot.database().ref('/Games/' + config.gameID + '/Units/' + uniqueDesignation).once('value').then((data) => {
+    Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let facing
     let val = data.val()
     facing = val.facing
@@ -63037,7 +63135,7 @@ function update (updates, uniqueDesignation) {
     changedValue['/' + uniqueDesignation + '/' + keys[i]] = updates[keys[i]]
   }
 
-  Database.unitsDB.update(changedValue)
+  Database.allUnits.update(changedValue)
 }
 
 function toggleHexSelection (hex) {
@@ -63061,4 +63159,4 @@ module.exports = {
   update: update
 }
 
-},{"./config":171,"./database":172,"./map":176,"./unit-list":177,"jquery":164,"lodash":165,"milsymbol":166}]},{},[173]);
+},{"./config":172,"./database":173,"./map":178,"./unit-list":179,"jquery":164,"lodash":165,"milsymbol":166}]},{},[175]);

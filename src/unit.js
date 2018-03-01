@@ -89,7 +89,7 @@ function animateUnitToHex (point, uniqueDesignation) {
     // need to query Firebase for the hex that was updated then perform
     // animation and view updates in the callback
     //
-    Database.firebaseRoot.database().ref('/Games/' + config.gameID + '/Units/' + uniqueDesignation).once('value').then((data) => {
+    Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let facing
     let val = data.val()
     facing = val.facing
@@ -138,7 +138,7 @@ function update (updates, uniqueDesignation) {
     changedValue['/' + uniqueDesignation + '/' + keys[i]] = updates[keys[i]]
   }
 
-  Database.unitsDB.update(changedValue)
+  Database.allUnits.update(changedValue)
 }
 
 function toggleHexSelection (hex) {
