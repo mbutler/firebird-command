@@ -61128,44 +61128,45 @@ var __importDefault;
 let Game = require('./game')
 
 function action (selection, uniqueDesignation) {
-    let actionMap = {
-        'face-1-left-moving': Game.face1LeftMoving,
-        'face-1-right-moving': Game.face1RightMoving,
+  let actionMap = {
+    'face-1-left-moving': Game.face1LeftMoving,
+    'face-1-right-moving': Game.face1RightMoving,
         //
-       /* 'change-facing-immobile': Game.changeFacingImmobile(uniqueDesignation),
-        'face-1-left-immobile': Game.face1LeftImmobile(uniqueDesignation),
-        'face-2-left-immobile': Game.face2LeftImmobile(uniqueDesignation),
-        'face-1-right-immobile': Game.face1RightImmobile(uniqueDesignation),
-        'face-2-right-immobile': Game.face2RightImmobile(uniqueDesignation),
+    'change-facing-immobile': Game.changeFacingImmobile,
+    'face-1-left-immobile': Game.face1LeftImmobile,
+    'face-2-left-immobile': Game.face2LeftImmobile,
+    'face-1-right-immobile': Game.face1RightImmobile,
+    'face-2-right-immobile': Game.face2RightImmobile,
         //
-        'assume-firing-stance': Game.assumeFiringStance(uniqueDesignation),
-        'look-over-cover': Game.lookOverCover(uniqueDesignation),
-        'throw-grenade': Game.throwGrenade(uniqueDesignation),
-        'open-door': Game.openDoor(uniqueDesignation),
-        'open-window': Game.openWindow(uniqueDesignation),
-        'reload-weapon': Game.reloadWeapon(uniqueDesignation),
-        'load-magazine': Game.loadMagazine(uniqueDesignation),
-        'drop-weapon': Game.dropWeapon(uniqueDesignation),
-        'deploy-bipod': Game.deployBipod(uniqueDesignation),
-        'climb-window': Game.climbWindow(uniqueDesignation),
-        'draw-pistol-shoulder': Game.drawPistolShoulder(uniqueDesignation),
-        'draw-pistol-hip': Game.drawPistolHip(uniqueDesignation),
-        'draw-hand-weapon': Game.drawHandWeapon(uniqueDesignation),
-        'access-backpack': Game.accessBackpack(uniqueDesignation),
+    'assume-firing-stance': Game.assumeFiringStance,
+    'look-over-cover': Game.lookOverCover,
+    'throw-grenade': Game.throwGrenade,
+    'open-door': Game.openDoor,
+    'open-window': Game.openWindow,
+    'reload-weapon': Game.reloadWeapon,
+    'load-magazine': Game.loadMagazine,
+    'drop-weapon': Game.dropWeapon,
+    'deploy-bipod': Game.deployBipod,
+    'climb-window': Game.climbWindow,
+    'draw-pistol-shoulder': Game.drawPistolShoulder,
+    'draw-pistol-hip': Game.drawPistolHip,
+    'draw-hand-weapon': Game.drawHandWeapon,
+    'access-backpack': Game.accessBackpack,
         //
-        'running-forward': Game.runningForward(uniqueDesignation),
-        'running-backward': Game.runningBackward(uniqueDesignation),
+    'running-forward': Game.runningForward,
+    'running-backward': Game.runningBackward,
         //
-        'crawling-forward': Game.crawlingForward(uniqueDesignation),
-        'crawling-backward': Game.crawlingBackward(uniqueDesignation) */
+    'crawling-forward': Game.crawlingForward,
+    'crawling-backward': Game.crawlingBackward
 
-    }
+  }
 
-    let act = actionMap[selection]
-    act(uniqueDesignation)
+  let act = actionMap[selection]
+  act(uniqueDesignation)
 }
 
 module.exports = action
+
 },{"./game":174}],172:[function(require,module,exports){
 let config = {
   mapWidth: 100,
@@ -61208,53 +61209,87 @@ module.exports = {
 let Database = require('./database')
 let config = require('./config')
 let Unit = require('./unit')
+let Map = require('./map')
 let _ = require('lodash')
 
+function wrap (m, n) {
+  return n >= 0 ? n % m : (n % m + m) % m
+}
+
 function findFace (current, direction, amount) {
-    let face
-    if (direction == 'left') {
-        console.log('left')
-        face = current - amount
-        if (face <= -1) {
-            face = 5
-        }
-    }
+  let faces = _.range(0, 6)
 
-    if (direction == 'right') {
-        console.log('right')
-        face = current + amount
-        if (face >= 6) {
-            face = 0
-        }
-    }
+  if (direction === 'left') return wrap(faces.length, (current - amount))
+  if (direction === 'right') return wrap(faces.length, (current + amount))
+}
 
-    return face
+function faceToDirection (face) {
+  let faceString = _.toString(face)
+  let map = {
+    '0': 'N',
+    '1': 'NE',
+    '2': 'SE',
+    '3': 'S',
+    '4': 'SW',
+    '5': 'NW'
+  }
+
+  return map[faceString]
+}
+
+function findNeighbor (currentCoords, facing, neighbor) {
+  let currentHex = Map.grid.get(Map.Hex(currentCoords))
+  let nextHex
+  let nextFace = findFace(facing, 'right', 3)
+
+  if (neighbor !== 'forward' && neighbor !== 'backward') {
+    nextHex = Map.grid.neighborsOf(currentHex, neighbor)
+  }
+
+  if (neighbor === 'forward') {
+    nextHex = Map.grid.neighborsOf(currentHex, faceToDirection(facing))
+  }
+
+  if (neighbor === 'backward') {
+    nextHex = Map.grid.neighborsOf(currentHex, faceToDirection(nextFace))
+  }
+
+  return nextHex
 }
 
 function face1LeftMoving (uniqueDesignation) {
-    Database.singleUnit(uniqueDesignation).once('value').then((data) => {
-        let unit = data.val()
-        let newFace = findFace(unit.facing, 'left', 1)
+  Database.singleUnit(uniqueDesignation).once('value').then((data) => {
+    let unit = data.val()
+    let newFace = findFace(unit.facing, 'left', 1)
 
-        Unit.update({facing: newFace}, uniqueDesignation)
-    })
-    
+    Unit.update({facing: newFace}, uniqueDesignation)
+  })
 }
 
 function face1RightMoving (uniqueDesignation) {
-    Database.singleUnit(uniqueDesignation).once('value').then((data) => {
-        let unit = data.val()
-        let newFace = findFace(unit.facing, 'right', 1)
+  Database.singleUnit(uniqueDesignation).once('value').then((data) => {
+    let unit = data.val()
+    let newFace = findFace(unit.facing, 'right', 1)
 
-        Unit.update({facing: newFace}, uniqueDesignation)
-    })
+    Unit.update({facing: newFace}, uniqueDesignation)
+  })
+}
+
+function runningForward (uniqueDesignation) {
+  Database.singleUnit(uniqueDesignation).once('value').then((data) => {
+    let unit = data.val()
+    let forwardHex = findNeighbor(unit.currentHex, unit.facing, 'forward')
+    Unit.update({currentHex: [forwardHex[0].x, forwardHex[0].y]}, uniqueDesignation)
+  })
 }
 
 module.exports = {
-    face1LeftMoving: face1LeftMoving,
-    face1RightMoving: face1RightMoving
+  face1LeftMoving: face1LeftMoving,
+  face1RightMoving: face1RightMoving,
+  runningForward: runningForward
 }
-},{"./config":172,"./database":173,"./unit":180,"lodash":165}],175:[function(require,module,exports){
+
+},{"./config":172,"./database":173,"./map":178,"./unit":180,"lodash":165}],175:[function(require,module,exports){
 let Map = require('./map')
 let Unit = require('./unit')
 let _ = require('lodash')
