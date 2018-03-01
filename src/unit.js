@@ -1,4 +1,4 @@
-let firebase = require('./database')
+let Database = require('./database')
 let ms = require('milsymbol')
 let $ = require('jquery')
 let config = require('./config')
@@ -89,7 +89,7 @@ function animateUnitToHex (point, uniqueDesignation) {
     // need to query Firebase for the hex that was updated then perform
     // animation and view updates in the callback
     //
-  firebase.firebaseRoot.database().ref('/Games/' + config.gameID + '/Units/' + uniqueDesignation).once('value').then((data) => {
+    Database.firebaseRoot.database().ref('/Games/' + config.gameID + '/Units/' + uniqueDesignation).once('value').then((data) => {
     let facing
     let val = data.val()
     facing = val.facing
@@ -138,7 +138,7 @@ function update (updates, uniqueDesignation) {
     changedValue['/' + uniqueDesignation + '/' + keys[i]] = updates[keys[i]]
   }
 
-  firebase.unitsDB.update(changedValue)
+  Database.unitsDB.update(changedValue)
 }
 
 function toggleHexSelection (hex) {

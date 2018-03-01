@@ -4,8 +4,8 @@
   "description": "Phoenix Command implementation",
   "main": "index.js",
   "scripts": {
-    "build": "browserify index.js -o js/bundle.js",
-    "start": "http-server"
+    "build": "browserify src/index.js -o dist/js/bundle.js",
+    "start": "http-server ./dist"
   },
   "author": "Matthew Butler",
   "license": "MIT",

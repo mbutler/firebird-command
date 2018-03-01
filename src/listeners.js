@@ -1,5 +1,5 @@
 let $ = require('jquery')
-let firebase = require('./database')
+let Database = require('./database')
 let Unit = require('./unit')
 let Map = require('./map')
 let config = require('./config')
@@ -13,7 +13,7 @@ require('./jquery.panzoom')
 $('#' + config.divContainer).panzoom({cursor: 'default'})
 
 //listen for any units changing
-firebase.unitsDB.on('child_changed', (snapshot) => {
+Database.unitsDB.on('child_changed', (snapshot) => {
   let unit = snapshot.val()
   let face = unit.facing
   let hex = unit.currentHex
@@ -27,9 +27,9 @@ firebase.unitsDB.on('child_changed', (snapshot) => {
 $(document).keypress((e) => {
   if (e.which === 32) {
 
-    Unit.update({currentHex: [6, 13]}, 'panther')
-    Unit.update({currentHex: [2, 13]}, 'dingo')
-    Unit.update({facing: 2}, 'panther')
+    Unit.update({currentHex: [6, 9]}, 'panther')
+    Unit.update({currentHex: [10, 13]}, 'dingo')
+    Unit.update({facing: 1}, 'panther')
 
       /* Unit.updateUnit({
         agility: 69,

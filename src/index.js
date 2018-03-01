@@ -1,13 +1,13 @@
-let Map = require('./js/map')
-let Unit = require('./js/unit')
+let Map = require('./map')
+let Unit = require('./unit')
 let _ = require('lodash')
 let $ = require('jquery')
-let firebase = require('./js/database')
-let config = require('./js/config')
-let unitList = require('./js/unit-list')
-require('./js/listeners')
+let Database = require('./database')
+let config = require('./config')
+let unitList = require('./unit-list')
+require('./listeners')
 
-firebase.unitsDB.once('value').then((snapshot) => {
+Database.unitsDB.once('value').then((snapshot) => {
   let units = snapshot.val()
 
   _.forEach(units, (unit) => {
