@@ -1,14 +1,17 @@
 let $ = require('jquery')
 let Database = require('./database')
 let Unit = require('./unit')
-let Map = require('./map')
 let config = require('./config')
 let actions = require('./actions')
+let MiniSignal = require('mini-signals')
+let Utils = require('./utils')
 require('jquery-contextmenu')
 
 // loading a local version, but keeping the npm module in package.json for now
 // https://github.com/timmywil/jquery.panzoom/issues/351#issuecomment-330924963
 require('./jquery.panzoom')
+
+let gameTimeSignal = new MiniSignal()
 
 //listen for panzooming
 $('#' + config.divContainer).panzoom({cursor: 'default'})
@@ -24,13 +27,21 @@ Database.allUnits.on('child_changed', (snapshot) => {
   Unit.animateUnitToHex(hex, uniqueDesignation)
 })
 
+Database.time.on('child_changed', (snapshot) => {
+  Database.time.once('value').then((snapshot) => {
+    let time = snapshot.val()
+  })
+})
+
 //testing with the space bar
 $(document).keypress((e) => {
   if (e.which === 32) {
 
-    Unit.update({currentHex: [6, 9]}, 'panther')
-    Unit.update({currentHex: [15, 9]}, 'dingo')
-    Unit.update({facing: 1}, 'panther')
+    //Unit.update({currentHex: [6, 9]}, 'panther')
+    //Unit.update({currentHex: [15, 9]}, 'dingo')
+    //Unit.update({facing: 1}, 'panther')
+    Utils.incrementTimer()
+    Utils.calculateActionTime(7, 'dingo')
 
       /* Unit.updateUnit({
         agility: 69,
@@ -43,7 +54,7 @@ $(document).keypress((e) => {
 //listen for contextmenu
 $.contextMenu({
   selector: '.unit',
-  trigger: 'right',
+  trigger: 'left',
   build: function ($trigger, e) {
     console.log(e.currentTarget.id)
     return {

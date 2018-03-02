@@ -5,7 +5,15 @@ function action (selection, uniqueDesignation) {
     'face-1-left-moving': Game.face1LeftMoving,
     'face-1-right-moving': Game.face1RightMoving,
         //
-    'change-facing-immobile': Game.changeFacingImmobile,
+    'crawling-forward': Game.crawlingForward,
+    'crawling-backward': Game.crawlingBackward,
+        //
+    'crouching-forward': Game.crouchingForward,
+    'crouching-backward': Game.crawlingBackward,
+        //
+    'running-forward': Game.runningForward,
+    'running-backward': Game.runningBackward,
+        //
     'face-1-left-immobile': Game.face1LeftImmobile,
     'face-2-left-immobile': Game.face2LeftImmobile,
     'face-1-right-immobile': Game.face1RightImmobile,
@@ -24,13 +32,7 @@ function action (selection, uniqueDesignation) {
     'draw-pistol-shoulder': Game.drawPistolShoulder,
     'draw-pistol-hip': Game.drawPistolHip,
     'draw-hand-weapon': Game.drawHandWeapon,
-    'access-backpack': Game.accessBackpack,
-        //
-    'running-forward': Game.runningForward,
-    'running-backward': Game.runningBackward,
-        //
-    'crawling-forward': Game.crawlingForward,
-    'crawling-backward': Game.crawlingBackward
+    'access-backpack': Game.accessBackpack
 
   }
 

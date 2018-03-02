@@ -51,9 +51,10 @@ let unitList = [
         'infoFields': false
       }
     },
-    'currentMovementType': '',
+    'position': '',
     'currentHex': [12, 9],
-    'facing': 4
+    'facing': 4,
+    'stance': ''
   },
   {
     'name': 'panther',
@@ -105,9 +106,10 @@ let unitList = [
         'infoFields': false
       }
     },
-    'currentMovementType': '',
+    'position': '',
     'currentHex': [7, 7],
-    'facing': 5
+    'facing': 5,
+    'stance': ''
   },
   {
     'name': 'snake',
@@ -159,9 +161,10 @@ let unitList = [
         'infoFields': false
       }
     },
-    'currentMovementType': '',
+    'position': '',
     'currentHex': [15, 15],
-    'facing': 2
+    'facing': 2,
+    'stance': ''
   }
 ]
 

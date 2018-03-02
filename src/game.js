@@ -75,8 +75,163 @@ function runningForward (uniqueDesignation) {
   })
 }
 
+function runningBackward (uniqueDesignation) {
+  Database.singleUnit(uniqueDesignation).once('value').then((data) => {
+    let unit = data.val()
+    let backwardHex = findNeighbor(unit.currentHex, unit.facing, 'backward')
+    Unit.update({currentHex: [backwardHex[0].x, backwardHex[0].y]}, uniqueDesignation)
+  })
+}
+
+function crawlingForward (uniqueDesignation) {
+  Database.singleUnit(uniqueDesignation).once('value').then((data) => {
+    let unit = data.val()
+    let forwardHex = findNeighbor(unit.currentHex, unit.facing, 'forward')
+    Unit.update({currentHex: [forwardHex[0].x, forwardHex[0].y]}, uniqueDesignation)
+  })
+}
+
+function crawlingBackward (uniqueDesignation) {
+  Database.singleUnit(uniqueDesignation).once('value').then((data) => {
+    let unit = data.val()
+    let backwardHex = findNeighbor(unit.currentHex, unit.facing, 'backward')
+    Unit.update({currentHex: [backwardHex[0].x, backwardHex[0].y]}, uniqueDesignation)
+  })
+}
+
+function crouchingForward (uniqueDesignation) {
+  Database.singleUnit(uniqueDesignation).once('value').then((data) => {
+    let unit = data.val()
+    let forwardHex = findNeighbor(unit.currentHex, unit.facing, 'forward')
+    Unit.update({currentHex: [forwardHex[0].x, forwardHex[0].y]}, uniqueDesignation)
+  })
+}
+
+function crouchingBackward (uniqueDesignation) {
+  Database.singleUnit(uniqueDesignation).once('value').then((data) => {
+    let unit = data.val()
+    let backwardHex = findNeighbor(unit.currentHex, unit.facing, 'backward')
+    Unit.update({currentHex: [backwardHex[0].x, backwardHex[0].y]}, uniqueDesignation)
+  })
+}
+
+function face1LeftImmobile (uniqueDesignation) {
+  Database.singleUnit(uniqueDesignation).once('value').then((data) => {
+    let unit = data.val()
+    let newFace = findFace(unit.facing, 'left', 1)
+
+    Unit.update({facing: newFace}, uniqueDesignation)
+  })
+}
+
+function face1RightImmobile (uniqueDesignation) {
+  Database.singleUnit(uniqueDesignation).once('value').then((data) => {
+    let unit = data.val()
+    let newFace = findFace(unit.facing, 'right', 1)
+
+    Unit.update({facing: newFace}, uniqueDesignation)
+  })
+}
+
+function face2LeftImmobile (uniqueDesignation) {
+  Database.singleUnit(uniqueDesignation).once('value').then((data) => {
+    let unit = data.val()
+    let newFace = findFace(unit.facing, 'left', 2)
+
+    Unit.update({facing: newFace}, uniqueDesignation)
+  })
+}
+
+function face2RightImmobile (uniqueDesignation) {
+  Database.singleUnit(uniqueDesignation).once('value').then((data) => {
+    let unit = data.val()
+    let newFace = findFace(unit.facing, 'right', 2)
+
+    Unit.update({facing: newFace}, uniqueDesignation)
+  })
+}
+
+function assumeFiringStance (uniqueDesignation) {
+  Unit.update({position: 'firing'}, uniqueDesignation)
+}
+
+function lookOverCover (uniqueDesignation) {
+  console.log('looking over cover')
+}
+
+function throwGrenade (uniqueDesignation) {
+
+}
+
+function openDoor (uniqueDesignation) {
+
+}
+
+function openWindow (uniqueDesignation) {
+
+}
+
+function reloadWeapon (uniqueDesignation) {
+
+}
+
+function loadMagazine (uniqueDesignation) {
+
+}
+
+function dropWeapon (uniqueDesignation) {
+
+}
+
+function deployBipod (uniqueDesignation) {
+
+}
+
+function climbWindow (uniqueDesignation) {
+
+}
+
+function drawPistolShoulder (uniqueDesignation) {
+
+}
+
+function drawPistolHip (uniqueDesignation) {
+
+}
+
+function drawHandWeapon (uniqueDesignation) {
+
+}
+
+function accessBackpack (uniqueDesignation) {
+
+}
+
 module.exports = {
   face1LeftMoving: face1LeftMoving,
   face1RightMoving: face1RightMoving,
-  runningForward: runningForward
+  runningForward: runningForward,
+  runningBackward: runningBackward,
+  crawlingForward: crawlingForward,
+  crawlingBackward: crawlingBackward,
+  crouchingForward: crouchingForward,
+  crouchingBackward: crouchingBackward,
+  face1LeftImmobile: face1LeftImmobile,
+  face1RightImmobile: face1RightImmobile,
+  face2LeftImmobile: face2LeftImmobile,
+  face2RightImmobile: face2RightImmobile,
+  assumeFiringStance: assumeFiringStance,
+  lookOverCover: lookOverCover,
+  throwGrenade: throwGrenade,
+  openDoor: openDoor,
+  openWindow: openWindow,
+  reloadWeapon: reloadWeapon,
+  loadMagazine: loadMagazine,
+  dropWeapon: dropWeapon,
+  deployBipod: deployBipod,
+  climbWindow: climbWindow,
+  drawPistolShoulder: drawPistolShoulder,
+  drawPistolHip: drawPistolHip,
+  drawHandWeapon: drawHandWeapon,
+  accessBackpack: accessBackpack
 }
