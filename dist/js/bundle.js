@@ -62988,8 +62988,8 @@ $(document).keypress((e) => {
     //Unit.update({currentHex: [6, 9]}, 'panther')
     //Unit.update({currentHex: [15, 9]}, 'dingo')
     //Unit.update({facing: 1}, 'panther')
-    Utils.incrementTimer()
-    Utils.calculateActionTime(7, 'dingo')
+    //Utils.incrementTimer()
+    Utils.calculateActionTime(13, 'dingo')
 
       /* Unit.updateUnit({
         agility: 69,
@@ -63563,11 +63563,38 @@ function calculateActionTime (actions, uniqueDesignation) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
     let ca = unit.combatActionsPerImpulse
+    ca.shift() // there's an undefined value in index 0 for some reason
+    Database.time.once('value').then((snapshot) => {
+      let time = snapshot.val()
+      let next = time
+      let phase = time.phase
+      let impulse = time.impulse
+      let i = 0
+      
+      while (actions >= ca[i]) {
+        actions = actions - ca[i]
+        i++
 
-    for (let i = 0; i <= actions; i++) {
+        if (i === 4) {
+          i = 0
+        }
 
-    }
-    console.log(ca['1'])
+        if (actions > 0) {
+          if (impulse === 4) {
+            phase += 1
+            impulse = 1
+          } else {
+            impulse += 1
+          }
+
+          next.impulse = impulse
+          next.phase = phase
+        }
+      }
+      //need to update here
+      console.log(next)
+      console.log('remaining actions at run time: ', actions)
+    })
   })
 }
 

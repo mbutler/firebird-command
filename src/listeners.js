@@ -40,8 +40,8 @@ $(document).keypress((e) => {
     //Unit.update({currentHex: [6, 9]}, 'panther')
     //Unit.update({currentHex: [15, 9]}, 'dingo')
     //Unit.update({facing: 1}, 'panther')
-    Utils.incrementTimer()
-    Utils.calculateActionTime(7, 'dingo')
+    //Utils.incrementTimer()
+    Utils.calculateActionTime(13, 'dingo')
 
       /* Unit.updateUnit({
         agility: 69,
