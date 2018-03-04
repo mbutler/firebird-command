@@ -1,19 +1,25 @@
 html,
 body {
-  padding: 0px;
-  margin: 0px;
-  overflow: hidden;
-  height: 100%;
+    padding: 0px;
+    margin: 0px;
+    overflow: hidden;
+    height: 100%;
 }
 
 #stage {
-  padding: 0px;
-  margin: 0px;
-  overflow: visible;
-  height: 100%;
+    padding: 0px;
+    margin: 0px;
+    overflow: visible;
+    height: 100%;
 }
 
 svg {
-  display: block; 
-  margin: auto; 
-  overflow: visible;}
+    display: block;
+    margin: auto;
+    overflow: visible;
+    height: 100%;
+}
+
+svg:not(:root) {
+    overflow: visible;
+}
