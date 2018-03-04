@@ -1,27 +1,27 @@
 {
-  "name": "firebird",
-  "version": "0.0.5",
-  "description": "Phoenix Command implementation",
-  "main": "index.js",
-  "scripts": {
-    "build": "browserify src/index.js -o dist/js/bundle.js",
-    "start": "http-server ./dist"
-  },
-  "author": "Matthew Butler",
-  "license": "MIT",
-  "dependencies": {
-    "firebase": "^4.10.1",
-    "honeycomb-grid": "^1.1.3",
-    "jquery": "^3.3.1",
-    "jquery-contextmenu": "^2.6.3",
-    "jquery.panzoom": "^3.2.2",
-    "lodash": "^4.17.5",
-    "milsymbol": "^1.3.3",
-    "mini-signals": "^1.2.0",
-    "svg.js": "^2.6.4"
-  },
-  "devDependencies": {
-    "browserify": "^16.1.0",
-    "http-server": "^0.11.1"
-  }
+    "name": "firebird",
+    "version": "0.0.5",
+    "description": "Phoenix Command implementation",
+    "main": "index.js",
+    "scripts": {
+        "build": "browserify src/index.js -o dist/js/bundle.js",
+        "start": "http-server ./dist"
+    },
+    "author": "Matthew Butler",
+    "license": "MIT",
+    "dependencies": {
+        "firebase": "^4.10.1",
+        "honeycomb-grid": "^1.1.3",
+        "jquery": "^3.3.1",
+        "jquery.panzoom": "^3.2.2",
+        "lodash": "^4.17.5",
+        "milsymbol": "^1.3.3",
+        "mini-signals": "^1.2.0",
+        "slideout": "^1.0.1",
+        "svg.js": "^2.6.4"
+    },
+    "devDependencies": {
+        "browserify": "^16.1.0",
+        "http-server": "^0.11.1"
+    }
 }
