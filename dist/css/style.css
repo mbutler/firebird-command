@@ -23,3 +23,27 @@ svg {
 svg:not(:root) {
     overflow: visible;
 }
+
+.close {
+    font-size: 40px;
+    display: block;
+    position: absolute;
+    color: grey;
+    top: 10px;
+    right: 20px;
+}
+
+.slideout-menu {
+    padding-left: 5px;
+    padding-right: 5px;
+    background-color: #F8F8F8;
+}
+
+#menu {
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.nav-tabs>li>a {
+    padding: 7px;
+}

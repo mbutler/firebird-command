@@ -24,20 +24,277 @@
     <div id="stage"></div>
 
     <nav id="menu">
-        <div class="container-fluid">
-            <div class="dropdown">
-                <button class="btn btn-primary dropdown-toggle" type="button" data-toggle="dropdown">Dropdown Example
-                <span class="caret"></span></button>
-                <ul class="dropdown-menu">
-                    <li><a href="#">HTML</a></li>
-                    <li><a href="#">CSS</a></li>
-                    <li><a href="#">JavaScript</a></li>
-                </ul>
+        <div class="container">
+            <button type="button" class="close" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        <div class="row">
+            <div id="panelUniqueDesignation" class="col-xs-10">
+                <h3></h3>
+            </div>
+        </div>
+        <div style="padding-bottom: 5px;" class="row">
+            <div class="col-xs-8">Skill Level
+                <span id="skill-level"></span>
+            </div>
+
+        </div>
+        <ul class="nav nav-tabs">
+            <li><a href="#stats" data-toggle="tab">Stats</a></li>
+            <li><a href="#actions" data-toggle="tab">Actions</a></li>
+            <li><a href="#weapon" data-toggle="tab">Weapon</a></li>
+            <li><a href="#equipment" data-toggle="tab">Equipment</a></li>
+        </ul>
+
+        <div class="tab-content">
+            <div class="tab-pane active" id="stats">
+                <div class="row">
+                    <div class="col-xs-8"><strong>Strength</strong></div>
+                    <div id="strength" class="col-xs-4"></div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-8"><strong>Intelligence</strong></div>
+                    <div id="intelligence" class="col-xs-4"></div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-8"><strong>Will</strong></div>
+                    <div id="will" class="col-xs-4"></div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-8"><strong>Health</strong></div>
+                    <div id="health" class="col-xs-4"></div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-8"><strong>Agility</strong></div>
+                    <div id="agility" class="col-xs-4"></div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-8"><strong>Base Speed</strong></div>
+                    <div id="base-speed" class="col-xs-4"></div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-8"><strong>Maximum Speed</strong></div>
+                    <div id="maximum-speed" class="col-xs-4"></div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-8"><strong>Skill Accuracy Level</strong></div>
+                    <div id="skill-accuracy-level" class="col-xs-4"></div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-8"><strong>INT Skill Factor</strong></div>
+                    <div id="int-skill-factor" class="col-xs-4"></div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-8"><strong>Combat Actions</strong></div>
+                    <div id="combat-actions" class="col-xs-4"></div>
+                </div>
+                <div style="padding-top: 20px;" class="row">
+                    <div class="col-xs-12">
+                        <strong>Combat actions per impulse</strong>
+                    </div>
+                </div>
+                <table class="table table-condensed table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>impulse</th>
+                            <th>1</th>
+                            <th>2</th>
+                            <th>3</th>
+                            <th>4</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="success">
+                            <td>actions</td>
+                            <td id="impulse1">2</td>
+                            <td id="impulse2">2</td>
+                            <td id="impulse3">2</td>
+                            <td id="impulse4">2</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="row">
+                    <div class="col-xs-8"><strong>Knockout Value</strong></div>
+                    <div id="knockout-value" class="col-xs-4"></div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-8"><strong>Physical damage total</strong></div>
+                    <div id="physical-damage-total" class="col-xs-4"></div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-8"><strong>Disabling injuries</strong></div>
+                    <div id="disabling-injuries" class="col-xs-4"></div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-8"><strong>Stance</strong></div>
+                    <div id="stance" class="col-xs-4"></div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-4"><strong>Action</strong></div>
+                    <div id="action" class="col-xs-8"></div>
+                </div>
+            </div>
+
+            <div class="tab-pane" id="weapon">
+                <div class="row">
+                    <div class="col-xs-8"><strong>Reload Time</strong></div>
+                    <div id="reload-time" class="col-xs-4"></div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-8"><strong>Rate of fire</strong></div>
+                    <div id="rate-of-fire" class="col-xs-4"></div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-8"><strong>Ammunition Capacity</strong></div>
+                    <div id="ammunition-capacity" class="col-xs-4"></div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-8"><strong>Ammunition Weight</strong></div>
+                    <div id="ammunition-weight" class="col-xs-4"></div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-8"><strong>Penetration</strong></div>
+                    <div id="penetration" class="col-xs-4"></div>
+                </div>
+                <div class="row">
+                    <div class="col-xs-8"><strong>Damage Class</strong></div>
+                    <div id="damage-class" class="col-xs-4"></div>
+                </div>
+                <div style="padding-bottom: 20px;" class="row">
+                    <div class="col-xs-8"><strong>Ammunition</strong></div>
+                    <div id="ammunition" class="col-xs-4"></div>
+                </div>
+                <table class="table table-condensed table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Aim Time</th>
+                            <th>Aim Time Mod</th>
+                            <th>Shot Accuracy</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-center">1</td>
+                            <td id="aim-time-mod-1"></td>
+                            <td id="shot-accuracy-1"></td>
+                        </tr>
+                        <tr>
+                            <td class="text-center">2</td>
+                            <td id="aim-time-mod-2"></td>
+                            <td id="shot-accuracy-2"></td>
+                        </tr>
+                        <tr>
+                            <td class="text-center">3</td>
+                            <td id="aim-time-mod-3"></td>
+                            <td id="shot-accuracy-3"></td>
+                        </tr>
+                        <tr>
+                            <td class="text-center">4</td>
+                            <td id="aim-time-mod-4"></td>
+                            <td id="shot-accuracy-4"></td>
+                        </tr>
+                        <tr>
+                            <td class="text-center">5</td>
+                            <td id="aim-time-mod-5"></td>
+                            <td id="shot-accuracy-5"></td>
+                        </tr>
+                        <tr>
+                            <td class="text-center">6</td>
+                            <td id="aim-time-mod-6"></td>
+                            <td id="shot-accuracy-6"></td>
+                        </tr>
+                        <tr>
+                            <td class="text-center">7</td>
+                            <td id="aim-time-mod-7"></td>
+                            <td id="shot-accuracy-7"></td>
+                        </tr>
+                        <tr>
+                            <td class="text-center">8</td>
+                            <td id="aim-time-mod-8"></td>
+                            <td id="shot-accuracy-8"></td>
+                        </tr>
+                        <tr>
+                            <td class="text-center">9</td>
+                            <td id="aim-time-mod-9"></td>
+                            <td id="shot-accuracy-9"></td>
+                        </tr>
+                        <tr>
+                            <td class="text-center">10</td>
+                            <td id="aim-time-mod-10"></td>
+                            <td id="shot-accuracy-10"></td>
+                        </tr>
+                        <tr>
+                            <td class="text-center">11</td>
+                            <td id="aim-time-mod-11"></td>
+                            <td id="shot-accuracy-11"></td>
+                        </tr>
+                        <tr>
+                            <td class="text-center">12</td>
+                            <td id="aim-time-mod-12"></td>
+                            <td id="shot-accuracy-12"></td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
 
 
-        </div>
+            <div class="tab-pane" id="equipment">
+                <table class="table table-condensed table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Body Armor</th>
+                            <th>Protection Factor</th>
+                            <th>Weight</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Helm:</td>
+                            <td id="protection-factor-helm"></td>
+                            <td id="protection-weight-helm"></td>
+                        </tr>
+                        <tr>
+                            <td>Visor:</td>
+                            <td id="protection-factor-visor"></td>
+                            <td id="protection-weight-visor"></td>
+                        </tr>
+                        <tr>
+                            <td>Body:</td>
+                            <td id="protection-factor-body"></td>
+                            <td id="protection-weight-body"></td>
+                        </tr>
+                        <tr>
+                            <td>Limbs:</td>
+                            <td id="protection-factor-limbs"></td>
+                            <td id="protection-weight-limbs"></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table class="table table-condensed table-bordered table-striped">
+                    <thead>
+                        <tr>
+                            <th>Equipment</th>
+                            <th>Weight</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="row">
+                    <div class="col-xs-8"><strong>Encumbrance</strong></div>
+                    <div id="encumbrance" class="col-xs-4"></div>
+                </div>
+            </div>
 
+            <div class="tab-pane" id="actions">
+                run actions from here
+            </div>
+        </div>
     </nav>
 
     <div id="panel"></div>

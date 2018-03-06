@@ -1,19 +1,10 @@
 let Database = require('./database')
 let ms = require('milsymbol')
-let $ = require('jquery')
 let config = require('./config')
 let _ = require('lodash')
 let unitList = require('./unit-list')
 let Map = require('./map')
-let Slideout = require('slideout')
-
-let controlPanel = new Slideout({
-    'panel': document.getElementById('panel'),
-    'menu': document.getElementById('menu'),
-    'padding': 0,
-    'duration': 0,
-    'tolerance': 0
-})
+let Utils = require('./utils')
 
 function create(hex, sidc, options) {
     let container, symbol, size
@@ -36,7 +27,8 @@ function create(hex, sidc, options) {
     setUnitCoords(hex, options.uniqueDesignation)
 
     $(container).on('touchstart mousedown', (e) => {
-        controlPanel.toggle()
+        Utils.populateControlPanel(options.uniqueDesignation)
+        controlPanel.open('test')
         let hex = getUnitHex(e.currentTarget.id)
         if (hex.currentUnit !== undefined) {
             toggleHexSelection(hex)

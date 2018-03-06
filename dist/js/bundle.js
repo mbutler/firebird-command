@@ -63766,7 +63766,6 @@ Database.allUnits.once('value').then((snapshot) => {
 }));
 
 },{"jquery":166}],181:[function(require,module,exports){
-let $ = require('jquery')
 let Database = require('./database')
 let Unit = require('./unit')
 let config = require('./config')
@@ -63777,6 +63776,19 @@ let Utils = require('./utils')
 // loading a local version, but keeping the npm module in package.json for now
 // https://github.com/timmywil/jquery.panzoom/issues/351#issuecomment-330924963
 require('./jquery.panzoom')
+let Slideout = require('slideout')
+
+controlPanel = new Slideout({
+    'panel': document.getElementById('panel'),
+    'menu': document.getElementById('menu'),
+    'padding': 0,
+    'duration': 0,
+    'tolerance': 0
+})
+
+$('.close').on('touchstart mousedown', (e) => {
+    controlPanel.close()
+})
 
 let gameTimeSignal = new MiniSignal()
 
@@ -63817,9 +63829,7 @@ $(document).keypress((e) => {
         }, 'snake') */
     }
 })
-
-module.exports = panel
-},{"./actions":175,"./config":176,"./database":177,"./jquery.panzoom":180,"./unit":184,"./utils":185,"jquery":166,"mini-signals":169}],182:[function(require,module,exports){
+},{"./actions":175,"./config":176,"./database":177,"./jquery.panzoom":180,"./unit":184,"./utils":185,"mini-signals":169,"slideout":172}],182:[function(require,module,exports){
 let SVG = require('svg.js')
 let Honeycomb = require('honeycomb-grid')
 let _ = require('lodash')
@@ -63828,122 +63838,121 @@ let config = require('./config')
 const draw = SVG(config.divContainer)
 
 const Hex = Honeycomb.extendHex({
-  size: config.hexSize,
-  orientation: 'flat',
+    size: config.hexSize,
+    orientation: 'flat',
 
-  render (draw) {
-    const { x, y } = this.toPoint()
-    const corners = this.corners()
-    this.screenCoords = {'x': x, 'y': y}
-    this.cornerList = this.corners().map(corner => this.toPoint().add(corner))
-    this.currentUnit = undefined
-    this.selected = false
+    render(draw) {
+        const { x, y } = this.toPoint()
+        const corners = this.corners()
+        this.screenCoords = { 'x': x, 'y': y }
+        this.cornerList = this.corners().map(corner => this.toPoint().add(corner))
+        this.currentUnit = undefined
+        this.selected = false
 
-    this.draw = draw
-      .polygon(corners.map(({ x, y }) => `${x},${y}`))
-      .fill('none')
-      .stroke({ width: 1, color: '#E0E0E0' })
-      .translate(x, y)
-  },
+        this.draw = draw
+            .polygon(corners.map(({ x, y }) => `${x},${y}`))
+            .fill('none')
+            .stroke({ width: 1, color: '#E0E0E0' })
+            .translate(x, y)
+    },
 
-  highlight () {
-    if (this.selected === true) {
-      this.selected = true
-      this.draw
-      .fill({ opacity: 1, color: 'aquamarine' })
-    } else {
-      this.selected = false
-      this.draw
-      .fill({ opacity: 0, color: 'none' })
-    }
-  },
+    highlight() {
+        if (this.selected === true) {
+            this.selected = true
+            this.draw
+                .fill({ opacity: 1, color: 'aquamarine' })
+        } else {
+            this.selected = false
+            this.draw
+                .fill({ opacity: 0, color: 'none' })
+        }
+    },
 
-  facing (face, uniqueDesignation) {
-    let faceStart, faceEnd, x1, x2, y1, y2, lines
+    facing(face, uniqueDesignation) {
+        let faceStart, faceEnd, x1, x2, y1, y2, lines
 
-    switch (face) {
-      case 0:
-      // top
-        faceStart = 4
-        faceEnd = 5
-        break
-      case 1:
-      // top right
-        faceStart = 5
-        faceEnd = 0
-        break
-      case 2:
-      // bottom right
-        faceStart = 0
-        faceEnd = 1
-        break
-      case 3:
-      // bottom
-        faceStart = 1
-        faceEnd = 2
-        break
-      case 4:
-      // bottom left
-        faceStart = 2
-        faceEnd = 3
-        break
-      case 5:
-      // top left
-        faceStart = 3
-        faceEnd = 4
-        break
-      default:
-        faceStart = 4
-        faceEnd = 5
-    }
-    // 1-2 bottom
-    // 2-3 bottom left
-    // 3-4 top left
-    // 4-5 top
-    // 5-0 top right
-    // 0-1 bottom right
-    x1 = this.cornerList[faceStart].x
-    y1 = this.cornerList[faceStart].y
-    x2 = this.cornerList[faceEnd].x
-    y2 = this.cornerList[faceEnd].y
+        switch (face) {
+            case 0:
+                // top
+                faceStart = 4
+                faceEnd = 5
+                break
+            case 1:
+                // top right
+                faceStart = 5
+                faceEnd = 0
+                break
+            case 2:
+                // bottom right
+                faceStart = 0
+                faceEnd = 1
+                break
+            case 3:
+                // bottom
+                faceStart = 1
+                faceEnd = 2
+                break
+            case 4:
+                // bottom left
+                faceStart = 2
+                faceEnd = 3
+                break
+            case 5:
+                // top left
+                faceStart = 3
+                faceEnd = 4
+                break
+            default:
+                faceStart = 4
+                faceEnd = 5
+        }
+        // 1-2 bottom
+        // 2-3 bottom left
+        // 3-4 top left
+        // 4-5 top
+        // 5-0 top right
+        // 0-1 bottom right
+        x1 = this.cornerList[faceStart].x
+        y1 = this.cornerList[faceStart].y
+        x2 = this.cornerList[faceEnd].x
+        y2 = this.cornerList[faceEnd].y
 
-    lines = _.toString([x1, y1, x2, y2, (x1 + x2) / 2, (y1 + y2) / 2, this.cornerList[3].x + config.hexSize, this.cornerList[3].y])
+        lines = _.toString([x1, y1, x2, y2, (x1 + x2) / 2, (y1 + y2) / 2, this.cornerList[3].x + config.hexSize, this.cornerList[3].y])
 
-    draw
-    .polyline(lines)
-    .stroke({ color: '#f06', width: 1})
-    .fill('none')
-    .attr('id', uniqueDesignation + '-facing')
-  },
+        draw
+            .polyline(lines)
+            .stroke({ color: '#f06', width: 1 })
+            .fill('none')
+            .attr('id', uniqueDesignation + '-facing')
+    },
 
-  currentUnit: undefined
+    currentUnit: undefined
 })
 
 const Grid = Honeycomb.defineGrid(Hex)
 
 const grid = Grid.rectangle({
-  width: config.mapWidth,
-  height: config.mapHeight,
-  // render each hex, passing the draw instance
-  onCreate (hex) {
-    hex.render(draw)
-  }
+    width: config.mapWidth,
+    height: config.mapHeight,
+    // render each hex, passing the draw instance
+    onCreate(hex) {
+        hex.render(draw)
+    }
 })
 
-function getHexFromCoords (pageX, pageY) {
-  let hexCoordinates = Grid.pointToHex([pageX, pageY])
-  let hex = grid.get(hexCoordinates)
+function getHexFromCoords(pageX, pageY) {
+    let hexCoordinates = Grid.pointToHex([pageX, pageY])
+    let hex = grid.get(hexCoordinates)
 
-  return hex
+    return hex
 }
 
 module.exports = {
-  Hex: Hex,
-  Grid: Grid,
-  grid: grid,
-  getHexFromCoords: getHexFromCoords
+    Hex: Hex,
+    Grid: Grid,
+    grid: grid,
+    getHexFromCoords: getHexFromCoords
 }
-
 },{"./config":176,"honeycomb-grid":165,"lodash":167,"svg.js":173}],183:[function(require,module,exports){
 let unitsToggleList = []
 
@@ -64123,20 +64132,11 @@ module.exports = {
 },{}],184:[function(require,module,exports){
 let Database = require('./database')
 let ms = require('milsymbol')
-let $ = require('jquery')
 let config = require('./config')
 let _ = require('lodash')
 let unitList = require('./unit-list')
 let Map = require('./map')
-let Slideout = require('slideout')
-
-let controlPanel = new Slideout({
-    'panel': document.getElementById('panel'),
-    'menu': document.getElementById('menu'),
-    'padding': 0,
-    'duration': 0,
-    'tolerance': 0
-})
+let Utils = require('./utils')
 
 function create(hex, sidc, options) {
     let container, symbol, size
@@ -64159,7 +64159,8 @@ function create(hex, sidc, options) {
     setUnitCoords(hex, options.uniqueDesignation)
 
     $(container).on('touchstart mousedown', (e) => {
-        controlPanel.toggle()
+        Utils.populateControlPanel(options.uniqueDesignation)
+        controlPanel.open('test')
         let hex = getUnitHex(e.currentTarget.id)
         if (hex.currentUnit !== undefined) {
             toggleHexSelection(hex)
@@ -64294,77 +64295,101 @@ module.exports = {
     changeFacing: changeFacing,
     update: update
 }
-},{"./config":176,"./database":177,"./map":182,"./unit-list":183,"jquery":166,"lodash":167,"milsymbol":168,"slideout":172}],185:[function(require,module,exports){
+},{"./config":176,"./database":177,"./map":182,"./unit-list":183,"./utils":185,"lodash":167,"milsymbol":168}],185:[function(require,module,exports){
 let Database = require('./database')
 
-function incrementTimer () {
-  Database.time.once('value').then((snapshot) => {
-    let time = snapshot.val()
-    let phase = time.phase
-    let impulse = time.impulse
-    let next = {}
-
-    if (impulse === 4) {
-      phase += 1
-      impulse = 1
-    } else {
-      impulse += 1
-    }
-
-    next.impulse = impulse
-    next.phase = phase
-
-    Database.time.update(next)
-    console.log(next)
-  })
-}
-
-function calculateActionTime (actions, uniqueDesignation) {
-  Database.singleUnit(uniqueDesignation).once('value').then((data) => {
-    let unit = data.val()
-    let ca = unit.combatActionsPerImpulse
-    ca.shift() // there's an undefined value in index 0 for some reason
+function incrementTimer() {
     Database.time.once('value').then((snapshot) => {
-      let time = snapshot.val()
-      let next = time
-      let phase = time.phase
-      let impulse = time.impulse
-      let i = 0
-      
-      //while there are still total actions at each impulse
-      while (actions >= ca[i]) {
-        //subtract the impulse's actions from total actions
-        actions = actions - ca[i]
-        i++
+        let time = snapshot.val()
+        let phase = time.phase
+        let impulse = time.impulse
+        let next = {}
 
-        //there are only 4 impulses per phase, so loop around
-        if (i === 4) {
-          i = 0
-        }
-
-        //only increment the time if there are actions left
-        if (actions > 0) {
-          if (impulse === 4) {
+        if (impulse === 4) {
             phase += 1
             impulse = 1
-          } else {
+        } else {
             impulse += 1
-          }
-
-          next.impulse = impulse
-          next.phase = phase
         }
-      }
-      //need to update here
-      console.log(next)
-      console.log('remaining actions at run time: ', actions)
+
+        next.impulse = impulse
+        next.phase = phase
+
+        Database.time.update(next)
+        console.log(next)
     })
-  })
+}
+
+function calculateActionTime(actions, uniqueDesignation) {
+    Database.singleUnit(uniqueDesignation).once('value').then((data) => {
+        let unit = data.val()
+        let ca = unit.combatActionsPerImpulse
+        ca.shift() // there's an undefined value in index 0 for some reason
+        Database.time.once('value').then((snapshot) => {
+            let time = snapshot.val()
+            let next = time
+            let phase = time.phase
+            let impulse = time.impulse
+            let i = 0
+
+            //while there are still total actions at each impulse
+            while (actions >= ca[i]) {
+                //subtract the impulse's actions from total actions
+                actions = actions - ca[i]
+                i++
+
+                //there are only 4 impulses per phase, so loop around
+                if (i === 4) {
+                    i = 0
+                }
+
+                //only increment the time if there are actions left
+                if (actions > 0) {
+                    if (impulse === 4) {
+                        phase += 1
+                        impulse = 1
+                    } else {
+                        impulse += 1
+                    }
+
+                    next.impulse = impulse
+                    next.phase = phase
+                }
+            }
+            //need to update here
+            console.log(next)
+            console.log('remaining actions at run time: ', actions)
+        })
+    })
+}
+
+function populateControlPanel(uniqueDesignation) {
+    Database.singleUnit(uniqueDesignation).once('value').then((data) => {
+        let unit = data.val()
+        $('#panelUniqueDesignation h3').html(uniqueDesignation)
+        $('#skill-level').html(unit.skillLevel)
+        $('#strength').html(unit.strength)
+        $('#intelligence').html(unit.intelligence)
+        $('#will').html(unit.will)
+        $('#health').html(unit.health)
+        $('#agility').html(unit.agility)
+        $('#base-speed').html(unit.baseSpeed)
+        $('#maximum-speed').html(unit.maximumSpeed)
+        $('#gun-combat-skill-level').html(unit.gunCombatSkillLevel)
+        $('#skill-accuracy-level').html(unit.skillAccuracyLevel)
+        $('#int-skill-factor').html(unit.intSkillFactor)
+        $('#combat-actions').html(unit.combatActions)
+        $('#impulse1').html(unit.combatActionsPerImpulse['1'])
+        $('#impulse2').html(unit.combatActionsPerImpulse['2'])
+        $('#impulse3').html(unit.combatActionsPerImpulse['3'])
+        $('#impulse4').html(unit.combatActionsPerImpulse['4'])
+        $('#knockout-value').html(unit.knockoutValue)
+    })
 }
 
 module.exports = {
-  incrementTimer: incrementTimer,
-  calculateActionTime: calculateActionTime
+    incrementTimer: incrementTimer,
+    calculateActionTime: calculateActionTime,
+    populateControlPanel: populateControlPanel
 }
-
 },{"./database":177}]},{},[179]);

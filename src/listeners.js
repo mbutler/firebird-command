@@ -1,4 +1,3 @@
-let $ = require('jquery')
 let Database = require('./database')
 let Unit = require('./unit')
 let config = require('./config')
@@ -9,6 +8,19 @@ let Utils = require('./utils')
 // loading a local version, but keeping the npm module in package.json for now
 // https://github.com/timmywil/jquery.panzoom/issues/351#issuecomment-330924963
 require('./jquery.panzoom')
+let Slideout = require('slideout')
+
+controlPanel = new Slideout({
+    'panel': document.getElementById('panel'),
+    'menu': document.getElementById('menu'),
+    'padding': 0,
+    'duration': 0,
+    'tolerance': 0
+})
+
+$('.close').on('touchstart mousedown', (e) => {
+    controlPanel.close()
+})
 
 let gameTimeSignal = new MiniSignal()
 
@@ -49,5 +61,3 @@ $(document).keypress((e) => {
         }, 'snake') */
     }
 })
-
-module.exports = panel
