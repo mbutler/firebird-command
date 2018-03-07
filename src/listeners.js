@@ -8,6 +8,8 @@ let Utils = require('./utils')
 // loading a local version, but keeping the npm module in package.json for now
 // https://github.com/timmywil/jquery.panzoom/issues/351#issuecomment-330924963
 require('./jquery.panzoom')
+let panzoom = require('panzoom')
+let area = document.querySelector('#stage')
 let Slideout = require('slideout')
 
 controlPanel = new Slideout({
@@ -25,7 +27,9 @@ $('.close').on('touchstart mousedown', (e) => {
 let gameTimeSignal = new MiniSignal()
 
 //listen for panzooming
-$('#' + config.divContainer).panzoom({ cursor: 'default' })
+//seems insane to use two panzoom libraries, but it works... for now
+$('document').panzoom({ cursor: 'default' })
+panzoom(area)
 
 //listen for any units changing
 Database.allUnits.on('child_changed', (snapshot) => {
