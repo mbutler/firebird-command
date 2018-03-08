@@ -44,6 +44,14 @@ svg:not(:root) {
     overflow-x: hidden;
 }
 
+.nav-tabs {
+    margin-bottom: 10px;
+}
+
 .nav-tabs>li>a {
     padding: 7px;
+}
+
+#drop2 {
+    color: white;
 }

@@ -1,5 +1,11 @@
 let Database = require('./database')
 
+function createButtonSet(uniqueDesignation) {
+    let face1LeftMoving = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="action('face-1-left-moving', '${uniqueDesignation}')">Turn 1 hexside left <span class="badge">0</span></a></li>`
+
+    $('#facing-dropdown').append(face1LeftMoving)
+}
+
 function incrementTimer() {
     Database.time.once('value').then((snapshot) => {
         let time = snapshot.val()
@@ -92,5 +98,6 @@ function populateControlPanel(uniqueDesignation) {
 module.exports = {
     incrementTimer: incrementTimer,
     calculateActionTime: calculateActionTime,
-    populateControlPanel: populateControlPanel
+    populateControlPanel: populateControlPanel,
+    createButtonSet: createButtonSet
 }

@@ -28,7 +28,8 @@ function create(hex, sidc, options) {
 
     $(container).on('touchstart mousedown', (e) => {
         Utils.populateControlPanel(options.uniqueDesignation)
-        controlPanel.open('test')
+        Utils.createButtonSet(options.uniqueDesignation)
+        controlPanel.open()
         let hex = getUnitHex(e.currentTarget.id)
         if (hex.currentUnit !== undefined) {
             toggleHexSelection(hex)

@@ -1,43 +1,45 @@
 let Game = require('./game')
 
-function action (selection, uniqueDesignation) {
-  let actionMap = {
-    'face-1-left-moving': Game.face1LeftMoving,
-    'face-1-right-moving': Game.face1RightMoving,
+function action(selection, uniqueDesignation) {
+    let actionMap = {
+        'face-1-left-moving': Game.face1LeftMoving,
+        'face-1-right-moving': Game.face1RightMoving,
         //
-    'crawling-forward': Game.crawlingForward,
-    'crawling-backward': Game.crawlingBackward,
+        'crawling-forward': Game.crawlingForward,
+        'crawling-backward': Game.crawlingBackward,
         //
-    'crouching-forward': Game.crouchingForward,
-    'crouching-backward': Game.crawlingBackward,
+        'crouching-forward': Game.crouchingForward,
+        'crouching-backward': Game.crawlingBackward,
         //
-    'running-forward': Game.runningForward,
-    'running-backward': Game.runningBackward,
+        'running-forward': Game.runningForward,
+        'running-backward': Game.runningBackward,
         //
-    'face-1-left-immobile': Game.face1LeftImmobile,
-    'face-2-left-immobile': Game.face2LeftImmobile,
-    'face-1-right-immobile': Game.face1RightImmobile,
-    'face-2-right-immobile': Game.face2RightImmobile,
+        'face-1-left-immobile': Game.face1LeftImmobile,
+        'face-2-left-immobile': Game.face2LeftImmobile,
+        'face-1-right-immobile': Game.face1RightImmobile,
+        'face-2-right-immobile': Game.face2RightImmobile,
         //
-    'assume-firing-stance': Game.assumeFiringStance,
-    'look-over-cover': Game.lookOverCover,
-    'throw-grenade': Game.throwGrenade,
-    'open-door': Game.openDoor,
-    'open-window': Game.openWindow,
-    'reload-weapon': Game.reloadWeapon,
-    'load-magazine': Game.loadMagazine,
-    'drop-weapon': Game.dropWeapon,
-    'deploy-bipod': Game.deployBipod,
-    'climb-window': Game.climbWindow,
-    'draw-pistol-shoulder': Game.drawPistolShoulder,
-    'draw-pistol-hip': Game.drawPistolHip,
-    'draw-hand-weapon': Game.drawHandWeapon,
-    'access-backpack': Game.accessBackpack
+        'assume-firing-stance': Game.assumeFiringStance,
+        'look-over-cover': Game.lookOverCover,
+        'throw-grenade': Game.throwGrenade,
+        'open-door': Game.openDoor,
+        'open-window': Game.openWindow,
+        'reload-weapon': Game.reloadWeapon,
+        'load-magazine': Game.loadMagazine,
+        'drop-weapon': Game.dropWeapon,
+        'deploy-bipod': Game.deployBipod,
+        'climb-window': Game.climbWindow,
+        'draw-pistol-shoulder': Game.drawPistolShoulder,
+        'draw-pistol-hip': Game.drawPistolHip,
+        'draw-hand-weapon': Game.drawHandWeapon,
+        'access-backpack': Game.accessBackpack
 
-  }
+    }
 
-  let act = actionMap[selection]
-  act(uniqueDesignation)
+    let act = actionMap[selection]
+    act(uniqueDesignation)
 }
+
+window.action = action
 
 module.exports = action
