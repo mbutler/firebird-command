@@ -28,8 +28,8 @@ let gameTimeSignal = new MiniSignal()
 
 //listen for panzooming
 //seems insane to use two panzoom libraries, but it works... for now
-$('document').panzoom({ cursor: 'default' })
-panzoom(area)
+$('#' + config.divContainer).panzoom({ cursor: 'default' })
+    //panzoom(area)
 
 //listen for any units changing
 Database.allUnits.on('child_changed', (snapshot) => {

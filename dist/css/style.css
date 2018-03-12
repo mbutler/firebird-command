@@ -2,7 +2,7 @@ html,
 body {
     padding: 0px;
     margin: 0px;
-    overflow: hidden;
+    overflow: visible;
     height: 100%;
 }
 
@@ -52,6 +52,35 @@ svg:not(:root) {
     padding: 7px;
 }
 
-#drop2 {
+.action-buttons {
     color: white;
 }
+
+.btn-primary {
+    color: #fff;
+    background-color: #0495c9;
+    border-color: #357ebd; /*set the color you want here*/
+}
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active, .open>.dropdown-toggle.btn-primary {
+    color: #fff;
+    background-color: #00b3db;
+    border-color: #285e8e; /*set the color you want here*/
+}
+
+.badge {
+    padding: 1px 9px 2px;
+    font-size: 12.025px;
+    font-weight: bold;
+    white-space: nowrap;
+    color: #ffffff;
+    background-color: #3a87ad;
+    -webkit-border-radius: 9px;
+    -moz-border-radius: 9px;
+    border-radius: 9px;
+  }
+  
+  .badge:hover {
+    color: #3a87ad;
+    text-decoration: none;
+    cursor: pointer;
+  }

@@ -40,6 +40,7 @@ function action(selection, uniqueDesignation) {
     act(uniqueDesignation)
 }
 
+//put the action function on window so it's accessible by button onclicks
 window.action = action
 
 module.exports = action
