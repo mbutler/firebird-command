@@ -2,8 +2,9 @@ let Database = require('./database')
 let Unit = require('./unit')
 let config = require('./config')
 let actions = require('./actions')
-let MiniSignal = require('mini-signals')
 let Utils = require('./utils')
+let Timer = require('./timer')
+let _ = require('lodash')
 
 // loading a local version, but keeping the npm module in package.json for now
 // https://github.com/timmywil/jquery.panzoom/issues/351#issuecomment-330924963
@@ -24,12 +25,10 @@ $('.close').on('touchstart mousedown', (e) => {
     controlPanel.close()
 })
 
-let gameTimeSignal = new MiniSignal()
-
 //listen for panzooming
 //seems insane to use two panzoom libraries, but it works... for now
 $('#' + config.divContainer).panzoom({ cursor: 'default' })
-    //panzoom(area)
+panzoom(area)
 
 //listen for any units changing
 Database.allUnits.on('child_changed', (snapshot) => {
@@ -43,8 +42,10 @@ Database.allUnits.on('child_changed', (snapshot) => {
 })
 
 Database.time.on('child_changed', (snapshot) => {
+    //don't really need to get a time snapshot here, but can
     Database.time.once('value').then((snapshot) => {
         let time = snapshot.val()
+        Timer.runActions()
     })
 })
 
@@ -55,8 +56,16 @@ $(document).keypress((e) => {
         //Unit.update({currentHex: [6, 9]}, 'panther')
         //Unit.update({currentHex: [15, 9]}, 'dingo')
         //Unit.update({facing: 1}, 'panther')
-        //Utils.incrementTimer()
-        Utils.calculateActionTime(13, 'dingo')
+        //Timer.incrementTimer()
+        Timer.addToActionList({
+            uniqueDesignation: 'snake',
+            time: {phase: 1, impulse: 2},
+            action: 'face-1-left-moving'
+        })
+
+        Timer.incrementTimer()
+        
+        //Utils.calculateActionTime(13, 'dingo')
 
         /* Unit.updateUnit({
           agility: 69,
