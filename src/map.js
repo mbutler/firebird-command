@@ -1,3 +1,8 @@
+/**
+ * This module handles creating the hex grid and individual hex methods
+ * @module js/map
+ */
+
 let SVG = require('svg.js')
 let Honeycomb = require('honeycomb-grid')
 let _ = require('lodash')
@@ -108,6 +113,13 @@ const grid = Grid.rectangle({
     }
 })
 
+/**
+ * Finds a hex given a coordinate
+ *
+ * @param {object} pageX - A pointer screen coordinates for X
+ * @param {object} pageY - A pointer screen coordinates for Y
+ * @return {hex} - A Honeycomb hex object
+ */
 function getHexFromCoords(pageX, pageY) {
     let hexCoordinates = Grid.pointToHex([pageX, pageY])
     let hex = grid.get(hexCoordinates)

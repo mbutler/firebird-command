@@ -1,3 +1,8 @@
+/**
+ * This module handles creating, controlling, and updating units
+ * @module js/unit
+ */
+
 let Database = require('./database')
 let ms = require('milsymbol')
 let config = require('./config')
@@ -6,6 +11,14 @@ let unitList = require('./unit-list')
 let Map = require('./map')
 let Utils = require('./utils')
 
+/**
+ * Creates the graphical elements of a unit, adds to DOM, and adds events
+ *
+ * @param {object} hex - A Honeycomb hex object
+ * @param {string} sidc - A milsymbol code for the type of svg symbol to create. e.g. 'SHG-UCFM-------'
+ * @param {object} options - Milsymbol options to pass into the its constructor. e.g. {'size': 0,'uniqueDesignation': 'dingo','additionalInformation': '','infoFields': false}
+ * @return {undefined} - Modifies DOM directly
+ */
 function create(hex, sidc, options) {
     let container, symbol, size
 
@@ -37,6 +50,12 @@ function create(hex, sidc, options) {
     })
 }
 
+/**
+ * Destroys a unit. Out of date as it uses the old unitList and does not interact with the database
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @return {undefined} - Modifies DOM directly
+ */
 function removeUnitById(uniqueDesignation) {
     let unit = document.getElementById(uniqueDesignation)
         // clear the hex
@@ -47,6 +66,13 @@ function removeUnitById(uniqueDesignation) {
     _.pull(unitList.unitsToggleList, uniqueDesignation)
 }
 
+/**
+ * Find the point coordinates for a given unit stored in its data attribute.
+ *
+ * @todo Read from database instead
+ * @param {string} uniqueDesignation - The name of the unit
+ * @return {object} - A Honeycomb hex coordinates object. e.g. { x: 0, y: 0 }
+ */
 function getUnitCoords(uniqueDesignation) {
     let unit = document.getElementById(uniqueDesignation)
     let point = $.data(unit, 'coords')
@@ -54,6 +80,12 @@ function getUnitCoords(uniqueDesignation) {
     return point
 }
 
+/**
+ * Find the hex for a given unit
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @return {object} - A Honeycomb hex object
+ */
 function getUnitHex(uniqueDesignation) {
     let coords = getUnitCoords(uniqueDesignation)
     let hex = Map.grid.get(Map.Hex(coords))
@@ -61,11 +93,25 @@ function getUnitHex(uniqueDesignation) {
     return hex
 }
 
+/**
+ * Sets the coordinates for a unit
+ *
+ * @todo Write to database instead
+ * @param {object} hex - A Honeycomb hex object
+ * @param {string} uniqueDesignation - The name of the unit
+ * @return {object} - A Honeycomb hex coordinates object. e.g. { x: 0, y: 0 }
+ */
 function setUnitCoords(hex, uniqueDesignation) {
     let unit = document.getElementById(uniqueDesignation)
     $(unit).data('coords', hex.coordinates())
 }
 
+/**
+ * Creates a DOM element to hold graphics and data
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @return {object} - A div element with id set to unique designation and class to unit
+ */
 function createSymbolContainer(uniqueDesignation) {
     let div = document.createElement('div')
     div.setAttribute('id', uniqueDesignation)
@@ -74,6 +120,13 @@ function createSymbolContainer(uniqueDesignation) {
     return div
 }
 
+/**
+ * Positions the unit according to the irregular size of individual milsymbols
+ *
+ * @param {object} hex - A Honeycomb hex object
+ * @param {object} unit - The div container for the unit 
+ * @return {object} - A modified div container DOM element
+ */
 function positionUnit(hex, unit) {
     let hexDiagonal = config.hexSize * 2
     let symbolSize = $.data(unit, 'size')
@@ -88,6 +141,13 @@ function positionUnit(hex, unit) {
     return unit
 }
 
+/**
+ * Moves a unit to a new hex
+ *
+ * @param {object} point - A Honeycomb point object. e.g. {x:0, y:1}
+ * @param {string} uniqueDesignation - The name of the unit
+ * @return {undefined} - Modifies the DOM directly
+ */
 function animateUnitToHex(point, uniqueDesignation) {
     // need to query Firebase for the hex that was updated then perform
     // animation and view updates in the callback
@@ -127,12 +187,26 @@ function animateUnitToHex(point, uniqueDesignation) {
     })
 }
 
+/**
+ * Find the hex for a given unit
+ *
+ * @param {number} face - A number 0-5 representing the face of the hexagon as documented in Honeycomb
+ * @param {string} uniqueDesignation - The name of the unit
+ * @return {undefined} - Modifies the DOM directly
+ */
 function changeFacing(face, uniqueDesignation) {
     let hex = getUnitHex(uniqueDesignation)
     $('#' + uniqueDesignation + '-facing').remove()
     hex.facing(face, uniqueDesignation)
 }
 
+/**
+ * Updates the unit in the database for an arbitrary number of properties
+ *
+ * @param {object} updates - A JSON snippet of all properties to change. e.g. {facing: 1, currentHex: [6, 9]}
+ * @param {string} uniqueDesignation - The name of the unit
+ * @return {undefined} - Modifies the database directly
+ */
 function update(updates, uniqueDesignation) {
     let changedValue = {}
     let keys = _.keys(updates)
@@ -144,6 +218,12 @@ function update(updates, uniqueDesignation) {
     Database.allUnits.update(changedValue)
 }
 
+/**
+ * Toggles the highlighting of a selected hex on/off
+ *
+ * @param {object} hex - A Honeycomb hex object
+ * @return {undefined} - Modifies the DOM directly
+ */
 function toggleHexSelection(hex) {
     _.forEach(unitList.unitsToggleList, (name) => {
         let h = getUnitHex(name)

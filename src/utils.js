@@ -1,5 +1,15 @@
+/**
+ * This module handles various utility functions
+ * @module js/utils
+ */
 let Database = require('./database')
 
+/**
+ * Adds a set of buttons for the specified unit to control actions.
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @return {undefined} - Modifies DOM directly
+ */
 function createButtonSet(uniqueDesignation) {
     $('#facing-dropdown').empty()
     let face1LeftMoving = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="action('face-1-left-moving', '${uniqueDesignation}')">Turn 1 hexside left <span class="badge">0</span></a></li>`
@@ -43,6 +53,13 @@ function createButtonSet(uniqueDesignation) {
     })
 }
 
+/**
+ * Adds a specified number of actions to the current game time to determine the correct phase and impulse in the future
+ *
+ * @param {number} actions - A number of combat actions
+ * @param {string} uniqueDesignation - The name of the unit
+ * @return {object} - Returns an object with a correct time object as well as remaining actions {time: next, remaining: actions}
+ */
 function calculateActionTime(actions, uniqueDesignation) {
     Database.singleUnit(uniqueDesignation).once('value').then((data) => {
         let unit = data.val()
@@ -82,10 +99,17 @@ function calculateActionTime(actions, uniqueDesignation) {
             //need to update here
             console.log(next)
             console.log('remaining actions at run time: ', actions)
+            //returns {time: next, remaining: actions}
         })
     })
 }
 
+/**
+ * Reads values from database and populates the control panel forms
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @return {undefined} - Inserts values directly into the DOM
+ */
 function populateControlPanel(uniqueDesignation) {
     Database.singleUnit(uniqueDesignation).once('value').then((data) => {
         let unit = data.val()

@@ -1,5 +1,16 @@
+/**
+ * This module handles mapping a string input to an action function
+ * @module js/actions
+ */
 let Game = require('./game')
 
+/**
+ * Map to the action functions in the Game module
+ *
+ * @param {string} selection - A unique name for the action
+ * @param {string} uniqueDesignation - The name of the unit
+ * @return {undefined} - Runs a function directly
+ */
 function action(selection, uniqueDesignation) {
     let actionMap = {
         'face-1-left-moving': Game.face1LeftMoving,

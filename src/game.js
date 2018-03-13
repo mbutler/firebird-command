@@ -1,13 +1,33 @@
+/**
+ * This module handles primary game logic
+ * @module js/game
+ */
+
 let Database = require('./database')
 let config = require('./config')
 let Unit = require('./unit')
 let Map = require('./map')
 let _ = require('lodash')
 
+/**
+ * Wraps an array index around the end of an array like a loop
+ *
+ * @param {number} m - An array length
+ * @param {number} n - An offset from current index
+ * @return {number} - The correct array index wrapped around
+ */
 function wrap (m, n) {
   return n >= 0 ? n % m : (n % m + m) % m
 }
 
+/**
+ * Finds the correct face number in either direction and amount
+ *
+ * @param {number} current - The current face number, 0-5
+ * @param {string} direction - Either 'right' or 'left'
+ * @param {number} amount - The numer of faces to increment
+ * @return {number} - The correct hex face number
+ */
 function findFace (current, direction, amount) {
   let faces = _.range(0, 6)
 
@@ -15,6 +35,12 @@ function findFace (current, direction, amount) {
   if (direction === 'right') return wrap(faces.length, (current + amount))
 }
 
+/**
+ * Converts a face number (0-5) to a two-letter cardinal direction
+ *
+ * @param {number} face -  A face number 0-5
+ * @return {string} - A two-letter direction. e.g. N, NW, SW, etc.
+ */
 function faceToDirection (face) {
   let faceString = _.toString(face)
   let map = {
@@ -29,6 +55,14 @@ function faceToDirection (face) {
   return map[faceString]
 }
 
+/**
+ * Looks ahead and finds a hex based on a given face
+ *
+ * @param {object} currentCoords -  A point object of the current position
+ * @param {number} facing - The face number the unit is looking towards, 0-5
+ * @param {string} neighbor - The direction to find. 'forward', 'backward', or two-letter direction
+ * @return {object} - A Honeycomb hex
+ */
 function findNeighbor (currentCoords, facing, neighbor) {
   let currentHex = Map.grid.get(Map.Hex(currentCoords))
   let nextHex
