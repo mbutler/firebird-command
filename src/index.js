@@ -1,4 +1,6 @@
 /**
+ * @author Matthew Butler <matthewtbutler@gmail.com>
+ * 
  * The main entry point of the application
  * @module Index
  */
