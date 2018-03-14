@@ -1,6 +1,7 @@
 /**
  * This module handles database interaction and database references
- * @module js/database
+ * @module Database
+ * @namespace
  */
 
 let firebase = require('firebase')
@@ -15,6 +16,7 @@ let actionList = firebase.database().ref('/Games/' + config.gameID + '/actionLis
  * A reference to a single unit in the database
  *
  * @param {string} uniqueDesignation - The name of the unit
+ * @memberof Database
  * @return {object} - A reference to the unit in the database
  */
 function singleUnit (uniqueDesignation) {

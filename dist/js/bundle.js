@@ -63330,8 +63330,22 @@ function detectEventModel(window, document) {
 }
 
 },{}],184:[function(require,module,exports){
+/**
+ * This module handles mapping a string input to an action function
+ * @module Actions
+ * @namespace
+ */
 let Game = require('./game')
 
+/**
+ * Map to the action functions in the Game module
+ *
+ * @param {string} selection - A unique name for the action
+ * @param {string} uniqueDesignation - The name of the unit
+ * @requires Game
+ * @memberof Actions
+ * @return {undefined} - Runs a function directly
+ */
 function action(selection, uniqueDesignation) {
     let actionMap = {
         'face-1-left-moving': Game.face1LeftMoving,
@@ -63377,6 +63391,12 @@ window.action = action
 
 module.exports = action
 },{"./game":187}],185:[function(require,module,exports){
+/**
+ * Configuration file for setting up the map, document, and database connection
+ * @module Config
+ * @namespace
+ */
+
 let config = {
   mapWidth: 100,
   mapHeight: 100,
@@ -63397,6 +63417,12 @@ let config = {
 module.exports = config
 
 },{}],186:[function(require,module,exports){
+/**
+ * This module handles database interaction and database references
+ * @module Database
+ * @namespace
+ */
+
 let firebase = require('firebase')
 let config = require('./config')
 
@@ -63405,6 +63431,13 @@ let allUnits = firebase.database().ref('/Games/' + config.gameID + '/Units')
 let time = firebase.database().ref('/Games/' + config.gameID + '/time')
 let actionList = firebase.database().ref('/Games/' + config.gameID + '/actionList')
 
+/**
+ * A reference to a single unit in the database
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @memberof Database
+ * @return {object} - A reference to the unit in the database
+ */
 function singleUnit (uniqueDesignation) {
   let path = '/Games/' + config.gameID + '/Units/' + uniqueDesignation
   return firebase.database().ref(path)
@@ -63419,16 +63452,38 @@ module.exports = {
 }
 
 },{"./config":185,"firebase":164}],187:[function(require,module,exports){
+/**
+ * This module handles primary game logic
+ * @module Game
+ */
+
 let Database = require('./database')
 let config = require('./config')
 let Unit = require('./unit')
 let Map = require('./map')
 let _ = require('lodash')
 
+/**
+ * Wraps an array index around the end of an array like a loop
+ *
+ * @param {number} m - An array length
+ * @param {number} n - An offset from current index
+ * @memberof Game
+ * @return {number} - The correct array index wrapped around
+ */
 function wrap (m, n) {
   return n >= 0 ? n % m : (n % m + m) % m
 }
 
+/**
+ * Finds the correct face number in either direction and amount
+ *
+ * @param {number} current - The current face number, 0-5
+ * @param {string} direction - Either 'right' or 'left'
+ * @param {number} amount - The numer of faces to increment
+ * @memberof Game
+ * @return {number} - The correct hex face number
+ */
 function findFace (current, direction, amount) {
   let faces = _.range(0, 6)
 
@@ -63436,6 +63491,13 @@ function findFace (current, direction, amount) {
   if (direction === 'right') return wrap(faces.length, (current + amount))
 }
 
+/**
+ * Converts a face number (0-5) to a two-letter cardinal direction
+ *
+ * @param {number} face -  A face number 0-5
+ * @memberof Game
+ * @return {string} - A two-letter direction. e.g. N, NW, SW, etc.
+ */
 function faceToDirection (face) {
   let faceString = _.toString(face)
   let map = {
@@ -63450,6 +63512,16 @@ function faceToDirection (face) {
   return map[faceString]
 }
 
+/**
+ * Looks ahead and finds a hex based on a given face
+ *
+ * @param {object} currentCoords -  A point object of the current position
+ * @param {number} facing - The face number the unit is looking towards, 0-5
+ * @param {string} neighbor - The direction to find. 'forward', 'backward', or two-letter direction
+ * @requires Map
+ * @memberof Game
+ * @return {object} - A Honeycomb hex
+ */
 function findNeighbor (currentCoords, facing, neighbor) {
   let currentHex = Map.grid.get(Map.Hex(currentCoords))
   let nextHex
@@ -63470,6 +63542,15 @@ function findNeighbor (currentCoords, facing, neighbor) {
   return nextHex
 }
 
+/**
+ * Changes facing 1 to the left if in moving
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @requires Database
+ * @requires Unit
+ * @memberof Game
+ * @return {undefined} - Modifies the database directly
+ */
 function face1LeftMoving (uniqueDesignation) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
@@ -63479,6 +63560,15 @@ function face1LeftMoving (uniqueDesignation) {
   })
 }
 
+/**
+ * Changes facing 1 to the right if in moving
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @requires Database
+ * @requires Unit
+ * @memberof Game
+ * @return {undefined} - Modifies the database directly
+ */
 function face1RightMoving (uniqueDesignation) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
@@ -63488,6 +63578,15 @@ function face1RightMoving (uniqueDesignation) {
   })
 }
 
+/**
+ * Moves the unit forward 1 hex
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @requires Database
+ * @requires Unit
+ * @memberof Game
+ * @return {undefined} - Modifies the database directly
+ */
 function runningForward (uniqueDesignation) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
@@ -63496,6 +63595,15 @@ function runningForward (uniqueDesignation) {
   })
 }
 
+/**
+ * Moves the unit backward 1 hex
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @requires Database
+ * @requires Unit
+ * @memberof Game
+ * @return {undefined} - Modifies the database directly
+ */
 function runningBackward (uniqueDesignation) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
@@ -63504,6 +63612,15 @@ function runningBackward (uniqueDesignation) {
   })
 }
 
+/**
+ * Moves the unit forward 1 hex if crawling
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @requires Database
+ * @requires Unit
+ * @memberof Game
+ * @return {undefined} - Modifies the database directly
+ */
 function crawlingForward (uniqueDesignation) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
@@ -63512,6 +63629,15 @@ function crawlingForward (uniqueDesignation) {
   })
 }
 
+/**
+ * Moves the unit backward 1 hex if crawling
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @requires Database
+ * @requires Unit
+ * @memberof Game
+ * @return {undefined} - Modifies the database directly
+ */
 function crawlingBackward (uniqueDesignation) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
@@ -63520,6 +63646,15 @@ function crawlingBackward (uniqueDesignation) {
   })
 }
 
+/**
+ * Moves the unit forward 1 hex if crouching
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @requires Database
+ * @requires Unit
+ * @memberof Game
+ * @return {undefined} - Modifies the database directly
+ */
 function crouchingForward (uniqueDesignation) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
@@ -63528,6 +63663,15 @@ function crouchingForward (uniqueDesignation) {
   })
 }
 
+/**
+ * Moves the unit backward 1 hex if crouching
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @requires Database
+ * @requires Unit
+ * @memberof Game
+ * @return {undefined} - Modifies the database directly
+ */
 function crouchingBackward (uniqueDesignation) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
@@ -63536,6 +63680,15 @@ function crouchingBackward (uniqueDesignation) {
   })
 }
 
+/**
+ * Changes facing 1 to the left if immobile
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @requires Database
+ * @requires Unit
+ * @memberof Game
+ * @return {undefined} - Modifies the database directly
+ */
 function face1LeftImmobile (uniqueDesignation) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
@@ -63545,6 +63698,15 @@ function face1LeftImmobile (uniqueDesignation) {
   })
 }
 
+/**
+ * Changes facing 1 to the right if immobile
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @requires Database
+ * @requires Unit
+ * @memberof Game
+ * @return {undefined} - Modifies the database directly
+ */
 function face1RightImmobile (uniqueDesignation) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
@@ -63554,6 +63716,15 @@ function face1RightImmobile (uniqueDesignation) {
   })
 }
 
+/**
+ * Changes facing 2 to the left if immobile
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @requires Database
+ * @requires Unit
+ * @memberof Game
+ * @return {undefined} - Modifies the database directly
+ */
 function face2LeftImmobile (uniqueDesignation) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
@@ -63563,6 +63734,15 @@ function face2LeftImmobile (uniqueDesignation) {
   })
 }
 
+/**
+ * Changes facing 2 to the right if immobile
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @requires Database
+ * @requires Unit
+ * @memberof Game
+ * @return {undefined} - Modifies the database directly
+ */
 function face2RightImmobile (uniqueDesignation) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
@@ -63572,6 +63752,14 @@ function face2RightImmobile (uniqueDesignation) {
   })
 }
 
+/**
+ * Changes unit's stance to firing
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @requires Unit
+ * @memberof Game
+ * @return {undefined} - Modifies the database directly
+ */
 function assumeFiringStance (uniqueDesignation) {
   Unit.update({position: 'firing'}, uniqueDesignation)
 }
@@ -63657,7 +63845,12 @@ module.exports = {
   accessBackpack: accessBackpack
 }
 
-},{"./config":185,"./database":186,"./map":191,"./unit":194,"lodash":169}],188:[function(require,module,exports){
+},{"./config":185,"./database":186,"./map":190,"./unit":193,"lodash":169}],188:[function(require,module,exports){
+/**
+ * The main entry point of the application
+ * @module Index
+ */
+
 window.jQuery = window.$ = require('jquery')
 let Map = require('./map')
 let Unit = require('./unit')
@@ -63683,7 +63876,898 @@ Database.allUnits.once('value').then((snapshot) => {
         unitList.unitsToggleList.push(name)
     })
 })
-},{"./config":185,"./database":186,"./listeners":190,"./map":191,"./unit":194,"./unit-list":193,"bootstrap":158,"jquery":168,"lodash":169}],189:[function(require,module,exports){
+},{"./config":185,"./database":186,"./listeners":189,"./map":190,"./unit":193,"./unit-list":192,"bootstrap":158,"jquery":168,"lodash":169}],189:[function(require,module,exports){
+/**
+ * This module handles all event listeners
+ * @module Listeners
+ * @namespace
+ */
+
+let Database = require('./database')
+let Unit = require('./unit')
+let config = require('./config')
+let actions = require('./actions')
+let Utils = require('./utils')
+let Timer = require('./timer')
+let _ = require('lodash')
+
+// loading a local version, but keeping the npm module in package.json for now
+// https://github.com/timmywil/jquery.panzoom/issues/351#issuecomment-330924963
+require('../vendor/jquery.panzoom')
+let panzoom = require('panzoom')
+let area = document.querySelector('#stage')
+let Slideout = require('slideout')
+
+controlPanel = new Slideout({
+    'panel': document.getElementById('panel'),
+    'menu': document.getElementById('menu'),
+    'padding': 0,
+    'duration': 0,
+    'tolerance': 0
+})
+
+$('.close').on('touchstart mousedown', (e) => {
+    controlPanel.close()
+})
+
+//listen for panzooming
+//seems insane to use two panzoom libraries, but it works... for now
+$('#' + config.divContainer).panzoom({ cursor: 'default' })
+panzoom(area)
+
+Database.allUnits.on('child_changed', (snapshot) => {
+    let unit = snapshot.val()
+    let face = unit.facing
+    let hex = unit.currentHex
+    let uniqueDesignation = snapshot.key
+
+    Unit.changeFacing(face, uniqueDesignation)
+    Unit.animateUnitToHex(hex, uniqueDesignation)
+})
+
+Database.time.on('child_changed', (snapshot) => {
+    //don't really need to get a time snapshot here, but can
+    Database.time.once('value').then((snapshot) => {
+        let time = snapshot.val()
+        Timer.runActions()
+    })
+})
+
+//testing with the space bar
+$(document).keypress((e) => {
+    if (e.which === 32) {
+
+        //Unit.update({currentHex: [6, 9]}, 'panther')
+        //Unit.update({currentHex: [15, 9]}, 'dingo')
+        //Unit.update({facing: 1}, 'panther')
+        //Timer.incrementTimer()
+        Timer.addToActionList({
+            uniqueDesignation: 'snake',
+            time: {phase: 1, impulse: 2},
+            action: 'face-1-left-moving'
+        })
+
+        Timer.incrementTimer()
+        
+        //Utils.calculateActionTime(13, 'dingo')
+
+        /* Unit.updateUnit({
+          agility: 69,
+          strength: 20,
+          health: 100
+        }, 'snake') */
+    }
+})
+},{"../vendor/jquery.panzoom":195,"./actions":184,"./config":185,"./database":186,"./timer":191,"./unit":193,"./utils":194,"lodash":169,"panzoom":171,"slideout":180}],190:[function(require,module,exports){
+/**
+ * This module handles creating the hex grid and individual hex methods
+ * @module Map
+ * @namespace
+ */
+
+let SVG = require('svg.js')
+let Honeycomb = require('honeycomb-grid')
+let _ = require('lodash')
+let config = require('./config')
+
+const draw = SVG(config.divContainer)
+
+const Hex = Honeycomb.extendHex({
+    size: config.hexSize,
+    orientation: 'flat',
+
+    render(draw) {
+        const { x, y } = this.toPoint()
+        const corners = this.corners()
+        this.screenCoords = { 'x': x, 'y': y }
+        this.cornerList = this.corners().map(corner => this.toPoint().add(corner))
+        this.currentUnit = undefined
+        this.selected = false
+
+        this.draw = draw
+            .polygon(corners.map(({ x, y }) => `${x},${y}`))
+            .fill('none')
+            .stroke({ width: 1, color: '#E0E0E0' })
+            .translate(x, y)
+    },
+
+    highlight() {
+        if (this.selected === true) {
+            this.selected = true
+            this.draw
+                .fill({ opacity: 1, color: 'aquamarine' })
+        } else {
+            this.selected = false
+            this.draw
+                .fill({ opacity: 0, color: 'none' })
+        }
+    },
+
+    facing(face, uniqueDesignation) {
+        let faceStart, faceEnd, x1, x2, y1, y2, lines
+
+        switch (face) {
+            case 0:
+                // top
+                faceStart = 4
+                faceEnd = 5
+                break
+            case 1:
+                // top right
+                faceStart = 5
+                faceEnd = 0
+                break
+            case 2:
+                // bottom right
+                faceStart = 0
+                faceEnd = 1
+                break
+            case 3:
+                // bottom
+                faceStart = 1
+                faceEnd = 2
+                break
+            case 4:
+                // bottom left
+                faceStart = 2
+                faceEnd = 3
+                break
+            case 5:
+                // top left
+                faceStart = 3
+                faceEnd = 4
+                break
+            default:
+                faceStart = 4
+                faceEnd = 5
+        }
+        // 1-2 bottom
+        // 2-3 bottom left
+        // 3-4 top left
+        // 4-5 top
+        // 5-0 top right
+        // 0-1 bottom right
+        x1 = this.cornerList[faceStart].x
+        y1 = this.cornerList[faceStart].y
+        x2 = this.cornerList[faceEnd].x
+        y2 = this.cornerList[faceEnd].y
+
+        lines = _.toString([x1, y1, x2, y2, (x1 + x2) / 2, (y1 + y2) / 2, this.cornerList[3].x + config.hexSize, this.cornerList[3].y])
+
+        draw
+            .polyline(lines)
+            .stroke({ color: '#f06', width: 1 })
+            .fill('none')
+            .attr('id', uniqueDesignation + '-facing')
+    },
+
+    currentUnit: undefined
+})
+
+const Grid = Honeycomb.defineGrid(Hex)
+
+const grid = Grid.rectangle({
+    width: config.mapWidth,
+    height: config.mapHeight,
+    // render each hex, passing the draw instance
+    onCreate(hex) {
+        hex.render(draw)
+    }
+})
+
+/**
+ * Finds a hex given a coordinate
+ *
+ * @param {object} pageX - A pointer screen coordinates for X
+ * @param {object} pageY - A pointer screen coordinates for Y
+ * @memberof Map
+ * @return {hex} - A Honeycomb hex object
+ */
+function getHexFromCoords(pageX, pageY) {
+    let hexCoordinates = Grid.pointToHex([pageX, pageY])
+    let hex = grid.get(hexCoordinates)
+
+    return hex
+}
+
+module.exports = {
+    Hex: Hex,
+    Grid: Grid,
+    grid: grid,
+    getHexFromCoords: getHexFromCoords
+}
+},{"./config":185,"honeycomb-grid":167,"lodash":169,"svg.js":181}],191:[function(require,module,exports){
+/**
+ * This module handles game time in increments of phase and impulse
+ * @module Timer
+ * @namespace
+ */
+
+let Database = require('./database')
+let _ = require('lodash')
+let Action = require('./actions')
+
+/**
+ * Advances the game timer one impulse
+ * @requires Database
+ * @memberof Timer
+ * @return {undefined} - Modifies the database directly
+ */
+function incrementTimer() {
+    Database.time.once('value').then((snapshot) => {
+        let time = snapshot.val()
+        let phase = time.phase
+        let impulse = time.impulse
+        let next = {}
+
+        if (impulse === 4) {
+            phase += 1
+            impulse = 1
+        } else {
+            impulse += 1
+        }
+
+        next.impulse = impulse
+        next.phase = phase
+
+        Database.time.update(next)
+    })
+}
+
+/**
+ * Reads all stored actions in database action list then executes any that match current game time
+ * @requires Database
+ * @requires Action
+ * @memberof Timer
+ * @return {undefined} - Modifies the database directly
+ */
+function runActions () {
+    Database.time.once('value').then((snapshot) => {
+        let currentTime = snapshot.val()
+        Database.actionList.once('value').then((snapshot) => {
+            let actionList = snapshot.val()
+            //get a list of firebase keys for each child in actionList
+            var actionKeys = Object.keys(actionList)
+            //keep track of the index
+            let i = 0
+
+            _.forEach(actionList, (unit) => {
+                let unitKey = actionKeys[i]
+                let actionTime = unit.time
+
+                //if the unit's action time is the same as current time then run and delete the action from the list
+                if (_.isEqual(actionTime, currentTime)) {
+                    Action(unit.action, unit.uniqueDesignation)
+                    Database.actionList.child(unitKey).remove()
+                }
+                //increment actionKeys index
+                i++
+            })
+        })
+    })    
+}
+
+/**
+ * Adds an action object to the database's action list
+
+ * @param {object} action - An action object to store. e.g. {uniqueDesignation: 'snake', time: {phase: 1, impulse: 2}, action: 'face-1-left-moving'}
+ * @requires Database
+ * @memberof Timer
+ * @return {undefined} - Modifies the database directly
+ */
+function addToActionList (action) {
+    Database.actionList.push(action)
+}
+
+module.exports = {
+    incrementTimer: incrementTimer,
+    runActions: runActions,
+    addToActionList: addToActionList
+}
+},{"./actions":184,"./database":186,"lodash":169}],192:[function(require,module,exports){
+let unitsToggleList = []
+
+let unitList = [
+  {
+    'name': 'dingo',
+    'skillLevel': 1,
+    'strength': 0,
+    'intelligence': 0,
+    'will': 0,
+    'health': 0,
+    'agility': 0,
+    'baseSpeed': 0,
+    'maximumSpeed': 0,
+    'skillAccuracyLevel': 0,
+    'intSkillFactor': 0,
+    'combatActions': 0,
+    'combatActionsPerImpulse': {
+      '1': 0,
+      '2': 0,
+      '3': 0,
+      '4': 0
+    },
+    'knockoutValue': 0,
+    'weapons': [],
+    'bodyArmor': {
+      'helm': {
+        'protectionFactor': 0,
+        'weight': 0
+      },
+      'visor': {
+        'protectionFactor': 0,
+        'weight': 0
+      },
+      'body': {
+        'protectionFactor': 0,
+        'weight': 0
+      },
+      'limbs': {
+        'protectionFactor': 0,
+        'weight': 0
+      }
+    },
+    'equipment': [],
+    'encumbrance': 0,
+    'symbol': {
+      'sidc': 'SHG-UCFM-------',
+      'options': {
+        'size': 0,
+        'uniqueDesignation': 'dingo',
+        'additionalInformation': '',
+        'infoFields': false
+      }
+    },
+    'position': '',
+    'currentHex': [12, 9],
+    'facing': 4,
+    'stance': ''
+  },
+  {
+    'name': 'panther',
+    'skillLevel': 0,
+    'strength': 0,
+    'intelligence': 0,
+    'will': 0,
+    'health': 0,
+    'agility': 0,
+    'baseSpeed': 0,
+    'maximumSpeed': 0,
+    'skillAccuracyLevel': 0,
+    'intSkillFactor': 0,
+    'combatActions': 0,
+    'combatActionsPerImpulse': {
+      '1': 0,
+      '2': 0,
+      '3': 0,
+      '4': 0
+    },
+    'knockoutValue': 0,
+    'weapons': [],
+    'bodyArmor': {
+      'helm': {
+        'protectionFactor': 0,
+        'weight': 0
+      },
+      'visor': {
+        'protectionFactor': 0,
+        'weight': 0
+      },
+      'body': {
+        'protectionFactor': 0,
+        'weight': 0
+      },
+      'limbs': {
+        'protectionFactor': 0,
+        'weight': 0
+      }
+    },
+    'equipment': [],
+    'encumbrance': 0,
+    'symbol': {
+      'sidc': 'SHG-UCFM-------',
+      'options': {
+        'size': 0,
+        'uniqueDesignation': 'panther',
+        'additionalInformation': '',
+        'infoFields': false
+      }
+    },
+    'position': '',
+    'currentHex': [7, 7],
+    'facing': 5,
+    'stance': ''
+  },
+  {
+    'name': 'snake',
+    'skillLevel': 0,
+    'strength': 0,
+    'intelligence': 0,
+    'will': 0,
+    'health': 0,
+    'agility': 0,
+    'baseSpeed': 0,
+    'maximumSpeed': 0,
+    'skillAccuracyLevel': 0,
+    'intSkillFactor': 0,
+    'combatActions': 0,
+    'combatActionsPerImpulse': {
+      '1': 0,
+      '2': 0,
+      '3': 0,
+      '4': 0
+    },
+    'knockoutValue': 0,
+    'weapons': [],
+    'bodyArmor': {
+      'helm': {
+        'protectionFactor': 0,
+        'weight': 0
+      },
+      'visor': {
+        'protectionFactor': 0,
+        'weight': 0
+      },
+      'body': {
+        'protectionFactor': 0,
+        'weight': 0
+      },
+      'limbs': {
+        'protectionFactor': 0,
+        'weight': 0
+      }
+    },
+    'equipment': [],
+    'encumbrance': 0,
+    'symbol': {
+      'sidc': 'SHG-UCFM-------',
+      'options': {
+        'size': 0,
+        'uniqueDesignation': 'snake',
+        'additionalInformation': '',
+        'infoFields': false
+      }
+    },
+    'position': '',
+    'currentHex': [15, 15],
+    'facing': 2,
+    'stance': ''
+  }
+]
+
+module.exports = {
+  unitsToggleList: unitsToggleList,
+  unitList: unitList
+}
+
+},{}],193:[function(require,module,exports){
+/**
+ * This module handles creating, controlling, and updating units
+ * @module Unit
+ * @namespace Unit
+ */
+
+let Database = require('./database')
+let ms = require('milsymbol')
+let config = require('./config')
+let _ = require('lodash')
+let unitList = require('./unit-list')
+let Map = require('./map')
+let Utils = require('./utils')
+
+/**
+ * Creates the graphical elements of a unit, adds to DOM, and adds events
+ *
+ * @param {object} hex - A Honeycomb hex object
+ * @param {string} sidc - A milsymbol code for the type of svg symbol to create. e.g. 'SHG-UCFM-------'
+ * @param {object} options - Milsymbol options to pass into the its constructor. e.g. {'size': 0,'uniqueDesignation': 'dingo','additionalInformation': '','infoFields': false}
+ * @requires Utils
+ * @memberof Unit
+ * @return {undefined} - Modifies DOM directly
+ */
+function create(hex, sidc, options) {
+    let container, symbol, size
+
+    // create div container and svg symbol and set position
+    symbol = new ms.Symbol(sidc, options)
+    size = symbol.getSize()
+    container = createSymbolContainer(options.uniqueDesignation)
+    $(container).data('size', size)
+    container.innerHTML = symbol.asSVG()
+    container = positionUnit(hex, container)
+
+    // store the symbol in the hex
+    hex.currentUnit = container
+
+    // add the unit to the DOM and units list
+    $('#' + config.divContainer).append(container)
+
+    // store the coordinates of the hex in the unit
+    setUnitCoords(hex, options.uniqueDesignation)
+
+    $(container).on('touchstart mousedown', (e) => {
+        Utils.populateControlPanel(options.uniqueDesignation)
+        Utils.createButtonSet(options.uniqueDesignation)
+        controlPanel.open()
+        let hex = getUnitHex(e.currentTarget.id)
+        if (hex.currentUnit !== undefined) {
+            toggleHexSelection(hex)
+        }
+    })
+}
+
+/**
+ * Destroys a unit. Out of date as it uses the old unitList and does not interact with the database
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @memberof Unit
+ * @return {undefined} - Modifies DOM directly
+ */
+function removeUnitById(uniqueDesignation) {
+    let unit = document.getElementById(uniqueDesignation)
+        // clear the hex
+    let hex = getUnitHex(uniqueDesignation)
+    hex.currentUnit = undefined
+    unit.parentNode.removeChild(unit)
+    $('#' + uniqueDesignation + '-facing').remove()
+    _.pull(unitList.unitsToggleList, uniqueDesignation)
+}
+
+/**
+ * Find the point coordinates for a given unit stored in its data attribute.
+ *
+ * @todo Read from database instead
+ * @param {string} uniqueDesignation - The name of the unit
+ * @memberof Unit
+ * @return {object} - A Honeycomb hex coordinates object. e.g. { x: 0, y: 0 }
+ */
+function getUnitCoords(uniqueDesignation) {
+    let unit = document.getElementById(uniqueDesignation)
+    let point = $.data(unit, 'coords')
+
+    return point
+}
+
+/**
+ * Find the hex for a given unit
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @requires Map
+ * @memberof Unit
+ * @return {object} - A Honeycomb hex object
+ */
+function getUnitHex(uniqueDesignation) {
+    let coords = getUnitCoords(uniqueDesignation)
+    let hex = Map.grid.get(Map.Hex(coords))
+
+    return hex
+}
+
+/**
+ * Sets the coordinates for a unit
+ *
+ * @todo Write to database instead
+ * @param {object} hex - A Honeycomb hex object
+ * @param {string} uniqueDesignation - The name of the unit
+ * @memberof Unit
+ * @return {object} - A Honeycomb hex coordinates object. e.g. { x: 0, y: 0 }
+ */
+function setUnitCoords(hex, uniqueDesignation) {
+    let unit = document.getElementById(uniqueDesignation)
+    $(unit).data('coords', hex.coordinates())
+}
+
+/**
+ * Creates a DOM element to hold graphics and data
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @memberof Unit
+ * @return {object} - A div element with id set to unique designation and class to unit
+ */
+function createSymbolContainer(uniqueDesignation) {
+    let div = document.createElement('div')
+    div.setAttribute('id', uniqueDesignation)
+    div.setAttribute('class', 'unit')
+
+    return div
+}
+
+/**
+ * Positions the unit according to the irregular size of individual milsymbols
+ *
+ * @param {object} hex - A Honeycomb hex object
+ * @param {object} unit - The div container for the unit
+ * @memberof Unit
+ * @return {object} - A modified div container DOM element
+ */
+function positionUnit(hex, unit) {
+    let hexDiagonal = config.hexSize * 2
+    let symbolSize = $.data(unit, 'size')
+    let offsetX = (hexDiagonal - symbolSize.width) / 2
+    let offsetY = (hexDiagonal - symbolSize.height) / 4
+
+    // need to center it based on symbol's irregular size
+    unit.style.position = 'absolute'
+    unit.style.left = (hex.screenCoords.x + offsetX) + 'px'
+    unit.style.top = (hex.screenCoords.y + offsetY) + 'px'
+
+    return unit
+}
+
+/**
+ * Moves a unit to a new hex
+ *
+ * @param {object} point - A Honeycomb point object. e.g. {x:0, y:1}
+ * @param {string} uniqueDesignation - The name of the unit
+ * @requires Database
+ * @requires Map
+ * @memberof Unit
+ * @return {undefined} - Modifies the DOM directly
+ */
+function animateUnitToHex(point, uniqueDesignation) {
+    // need to query Firebase for the hex that was updated then perform
+    // animation and view updates in the callback
+    //
+    Database.singleUnit(uniqueDesignation).once('value').then((data) => {
+        let facing
+        let val = data.val()
+        facing = val.facing
+
+        const hex = Map.grid.get(point)
+
+        let unit = document.getElementById(uniqueDesignation)
+
+        let symbolSize = $.data(unit, 'size')
+        let offsetX = ((config.hexSize * 2) - symbolSize.width) / 2
+        let offsetY = ((config.hexSize * 2) - symbolSize.height) / 4
+
+        // clear the previous hex
+        let previousHex = getUnitHex(uniqueDesignation)
+        previousHex.currentUnit = undefined
+        $('#' + uniqueDesignation + '-facing').remove()
+        previousHex.selected = false
+        previousHex.highlight()
+
+        $('#' + uniqueDesignation).animate({
+            'top': (hex.screenCoords.y + offsetY) + 'px',
+            'left': (hex.screenCoords.x + offsetX) + 'px'
+        }, {
+            duration: 500,
+            complete: function() {
+                $('#' + uniqueDesignation + '-facing').remove()
+                setUnitCoords(hex, uniqueDesignation)
+                hex.currentUnit = unit
+                hex.facing(facing, uniqueDesignation)
+            }
+        })
+    })
+}
+
+/**
+ * Find the hex for a given unit
+ *
+ * @param {number} face - A number 0-5 representing the face of the hexagon as documented in Honeycomb
+ * @param {string} uniqueDesignation - The name of the unit
+ * @memberof Unit
+ * @return {undefined} - Modifies the DOM directly
+ */
+function changeFacing(face, uniqueDesignation) {
+    let hex = getUnitHex(uniqueDesignation)
+    $('#' + uniqueDesignation + '-facing').remove()
+    hex.facing(face, uniqueDesignation)
+}
+
+/**
+ * Updates the unit in the database for an arbitrary number of properties
+ *
+ * @param {object} updates - A JSON snippet of all properties to change. e.g. {facing: 1, currentHex: [6, 9]}
+ * @param {string} uniqueDesignation - The name of the unit
+ * @requires Database
+ * @memberof Unit
+ * @return {undefined} - Modifies the database directly
+ */
+function update(updates, uniqueDesignation) {
+    let changedValue = {}
+    let keys = _.keys(updates)
+
+    for (var i = 0; i <= keys.length - 1; i++) {
+        changedValue['/' + uniqueDesignation + '/' + keys[i]] = updates[keys[i]]
+    }
+
+    Database.allUnits.update(changedValue)
+}
+
+/**
+ * Toggles the highlighting of a selected hex on/off
+ *
+ * @param {object} hex - A Honeycomb hex object
+ * @memberof Unit
+ * @return {undefined} - Modifies the DOM directly
+ */
+function toggleHexSelection(hex) {
+    _.forEach(unitList.unitsToggleList, (name) => {
+        let h = getUnitHex(name)
+        h.selected = false
+        h.highlight()
+    })
+    hex.selected = true
+    hex.highlight()
+}
+
+module.exports = {
+    create: create,
+    removeUnitById: removeUnitById,
+    getUnitCoords: getUnitCoords,
+    getUnitHex: getUnitHex,
+    setUnitCoords: setUnitCoords,
+    animateUnitToHex: animateUnitToHex,
+    changeFacing: changeFacing,
+    update: update
+}
+},{"./config":185,"./database":186,"./map":190,"./unit-list":192,"./utils":194,"lodash":169,"milsymbol":170}],194:[function(require,module,exports){
+/**
+ * This module handles various utility functions
+ * @module Utils
+ * @namespace
+ */
+let Database = require('./database')
+
+/**
+ * Adds a set of buttons for the specified unit to control actions.
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @return {undefined} - Modifies DOM directly
+ */
+function createButtonSet(uniqueDesignation) {
+    $('#facing-dropdown').empty()
+    let face1LeftMoving = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="action('face-1-left-moving', '${uniqueDesignation}')">Turn 1 hexside left <span class="badge">0</span></a></li>`
+    let face1RightMoving = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="action('face-1-right-moving', '${uniqueDesignation}')">Turn 1 hexside right <span class="badge">0</span></a></li>`
+    let face1LeftImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="action('face-1-left-immobile', '${uniqueDesignation}')">Turn 1 hexside left <span class="badge">1</span></a></li>`
+    let face2LeftImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="action('face-2-left-immobile', '${uniqueDesignation}')">Turn 2 hexside left <span class="badge">1</span></a></li>`
+    let face1RightImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="action('face-1-right-immobile', '${uniqueDesignation}')">Turn 1 hexside right <span class="badge">1</span></a></li>`
+    let face2RightImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="action('face-2-right-immobile', '${uniqueDesignation}')">Turn 2 hexside right <span class="badge">1</span></a></li>`
+    
+    $('#facing-dropdown').append(face1LeftMoving)
+    $('#facing-dropdown').append(face1RightMoving)
+    $('#facing-dropdown').append(face1LeftImmobile)
+    $('#facing-dropdown').append(face2LeftImmobile)
+    $('#facing-dropdown').append(face1RightImmobile)
+    $('#facing-dropdown').append(face2RightImmobile)
+
+    Database.singleUnit(uniqueDesignation).once('value').then((data) => {
+        let unit = data.val()
+        $('#moving-dropdown').empty()
+
+        if (unit.position === 'standing') {
+            
+            let runningForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="action('running-forward', '${uniqueDesignation}')">Move forward one hex <span class="badge">1</span></a></li>`
+            let runningBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="action('running-backward', '${uniqueDesignation}')">Move backward one hex <span class="badge">2</span></a></li>`
+            
+            $('#moving-dropdown').append(runningForward)
+            $('#moving-dropdown').append(runningBackward)
+        } else if (unit.position === 'kneeling') {
+            let crouchingForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="action('crouching-forward', '${uniqueDesignation}')">Move forward one hex <span class="badge">2</span></a></li>`
+            let crouchingBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="action('crouching-backward', '${uniqueDesignation}')">Move backward one hex <span class="badge">4</span></a></li>`
+
+            $('#moving-dropdown').append(crouchingForward)
+            $('#moving-dropdown').append(crouchingBackward)
+        } else if (unit.position === 'prone') {
+            let crawlingForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="action('crawling-forward', '${uniqueDesignation}')">Move forward one hex <span class="badge">3</span></a></li>`
+            let crawlingBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="action('crawling-backward', '${uniqueDesignation}')">Move backward one hex <span class="badge">5</span></a></li>`
+
+            $('#moving-dropdown').append(crawlingForward)
+            $('#moving-dropdown').append(crawlingBackward)
+        }
+    })
+}
+
+/**
+ * Adds a specified number of actions to the current game time to determine the correct phase and impulse in the future
+ *
+ * @param {number} actions - A number of combat actions
+ * @param {string} uniqueDesignation - The name of the unit
+ * @return {object} - Returns an object with a correct time object as well as remaining actions {time: next, remaining: actions}
+ */
+function calculateActionTime(actions, uniqueDesignation) {
+    Database.singleUnit(uniqueDesignation).once('value').then((data) => {
+        let unit = data.val()
+        let ca = unit.combatActionsPerImpulse
+        ca.shift() // there's an undefined value in index 0 for some reason
+        Database.time.once('value').then((snapshot) => {
+            let time = snapshot.val()
+            let next = time
+            let phase = time.phase
+            let impulse = time.impulse
+            let i = 0
+
+            //while there are still total actions at each impulse
+            while (actions >= ca[i]) {
+                //subtract the impulse's actions from total actions
+                actions = actions - ca[i]
+                i++
+
+                //there are only 4 impulses per phase, so loop around
+                if (i === 4) {
+                    i = 0
+                }
+
+                //only increment the time if there are actions left
+                if (actions > 0) {
+                    if (impulse === 4) {
+                        phase += 1
+                        impulse = 1
+                    } else {
+                        impulse += 1
+                    }
+
+                    next.impulse = impulse
+                    next.phase = phase
+                }
+            }
+            //need to update here
+            console.log(next)
+            console.log('remaining actions at run time: ', actions)
+            //returns {time: next, remaining: actions}
+        })
+    })
+}
+
+/**
+ * Reads values from database and populates the control panel forms
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @return {undefined} - Inserts values directly into the DOM
+ */
+function populateControlPanel(uniqueDesignation) {
+    Database.singleUnit(uniqueDesignation).once('value').then((data) => {
+        let unit = data.val()
+        $('#panelUniqueDesignation h3').html(uniqueDesignation)
+        $('#skill-level').html(unit.skillLevel)
+        $('#strength').html(unit.strength)
+        $('#intelligence').html(unit.intelligence)
+        $('#will').html(unit.will)
+        $('#health').html(unit.health)
+        $('#agility').html(unit.agility)
+        $('#base-speed').html(unit.baseSpeed)
+        $('#maximum-speed').html(unit.maximumSpeed)
+        $('#gun-combat-skill-level').html(unit.gunCombatSkillLevel)
+        $('#skill-accuracy-level').html(unit.skillAccuracyLevel)
+        $('#int-skill-factor').html(unit.intSkillFactor)
+        $('#combat-actions').html(unit.combatActions)
+        $('#impulse1').html(unit.combatActionsPerImpulse['1'])
+        $('#impulse2').html(unit.combatActionsPerImpulse['2'])
+        $('#impulse3').html(unit.combatActionsPerImpulse['3'])
+        $('#impulse4').html(unit.combatActionsPerImpulse['4'])
+        $('#knockout-value').html(unit.knockoutValue)
+    })
+}
+
+module.exports = {
+    calculateActionTime: calculateActionTime,
+    populateControlPanel: populateControlPanel,
+    createButtonSet: createButtonSet
+}
+},{"./database":186}],195:[function(require,module,exports){
 /**
  * @license jquery.panzoom.js v3.2.2
  * Updated: Wed Sep 20 2017
@@ -64987,726 +66071,4 @@ Database.allUnits.once('value').then((snapshot) => {
 	return Panzoom;
 }));
 
-},{"jquery":168}],190:[function(require,module,exports){
-let Database = require('./database')
-let Unit = require('./unit')
-let config = require('./config')
-let actions = require('./actions')
-let Utils = require('./utils')
-let Timer = require('./timer')
-let _ = require('lodash')
-
-// loading a local version, but keeping the npm module in package.json for now
-// https://github.com/timmywil/jquery.panzoom/issues/351#issuecomment-330924963
-require('./jquery.panzoom')
-let panzoom = require('panzoom')
-let area = document.querySelector('#stage')
-let Slideout = require('slideout')
-
-controlPanel = new Slideout({
-    'panel': document.getElementById('panel'),
-    'menu': document.getElementById('menu'),
-    'padding': 0,
-    'duration': 0,
-    'tolerance': 0
-})
-
-$('.close').on('touchstart mousedown', (e) => {
-    controlPanel.close()
-})
-
-//listen for panzooming
-//seems insane to use two panzoom libraries, but it works... for now
-$('#' + config.divContainer).panzoom({ cursor: 'default' })
-panzoom(area)
-
-//listen for any units changing
-Database.allUnits.on('child_changed', (snapshot) => {
-    let unit = snapshot.val()
-    let face = unit.facing
-    let hex = unit.currentHex
-    let uniqueDesignation = snapshot.key
-
-    Unit.changeFacing(face, uniqueDesignation)
-    Unit.animateUnitToHex(hex, uniqueDesignation)
-})
-
-Database.time.on('child_changed', (snapshot) => {
-    Database.time.once('value').then((snapshot) => {
-        let time = snapshot.val()
-        Timer.runActions()
-    })
-})
-
-//testing with the space bar
-$(document).keypress((e) => {
-    if (e.which === 32) {
-
-        //Unit.update({currentHex: [6, 9]}, 'panther')
-        //Unit.update({currentHex: [15, 9]}, 'dingo')
-        //Unit.update({facing: 1}, 'panther')
-        //Timer.incrementTimer()
-        Timer.addToActionList({
-            uniqueDesignation: 'snake',
-            time: {phase: 1, impulse: 2},
-            action: 'face-1-left-moving'
-        })
-
-        Timer.incrementTimer()
-        
-        //Utils.calculateActionTime(13, 'dingo')
-
-        /* Unit.updateUnit({
-          agility: 69,
-          strength: 20,
-          health: 100
-        }, 'snake') */
-    }
-})
-},{"./actions":184,"./config":185,"./database":186,"./jquery.panzoom":189,"./timer":192,"./unit":194,"./utils":195,"lodash":169,"panzoom":171,"slideout":180}],191:[function(require,module,exports){
-let SVG = require('svg.js')
-let Honeycomb = require('honeycomb-grid')
-let _ = require('lodash')
-let config = require('./config')
-
-const draw = SVG(config.divContainer)
-
-const Hex = Honeycomb.extendHex({
-    size: config.hexSize,
-    orientation: 'flat',
-
-    render(draw) {
-        const { x, y } = this.toPoint()
-        const corners = this.corners()
-        this.screenCoords = { 'x': x, 'y': y }
-        this.cornerList = this.corners().map(corner => this.toPoint().add(corner))
-        this.currentUnit = undefined
-        this.selected = false
-
-        this.draw = draw
-            .polygon(corners.map(({ x, y }) => `${x},${y}`))
-            .fill('none')
-            .stroke({ width: 1, color: '#E0E0E0' })
-            .translate(x, y)
-    },
-
-    highlight() {
-        if (this.selected === true) {
-            this.selected = true
-            this.draw
-                .fill({ opacity: 1, color: 'aquamarine' })
-        } else {
-            this.selected = false
-            this.draw
-                .fill({ opacity: 0, color: 'none' })
-        }
-    },
-
-    facing(face, uniqueDesignation) {
-        let faceStart, faceEnd, x1, x2, y1, y2, lines
-
-        switch (face) {
-            case 0:
-                // top
-                faceStart = 4
-                faceEnd = 5
-                break
-            case 1:
-                // top right
-                faceStart = 5
-                faceEnd = 0
-                break
-            case 2:
-                // bottom right
-                faceStart = 0
-                faceEnd = 1
-                break
-            case 3:
-                // bottom
-                faceStart = 1
-                faceEnd = 2
-                break
-            case 4:
-                // bottom left
-                faceStart = 2
-                faceEnd = 3
-                break
-            case 5:
-                // top left
-                faceStart = 3
-                faceEnd = 4
-                break
-            default:
-                faceStart = 4
-                faceEnd = 5
-        }
-        // 1-2 bottom
-        // 2-3 bottom left
-        // 3-4 top left
-        // 4-5 top
-        // 5-0 top right
-        // 0-1 bottom right
-        x1 = this.cornerList[faceStart].x
-        y1 = this.cornerList[faceStart].y
-        x2 = this.cornerList[faceEnd].x
-        y2 = this.cornerList[faceEnd].y
-
-        lines = _.toString([x1, y1, x2, y2, (x1 + x2) / 2, (y1 + y2) / 2, this.cornerList[3].x + config.hexSize, this.cornerList[3].y])
-
-        draw
-            .polyline(lines)
-            .stroke({ color: '#f06', width: 1 })
-            .fill('none')
-            .attr('id', uniqueDesignation + '-facing')
-    },
-
-    currentUnit: undefined
-})
-
-const Grid = Honeycomb.defineGrid(Hex)
-
-const grid = Grid.rectangle({
-    width: config.mapWidth,
-    height: config.mapHeight,
-    // render each hex, passing the draw instance
-    onCreate(hex) {
-        hex.render(draw)
-    }
-})
-
-function getHexFromCoords(pageX, pageY) {
-    let hexCoordinates = Grid.pointToHex([pageX, pageY])
-    let hex = grid.get(hexCoordinates)
-
-    return hex
-}
-
-module.exports = {
-    Hex: Hex,
-    Grid: Grid,
-    grid: grid,
-    getHexFromCoords: getHexFromCoords
-}
-},{"./config":185,"honeycomb-grid":167,"lodash":169,"svg.js":181}],192:[function(require,module,exports){
-let Database = require('./database')
-let _ = require('lodash')
-let Action = require('./actions')
-
-function incrementTimer() {
-    Database.time.once('value').then((snapshot) => {
-        let time = snapshot.val()
-        let phase = time.phase
-        let impulse = time.impulse
-        let next = {}
-
-        if (impulse === 4) {
-            phase += 1
-            impulse = 1
-        } else {
-            impulse += 1
-        }
-
-        next.impulse = impulse
-        next.phase = phase
-
-        Database.time.update(next)
-    })
-}
-
-function runActions () {
-    Database.time.once('value').then((snapshot) => {
-        let currentTime = snapshot.val()
-        Database.actionList.once('value').then((snapshot) => {
-            let actionList = snapshot.val()
-            //this is a list of firebase keys for each child in actionList
-            var actionKeys = Object.keys(actionList)
-            //keep track of the index
-            let i = 0
-
-            _.forEach(actionList, (unit) => {
-                let unitKey = actionKeys[i]
-                let actionTime = unit.time
-
-                //if the unit's action time is the same as current time then run and delete the action from the list
-                if (_.isEqual(actionTime, currentTime)) {
-                    Action(unit.action, unit.uniqueDesignation)
-                    Database.actionList.child(unitKey).remove()
-                }
-                //increment actionKeys index
-                i++
-            })
-        })
-    })    
-}
-
-function addToActionList (action) {
-    Database.actionList.push(action)
-}
-
-module.exports = {
-    incrementTimer: incrementTimer,
-    runActions: runActions,
-    addToActionList: addToActionList
-}
-},{"./actions":184,"./database":186,"lodash":169}],193:[function(require,module,exports){
-let unitsToggleList = []
-
-let unitList = [
-  {
-    'name': 'dingo',
-    'skillLevel': 1,
-    'strength': 0,
-    'intelligence': 0,
-    'will': 0,
-    'health': 0,
-    'agility': 0,
-    'baseSpeed': 0,
-    'maximumSpeed': 0,
-    'skillAccuracyLevel': 0,
-    'intSkillFactor': 0,
-    'combatActions': 0,
-    'combatActionsPerImpulse': {
-      '1': 0,
-      '2': 0,
-      '3': 0,
-      '4': 0
-    },
-    'knockoutValue': 0,
-    'weapons': [],
-    'bodyArmor': {
-      'helm': {
-        'protectionFactor': 0,
-        'weight': 0
-      },
-      'visor': {
-        'protectionFactor': 0,
-        'weight': 0
-      },
-      'body': {
-        'protectionFactor': 0,
-        'weight': 0
-      },
-      'limbs': {
-        'protectionFactor': 0,
-        'weight': 0
-      }
-    },
-    'equipment': [],
-    'encumbrance': 0,
-    'symbol': {
-      'sidc': 'SHG-UCFM-------',
-      'options': {
-        'size': 0,
-        'uniqueDesignation': 'dingo',
-        'additionalInformation': '',
-        'infoFields': false
-      }
-    },
-    'position': '',
-    'currentHex': [12, 9],
-    'facing': 4,
-    'stance': ''
-  },
-  {
-    'name': 'panther',
-    'skillLevel': 0,
-    'strength': 0,
-    'intelligence': 0,
-    'will': 0,
-    'health': 0,
-    'agility': 0,
-    'baseSpeed': 0,
-    'maximumSpeed': 0,
-    'skillAccuracyLevel': 0,
-    'intSkillFactor': 0,
-    'combatActions': 0,
-    'combatActionsPerImpulse': {
-      '1': 0,
-      '2': 0,
-      '3': 0,
-      '4': 0
-    },
-    'knockoutValue': 0,
-    'weapons': [],
-    'bodyArmor': {
-      'helm': {
-        'protectionFactor': 0,
-        'weight': 0
-      },
-      'visor': {
-        'protectionFactor': 0,
-        'weight': 0
-      },
-      'body': {
-        'protectionFactor': 0,
-        'weight': 0
-      },
-      'limbs': {
-        'protectionFactor': 0,
-        'weight': 0
-      }
-    },
-    'equipment': [],
-    'encumbrance': 0,
-    'symbol': {
-      'sidc': 'SHG-UCFM-------',
-      'options': {
-        'size': 0,
-        'uniqueDesignation': 'panther',
-        'additionalInformation': '',
-        'infoFields': false
-      }
-    },
-    'position': '',
-    'currentHex': [7, 7],
-    'facing': 5,
-    'stance': ''
-  },
-  {
-    'name': 'snake',
-    'skillLevel': 0,
-    'strength': 0,
-    'intelligence': 0,
-    'will': 0,
-    'health': 0,
-    'agility': 0,
-    'baseSpeed': 0,
-    'maximumSpeed': 0,
-    'skillAccuracyLevel': 0,
-    'intSkillFactor': 0,
-    'combatActions': 0,
-    'combatActionsPerImpulse': {
-      '1': 0,
-      '2': 0,
-      '3': 0,
-      '4': 0
-    },
-    'knockoutValue': 0,
-    'weapons': [],
-    'bodyArmor': {
-      'helm': {
-        'protectionFactor': 0,
-        'weight': 0
-      },
-      'visor': {
-        'protectionFactor': 0,
-        'weight': 0
-      },
-      'body': {
-        'protectionFactor': 0,
-        'weight': 0
-      },
-      'limbs': {
-        'protectionFactor': 0,
-        'weight': 0
-      }
-    },
-    'equipment': [],
-    'encumbrance': 0,
-    'symbol': {
-      'sidc': 'SHG-UCFM-------',
-      'options': {
-        'size': 0,
-        'uniqueDesignation': 'snake',
-        'additionalInformation': '',
-        'infoFields': false
-      }
-    },
-    'position': '',
-    'currentHex': [15, 15],
-    'facing': 2,
-    'stance': ''
-  }
-]
-
-module.exports = {
-  unitsToggleList: unitsToggleList,
-  unitList: unitList
-}
-
-},{}],194:[function(require,module,exports){
-let Database = require('./database')
-let ms = require('milsymbol')
-let config = require('./config')
-let _ = require('lodash')
-let unitList = require('./unit-list')
-let Map = require('./map')
-let Utils = require('./utils')
-
-function create(hex, sidc, options) {
-    let container, symbol, size
-
-    // create div container and svg symbol and set position
-    symbol = new ms.Symbol(sidc, options)
-    size = symbol.getSize()
-    container = createSymbolContainer(options.uniqueDesignation)
-    $(container).data('size', size)
-    container.innerHTML = symbol.asSVG()
-    container = positionUnit(hex, container)
-
-    // store the symbol in the hex
-    hex.currentUnit = container
-
-    // add the unit to the DOM and units list
-    $('#' + config.divContainer).append(container)
-
-    // store the coordinates of the hex in the unit
-    setUnitCoords(hex, options.uniqueDesignation)
-
-    $(container).on('touchstart mousedown', (e) => {
-        Utils.populateControlPanel(options.uniqueDesignation)
-        Utils.createButtonSet(options.uniqueDesignation)
-        controlPanel.open()
-        let hex = getUnitHex(e.currentTarget.id)
-        if (hex.currentUnit !== undefined) {
-            toggleHexSelection(hex)
-        }
-    })
-}
-
-function removeUnitById(uniqueDesignation) {
-    let unit = document.getElementById(uniqueDesignation)
-        // clear the hex
-    let hex = getUnitHex(uniqueDesignation)
-    hex.currentUnit = undefined
-    unit.parentNode.removeChild(unit)
-    $('#' + uniqueDesignation + '-facing').remove()
-    _.pull(unitList.unitsToggleList, uniqueDesignation)
-}
-
-function getUnitCoords(uniqueDesignation) {
-    let unit = document.getElementById(uniqueDesignation)
-    let point = $.data(unit, 'coords')
-
-    return point
-}
-
-function getUnitHex(uniqueDesignation) {
-    let coords = getUnitCoords(uniqueDesignation)
-    let hex = Map.grid.get(Map.Hex(coords))
-
-    return hex
-}
-
-function setUnitCoords(hex, uniqueDesignation) {
-    let unit = document.getElementById(uniqueDesignation)
-    $(unit).data('coords', hex.coordinates())
-}
-
-function createSymbolContainer(uniqueDesignation) {
-    let div = document.createElement('div')
-    div.setAttribute('id', uniqueDesignation)
-    div.setAttribute('class', 'unit')
-
-    return div
-}
-
-function positionUnit(hex, unit) {
-    let hexDiagonal = config.hexSize * 2
-    let symbolSize = $.data(unit, 'size')
-    let offsetX = (hexDiagonal - symbolSize.width) / 2
-    let offsetY = (hexDiagonal - symbolSize.height) / 4
-
-    // need to center it based on symbol's irregular size
-    unit.style.position = 'absolute'
-    unit.style.left = (hex.screenCoords.x + offsetX) + 'px'
-    unit.style.top = (hex.screenCoords.y + offsetY) + 'px'
-
-    return unit
-}
-
-function animateUnitToHex(point, uniqueDesignation) {
-    // need to query Firebase for the hex that was updated then perform
-    // animation and view updates in the callback
-    //
-    Database.singleUnit(uniqueDesignation).once('value').then((data) => {
-        let facing
-        let val = data.val()
-        facing = val.facing
-
-        const hex = Map.grid.get(point)
-
-        let unit = document.getElementById(uniqueDesignation)
-
-        let symbolSize = $.data(unit, 'size')
-        let offsetX = ((config.hexSize * 2) - symbolSize.width) / 2
-        let offsetY = ((config.hexSize * 2) - symbolSize.height) / 4
-
-        // clear the previous hex
-        let previousHex = getUnitHex(uniqueDesignation)
-        previousHex.currentUnit = undefined
-        $('#' + uniqueDesignation + '-facing').remove()
-        previousHex.selected = false
-        previousHex.highlight()
-
-        $('#' + uniqueDesignation).animate({
-            'top': (hex.screenCoords.y + offsetY) + 'px',
-            'left': (hex.screenCoords.x + offsetX) + 'px'
-        }, {
-            duration: 500,
-            complete: function() {
-                $('#' + uniqueDesignation + '-facing').remove()
-                setUnitCoords(hex, uniqueDesignation)
-                hex.currentUnit = unit
-                hex.facing(facing, uniqueDesignation)
-            }
-        })
-    })
-}
-
-function changeFacing(face, uniqueDesignation) {
-    let hex = getUnitHex(uniqueDesignation)
-    $('#' + uniqueDesignation + '-facing').remove()
-    hex.facing(face, uniqueDesignation)
-}
-
-function update(updates, uniqueDesignation) {
-    let changedValue = {}
-    let keys = _.keys(updates)
-
-    for (var i = 0; i <= keys.length - 1; i++) {
-        changedValue['/' + uniqueDesignation + '/' + keys[i]] = updates[keys[i]]
-    }
-
-    Database.allUnits.update(changedValue)
-}
-
-function toggleHexSelection(hex) {
-    _.forEach(unitList.unitsToggleList, (name) => {
-        let h = getUnitHex(name)
-        h.selected = false
-        h.highlight()
-    })
-    hex.selected = true
-    hex.highlight()
-}
-
-module.exports = {
-    create: create,
-    removeUnitById: removeUnitById,
-    getUnitCoords: getUnitCoords,
-    getUnitHex: getUnitHex,
-    setUnitCoords: setUnitCoords,
-    animateUnitToHex: animateUnitToHex,
-    changeFacing: changeFacing,
-    update: update
-}
-},{"./config":185,"./database":186,"./map":191,"./unit-list":193,"./utils":195,"lodash":169,"milsymbol":170}],195:[function(require,module,exports){
-let Database = require('./database')
-
-function createButtonSet(uniqueDesignation) {
-    $('#facing-dropdown').empty()
-    let face1LeftMoving = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="action('face-1-left-moving', '${uniqueDesignation}')">Turn 1 hexside left <span class="badge">0</span></a></li>`
-    let face1RightMoving = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="action('face-1-right-moving', '${uniqueDesignation}')">Turn 1 hexside right <span class="badge">0</span></a></li>`
-    let face1LeftImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="action('face-1-left-immobile', '${uniqueDesignation}')">Turn 1 hexside left <span class="badge">1</span></a></li>`
-    let face2LeftImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="action('face-2-left-immobile', '${uniqueDesignation}')">Turn 2 hexside left <span class="badge">1</span></a></li>`
-    let face1RightImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="action('face-1-right-immobile', '${uniqueDesignation}')">Turn 1 hexside right <span class="badge">1</span></a></li>`
-    let face2RightImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="action('face-2-right-immobile', '${uniqueDesignation}')">Turn 2 hexside right <span class="badge">1</span></a></li>`
-    
-    $('#facing-dropdown').append(face1LeftMoving)
-    $('#facing-dropdown').append(face1RightMoving)
-    $('#facing-dropdown').append(face1LeftImmobile)
-    $('#facing-dropdown').append(face2LeftImmobile)
-    $('#facing-dropdown').append(face1RightImmobile)
-    $('#facing-dropdown').append(face2RightImmobile)
-
-    Database.singleUnit(uniqueDesignation).once('value').then((data) => {
-        let unit = data.val()
-        $('#moving-dropdown').empty()
-
-        if (unit.position === 'standing') {
-            
-            let runningForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="action('running-forward', '${uniqueDesignation}')">Move forward one hex <span class="badge">1</span></a></li>`
-            let runningBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="action('running-backward', '${uniqueDesignation}')">Move backward one hex <span class="badge">2</span></a></li>`
-            
-            $('#moving-dropdown').append(runningForward)
-            $('#moving-dropdown').append(runningBackward)
-        } else if (unit.position === 'kneeling') {
-            let crouchingForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="action('crouching-forward', '${uniqueDesignation}')">Move forward one hex <span class="badge">2</span></a></li>`
-            let crouchingBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="action('crouching-backward', '${uniqueDesignation}')">Move backward one hex <span class="badge">4</span></a></li>`
-
-            $('#moving-dropdown').append(crouchingForward)
-            $('#moving-dropdown').append(crouchingBackward)
-        } else if (unit.position === 'prone') {
-            let crawlingForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="action('crawling-forward', '${uniqueDesignation}')">Move forward one hex <span class="badge">3</span></a></li>`
-            let crawlingBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="action('crawling-backward', '${uniqueDesignation}')">Move backward one hex <span class="badge">5</span></a></li>`
-
-            $('#moving-dropdown').append(crawlingForward)
-            $('#moving-dropdown').append(crawlingBackward)
-        }
-    })
-}
-
-function calculateActionTime(actions, uniqueDesignation) {
-    Database.singleUnit(uniqueDesignation).once('value').then((data) => {
-        let unit = data.val()
-        let ca = unit.combatActionsPerImpulse
-        ca.shift() // there's an undefined value in index 0 for some reason
-        Database.time.once('value').then((snapshot) => {
-            let time = snapshot.val()
-            let next = time
-            let phase = time.phase
-            let impulse = time.impulse
-            let i = 0
-
-            //while there are still total actions at each impulse
-            while (actions >= ca[i]) {
-                //subtract the impulse's actions from total actions
-                actions = actions - ca[i]
-                i++
-
-                //there are only 4 impulses per phase, so loop around
-                if (i === 4) {
-                    i = 0
-                }
-
-                //only increment the time if there are actions left
-                if (actions > 0) {
-                    if (impulse === 4) {
-                        phase += 1
-                        impulse = 1
-                    } else {
-                        impulse += 1
-                    }
-
-                    next.impulse = impulse
-                    next.phase = phase
-                }
-            }
-            //need to update here
-            console.log(next)
-            console.log('remaining actions at run time: ', actions)
-        })
-    })
-}
-
-function populateControlPanel(uniqueDesignation) {
-    Database.singleUnit(uniqueDesignation).once('value').then((data) => {
-        let unit = data.val()
-        $('#panelUniqueDesignation h3').html(uniqueDesignation)
-        $('#skill-level').html(unit.skillLevel)
-        $('#strength').html(unit.strength)
-        $('#intelligence').html(unit.intelligence)
-        $('#will').html(unit.will)
-        $('#health').html(unit.health)
-        $('#agility').html(unit.agility)
-        $('#base-speed').html(unit.baseSpeed)
-        $('#maximum-speed').html(unit.maximumSpeed)
-        $('#gun-combat-skill-level').html(unit.gunCombatSkillLevel)
-        $('#skill-accuracy-level').html(unit.skillAccuracyLevel)
-        $('#int-skill-factor').html(unit.intSkillFactor)
-        $('#combat-actions').html(unit.combatActions)
-        $('#impulse1').html(unit.combatActionsPerImpulse['1'])
-        $('#impulse2').html(unit.combatActionsPerImpulse['2'])
-        $('#impulse3').html(unit.combatActionsPerImpulse['3'])
-        $('#impulse4').html(unit.combatActionsPerImpulse['4'])
-        $('#knockout-value').html(unit.knockoutValue)
-    })
-}
-
-module.exports = {
-    calculateActionTime: calculateActionTime,
-    populateControlPanel: populateControlPanel,
-    createButtonSet: createButtonSet
-}
-},{"./database":186}]},{},[188]);
+},{"jquery":168}]},{},[188]);

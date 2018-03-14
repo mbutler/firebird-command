@@ -1,3 +1,9 @@
+/**
+ * Configuration file for setting up the map, document, and database connection
+ * @module Config
+ * @namespace
+ */
+
 let config = {
   mapWidth: 100,
   mapHeight: 100,

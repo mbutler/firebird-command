@@ -1,6 +1,7 @@
 /**
  * This module handles mapping a string input to an action function
- * @module js/actions
+ * @module Actions
+ * @namespace
  */
 let Game = require('./game')
 
@@ -9,6 +10,8 @@ let Game = require('./game')
  *
  * @param {string} selection - A unique name for the action
  * @param {string} uniqueDesignation - The name of the unit
+ * @requires Game
+ * @memberof Actions
  * @return {undefined} - Runs a function directly
  */
 function action(selection, uniqueDesignation) {

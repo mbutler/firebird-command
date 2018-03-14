@@ -1,6 +1,7 @@
 /**
  * This module handles creating the hex grid and individual hex methods
- * @module js/map
+ * @module Map
+ * @namespace
  */
 
 let SVG = require('svg.js')
@@ -118,6 +119,7 @@ const grid = Grid.rectangle({
  *
  * @param {object} pageX - A pointer screen coordinates for X
  * @param {object} pageY - A pointer screen coordinates for Y
+ * @memberof Map
  * @return {hex} - A Honeycomb hex object
  */
 function getHexFromCoords(pageX, pageY) {

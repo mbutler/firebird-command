@@ -1,6 +1,7 @@
 /**
  * This module handles game time in increments of phase and impulse
- * @module js/timer
+ * @module Timer
+ * @namespace
  */
 
 let Database = require('./database')
@@ -9,7 +10,8 @@ let Action = require('./actions')
 
 /**
  * Advances the game timer one impulse
- *
+ * @requires Database
+ * @memberof Timer
  * @return {undefined} - Modifies the database directly
  */
 function incrementTimer() {
@@ -35,7 +37,9 @@ function incrementTimer() {
 
 /**
  * Reads all stored actions in database action list then executes any that match current game time
- *
+ * @requires Database
+ * @requires Action
+ * @memberof Timer
  * @return {undefined} - Modifies the database directly
  */
 function runActions () {
@@ -65,9 +69,11 @@ function runActions () {
 }
 
 /**
- * Creates the graphical elements of a unit, adds to DOM, and adds events
+ * Adds an action object to the database's action list
 
  * @param {object} action - An action object to store. e.g. {uniqueDesignation: 'snake', time: {phase: 1, impulse: 2}, action: 'face-1-left-moving'}
+ * @requires Database
+ * @memberof Timer
  * @return {undefined} - Modifies the database directly
  */
 function addToActionList (action) {

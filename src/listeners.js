@@ -1,3 +1,9 @@
+/**
+ * This module handles all event listeners
+ * @module Listeners
+ * @namespace
+ */
+
 let Database = require('./database')
 let Unit = require('./unit')
 let config = require('./config')
@@ -8,7 +14,7 @@ let _ = require('lodash')
 
 // loading a local version, but keeping the npm module in package.json for now
 // https://github.com/timmywil/jquery.panzoom/issues/351#issuecomment-330924963
-require('./jquery.panzoom')
+require('../vendor/jquery.panzoom')
 let panzoom = require('panzoom')
 let area = document.querySelector('#stage')
 let Slideout = require('slideout')
@@ -30,7 +36,6 @@ $('.close').on('touchstart mousedown', (e) => {
 $('#' + config.divContainer).panzoom({ cursor: 'default' })
 panzoom(area)
 
-//listen for any units changing
 Database.allUnits.on('child_changed', (snapshot) => {
     let unit = snapshot.val()
     let face = unit.facing

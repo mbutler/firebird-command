@@ -1,6 +1,6 @@
 /**
  * This module handles primary game logic
- * @module js/game
+ * @module Game
  */
 
 let Database = require('./database')
@@ -14,6 +14,7 @@ let _ = require('lodash')
  *
  * @param {number} m - An array length
  * @param {number} n - An offset from current index
+ * @memberof Game
  * @return {number} - The correct array index wrapped around
  */
 function wrap (m, n) {
@@ -26,6 +27,7 @@ function wrap (m, n) {
  * @param {number} current - The current face number, 0-5
  * @param {string} direction - Either 'right' or 'left'
  * @param {number} amount - The numer of faces to increment
+ * @memberof Game
  * @return {number} - The correct hex face number
  */
 function findFace (current, direction, amount) {
@@ -39,6 +41,7 @@ function findFace (current, direction, amount) {
  * Converts a face number (0-5) to a two-letter cardinal direction
  *
  * @param {number} face -  A face number 0-5
+ * @memberof Game
  * @return {string} - A two-letter direction. e.g. N, NW, SW, etc.
  */
 function faceToDirection (face) {
@@ -61,6 +64,8 @@ function faceToDirection (face) {
  * @param {object} currentCoords -  A point object of the current position
  * @param {number} facing - The face number the unit is looking towards, 0-5
  * @param {string} neighbor - The direction to find. 'forward', 'backward', or two-letter direction
+ * @requires Map
+ * @memberof Game
  * @return {object} - A Honeycomb hex
  */
 function findNeighbor (currentCoords, facing, neighbor) {
@@ -83,6 +88,15 @@ function findNeighbor (currentCoords, facing, neighbor) {
   return nextHex
 }
 
+/**
+ * Changes facing 1 to the left if in moving
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @requires Database
+ * @requires Unit
+ * @memberof Game
+ * @return {undefined} - Modifies the database directly
+ */
 function face1LeftMoving (uniqueDesignation) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
@@ -92,6 +106,15 @@ function face1LeftMoving (uniqueDesignation) {
   })
 }
 
+/**
+ * Changes facing 1 to the right if in moving
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @requires Database
+ * @requires Unit
+ * @memberof Game
+ * @return {undefined} - Modifies the database directly
+ */
 function face1RightMoving (uniqueDesignation) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
@@ -101,6 +124,15 @@ function face1RightMoving (uniqueDesignation) {
   })
 }
 
+/**
+ * Moves the unit forward 1 hex
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @requires Database
+ * @requires Unit
+ * @memberof Game
+ * @return {undefined} - Modifies the database directly
+ */
 function runningForward (uniqueDesignation) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
@@ -109,6 +141,15 @@ function runningForward (uniqueDesignation) {
   })
 }
 
+/**
+ * Moves the unit backward 1 hex
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @requires Database
+ * @requires Unit
+ * @memberof Game
+ * @return {undefined} - Modifies the database directly
+ */
 function runningBackward (uniqueDesignation) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
@@ -117,6 +158,15 @@ function runningBackward (uniqueDesignation) {
   })
 }
 
+/**
+ * Moves the unit forward 1 hex if crawling
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @requires Database
+ * @requires Unit
+ * @memberof Game
+ * @return {undefined} - Modifies the database directly
+ */
 function crawlingForward (uniqueDesignation) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
@@ -125,6 +175,15 @@ function crawlingForward (uniqueDesignation) {
   })
 }
 
+/**
+ * Moves the unit backward 1 hex if crawling
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @requires Database
+ * @requires Unit
+ * @memberof Game
+ * @return {undefined} - Modifies the database directly
+ */
 function crawlingBackward (uniqueDesignation) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
@@ -133,6 +192,15 @@ function crawlingBackward (uniqueDesignation) {
   })
 }
 
+/**
+ * Moves the unit forward 1 hex if crouching
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @requires Database
+ * @requires Unit
+ * @memberof Game
+ * @return {undefined} - Modifies the database directly
+ */
 function crouchingForward (uniqueDesignation) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
@@ -141,6 +209,15 @@ function crouchingForward (uniqueDesignation) {
   })
 }
 
+/**
+ * Moves the unit backward 1 hex if crouching
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @requires Database
+ * @requires Unit
+ * @memberof Game
+ * @return {undefined} - Modifies the database directly
+ */
 function crouchingBackward (uniqueDesignation) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
@@ -149,6 +226,15 @@ function crouchingBackward (uniqueDesignation) {
   })
 }
 
+/**
+ * Changes facing 1 to the left if immobile
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @requires Database
+ * @requires Unit
+ * @memberof Game
+ * @return {undefined} - Modifies the database directly
+ */
 function face1LeftImmobile (uniqueDesignation) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
@@ -158,6 +244,15 @@ function face1LeftImmobile (uniqueDesignation) {
   })
 }
 
+/**
+ * Changes facing 1 to the right if immobile
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @requires Database
+ * @requires Unit
+ * @memberof Game
+ * @return {undefined} - Modifies the database directly
+ */
 function face1RightImmobile (uniqueDesignation) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
@@ -167,6 +262,15 @@ function face1RightImmobile (uniqueDesignation) {
   })
 }
 
+/**
+ * Changes facing 2 to the left if immobile
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @requires Database
+ * @requires Unit
+ * @memberof Game
+ * @return {undefined} - Modifies the database directly
+ */
 function face2LeftImmobile (uniqueDesignation) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
@@ -176,6 +280,15 @@ function face2LeftImmobile (uniqueDesignation) {
   })
 }
 
+/**
+ * Changes facing 2 to the right if immobile
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @requires Database
+ * @requires Unit
+ * @memberof Game
+ * @return {undefined} - Modifies the database directly
+ */
 function face2RightImmobile (uniqueDesignation) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
@@ -185,6 +298,14 @@ function face2RightImmobile (uniqueDesignation) {
   })
 }
 
+/**
+ * Changes unit's stance to firing
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @requires Unit
+ * @memberof Game
+ * @return {undefined} - Modifies the database directly
+ */
 function assumeFiringStance (uniqueDesignation) {
   Unit.update({position: 'firing'}, uniqueDesignation)
 }

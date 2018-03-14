@@ -1,6 +1,7 @@
 /**
  * This module handles various utility functions
- * @module js/utils
+ * @module Utils
+ * @namespace
  */
 let Database = require('./database')
 
@@ -8,6 +9,7 @@ let Database = require('./database')
  * Adds a set of buttons for the specified unit to control actions.
  *
  * @param {string} uniqueDesignation - The name of the unit
+ * @memberof Utils
  * @return {undefined} - Modifies DOM directly
  */
 function createButtonSet(uniqueDesignation) {
@@ -58,6 +60,7 @@ function createButtonSet(uniqueDesignation) {
  *
  * @param {number} actions - A number of combat actions
  * @param {string} uniqueDesignation - The name of the unit
+ * @memberof Utils
  * @return {object} - Returns an object with a correct time object as well as remaining actions {time: next, remaining: actions}
  */
 function calculateActionTime(actions, uniqueDesignation) {
@@ -108,6 +111,7 @@ function calculateActionTime(actions, uniqueDesignation) {
  * Reads values from database and populates the control panel forms
  *
  * @param {string} uniqueDesignation - The name of the unit
+ * @memberof Utils
  * @return {undefined} - Inserts values directly into the DOM
  */
 function populateControlPanel(uniqueDesignation) {

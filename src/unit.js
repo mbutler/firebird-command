@@ -1,6 +1,7 @@
 /**
  * This module handles creating, controlling, and updating units
- * @module js/unit
+ * @module Unit
+ * @namespace Unit
  */
 
 let Database = require('./database')
@@ -17,6 +18,8 @@ let Utils = require('./utils')
  * @param {object} hex - A Honeycomb hex object
  * @param {string} sidc - A milsymbol code for the type of svg symbol to create. e.g. 'SHG-UCFM-------'
  * @param {object} options - Milsymbol options to pass into the its constructor. e.g. {'size': 0,'uniqueDesignation': 'dingo','additionalInformation': '','infoFields': false}
+ * @requires Utils
+ * @memberof Unit
  * @return {undefined} - Modifies DOM directly
  */
 function create(hex, sidc, options) {
@@ -54,6 +57,7 @@ function create(hex, sidc, options) {
  * Destroys a unit. Out of date as it uses the old unitList and does not interact with the database
  *
  * @param {string} uniqueDesignation - The name of the unit
+ * @memberof Unit
  * @return {undefined} - Modifies DOM directly
  */
 function removeUnitById(uniqueDesignation) {
@@ -71,6 +75,7 @@ function removeUnitById(uniqueDesignation) {
  *
  * @todo Read from database instead
  * @param {string} uniqueDesignation - The name of the unit
+ * @memberof Unit
  * @return {object} - A Honeycomb hex coordinates object. e.g. { x: 0, y: 0 }
  */
 function getUnitCoords(uniqueDesignation) {
@@ -84,6 +89,8 @@ function getUnitCoords(uniqueDesignation) {
  * Find the hex for a given unit
  *
  * @param {string} uniqueDesignation - The name of the unit
+ * @requires Map
+ * @memberof Unit
  * @return {object} - A Honeycomb hex object
  */
 function getUnitHex(uniqueDesignation) {
@@ -99,6 +106,7 @@ function getUnitHex(uniqueDesignation) {
  * @todo Write to database instead
  * @param {object} hex - A Honeycomb hex object
  * @param {string} uniqueDesignation - The name of the unit
+ * @memberof Unit
  * @return {object} - A Honeycomb hex coordinates object. e.g. { x: 0, y: 0 }
  */
 function setUnitCoords(hex, uniqueDesignation) {
@@ -110,6 +118,7 @@ function setUnitCoords(hex, uniqueDesignation) {
  * Creates a DOM element to hold graphics and data
  *
  * @param {string} uniqueDesignation - The name of the unit
+ * @memberof Unit
  * @return {object} - A div element with id set to unique designation and class to unit
  */
 function createSymbolContainer(uniqueDesignation) {
@@ -124,7 +133,8 @@ function createSymbolContainer(uniqueDesignation) {
  * Positions the unit according to the irregular size of individual milsymbols
  *
  * @param {object} hex - A Honeycomb hex object
- * @param {object} unit - The div container for the unit 
+ * @param {object} unit - The div container for the unit
+ * @memberof Unit
  * @return {object} - A modified div container DOM element
  */
 function positionUnit(hex, unit) {
@@ -146,6 +156,9 @@ function positionUnit(hex, unit) {
  *
  * @param {object} point - A Honeycomb point object. e.g. {x:0, y:1}
  * @param {string} uniqueDesignation - The name of the unit
+ * @requires Database
+ * @requires Map
+ * @memberof Unit
  * @return {undefined} - Modifies the DOM directly
  */
 function animateUnitToHex(point, uniqueDesignation) {
@@ -192,6 +205,7 @@ function animateUnitToHex(point, uniqueDesignation) {
  *
  * @param {number} face - A number 0-5 representing the face of the hexagon as documented in Honeycomb
  * @param {string} uniqueDesignation - The name of the unit
+ * @memberof Unit
  * @return {undefined} - Modifies the DOM directly
  */
 function changeFacing(face, uniqueDesignation) {
@@ -205,6 +219,8 @@ function changeFacing(face, uniqueDesignation) {
  *
  * @param {object} updates - A JSON snippet of all properties to change. e.g. {facing: 1, currentHex: [6, 9]}
  * @param {string} uniqueDesignation - The name of the unit
+ * @requires Database
+ * @memberof Unit
  * @return {undefined} - Modifies the database directly
  */
 function update(updates, uniqueDesignation) {
@@ -222,6 +238,7 @@ function update(updates, uniqueDesignation) {
  * Toggles the highlighting of a selected hex on/off
  *
  * @param {object} hex - A Honeycomb hex object
+ * @memberof Unit
  * @return {undefined} - Modifies the DOM directly
  */
 function toggleHexSelection(hex) {

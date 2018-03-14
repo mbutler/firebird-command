@@ -1,3 +1,8 @@
+/**
+ * The main entry point of the application
+ * @module Index
+ */
+
 window.jQuery = window.$ = require('jquery')
 let Map = require('./map')
 let Unit = require('./unit')
