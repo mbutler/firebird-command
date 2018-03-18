@@ -63847,6 +63847,8 @@ module.exports = {
 
 },{"./config":185,"./database":186,"./map":190,"./unit":193,"lodash":169}],188:[function(require,module,exports){
 /**
+ * @author Matthew Butler <matthewtbutler@gmail.com>
+ * 
  * The main entry point of the application
  * @module Index
  */
@@ -63933,6 +63935,11 @@ Database.time.on('child_changed', (snapshot) => {
     })
 })
 
+async function testTime (uniqueDesignation) {
+    let sample = await Database.time.once('value')
+    console.log(sample.val())
+}
+
 //testing with the space bar
 $(document).keypress((e) => {
     if (e.which === 32) {
@@ -63941,13 +63948,29 @@ $(document).keypress((e) => {
         //Unit.update({currentHex: [15, 9]}, 'dingo')
         //Unit.update({facing: 1}, 'panther')
         //Timer.incrementTimer()
-        Timer.addToActionList({
+/*         Timer.addToActionList({
             uniqueDesignation: 'snake',
             time: {phase: 1, impulse: 2},
             action: 'face-1-left-moving'
+        }) */
+
+       
+        let sample = Timer.getTimeAndUnit('snake')
+        sample.then((data) => {
+            let unit = data[0]
+            let time = data[1]
+            let result = Timer.calculateActionTime(8, unit, time)
+            console.log(result)
         })
 
-        Timer.incrementTimer()
+/*         sample.then((data) => {
+            let unit = data[0].val()
+            let time = data[1].val()
+            console.log(unit, time)
+            //console.log(Timer.calculateActionTime(9, unit, time))
+        }) */
+       
+        //Timer.incrementTimer()
         
         //Utils.calculateActionTime(13, 'dingo')
 
@@ -64134,6 +64157,63 @@ function incrementTimer() {
     })
 }
 
+
+/**
+ * Adds a specified number of actions to the current game time to determine the correct phase and impulse in the future
+ *
+ * @param {number} actions - A number of combat actions
+ * @param {string} uniqueDesignation - The name of the unit
+ * @memberof Utils
+ * @return {object} - Returns an object with a correct time object as well as remaining actions {time: next, remaining: actions}
+ */
+function calculateActionTime(combatActions, unit, time) {
+    let actions = combatActions
+    let ca = unit.combatActionsPerImpulse
+    let next = time
+    let phase = time.phase
+    let impulse = time.impulse
+    let i = 0
+    
+    ca.shift() // there's an undefined value in index 0 for some reason 
+
+    //while there are still total actions at each impulse
+    while (actions >= ca[i]) {
+        //subtract the impulse's actions from total actions
+        actions = actions - ca[i]
+        i++
+
+        //there are only 4 impulses per phase, so loop around
+        if (i === 4) {
+            i = 0
+        }
+
+        //only increment the time if there are actions left
+        if (actions > 0) {
+            if (impulse === 4) {
+                phase += 1
+                impulse = 1
+            } else {
+                impulse += 1
+            }
+
+            next.impulse = impulse
+            next.phase = phase
+        }
+    }
+
+    return {time: next, remaining: actions}
+}
+
+async function getTimeAndUnit (uniqueDesignation) {
+    let singleUnit = Database.singleUnit(uniqueDesignation).once('value')
+    let currentTime = Database.time.once('value')
+    let values = await Promise.all([singleUnit, currentTime])
+    let unit = values[0].val()
+    let time = values[1].val()
+    
+    return [unit, time]
+}
+
 /**
  * Reads all stored actions in database action list then executes any that match current game time
  * @requires Database
@@ -64180,6 +64260,8 @@ function addToActionList (action) {
 }
 
 module.exports = {
+    getTimeAndUnit: getTimeAndUnit,
+    calculateActionTime: calculateActionTime,
     incrementTimer: incrementTimer,
     runActions: runActions,
     addToActionList: addToActionList
@@ -64636,6 +64718,7 @@ let Database = require('./database')
  * Adds a set of buttons for the specified unit to control actions.
  *
  * @param {string} uniqueDesignation - The name of the unit
+ * @memberof Utils
  * @return {undefined} - Modifies DOM directly
  */
 function createButtonSet(uniqueDesignation) {
@@ -64681,61 +64764,13 @@ function createButtonSet(uniqueDesignation) {
     })
 }
 
-/**
- * Adds a specified number of actions to the current game time to determine the correct phase and impulse in the future
- *
- * @param {number} actions - A number of combat actions
- * @param {string} uniqueDesignation - The name of the unit
- * @return {object} - Returns an object with a correct time object as well as remaining actions {time: next, remaining: actions}
- */
-function calculateActionTime(actions, uniqueDesignation) {
-    Database.singleUnit(uniqueDesignation).once('value').then((data) => {
-        let unit = data.val()
-        let ca = unit.combatActionsPerImpulse
-        ca.shift() // there's an undefined value in index 0 for some reason
-        Database.time.once('value').then((snapshot) => {
-            let time = snapshot.val()
-            let next = time
-            let phase = time.phase
-            let impulse = time.impulse
-            let i = 0
 
-            //while there are still total actions at each impulse
-            while (actions >= ca[i]) {
-                //subtract the impulse's actions from total actions
-                actions = actions - ca[i]
-                i++
-
-                //there are only 4 impulses per phase, so loop around
-                if (i === 4) {
-                    i = 0
-                }
-
-                //only increment the time if there are actions left
-                if (actions > 0) {
-                    if (impulse === 4) {
-                        phase += 1
-                        impulse = 1
-                    } else {
-                        impulse += 1
-                    }
-
-                    next.impulse = impulse
-                    next.phase = phase
-                }
-            }
-            //need to update here
-            console.log(next)
-            console.log('remaining actions at run time: ', actions)
-            //returns {time: next, remaining: actions}
-        })
-    })
-}
 
 /**
  * Reads values from database and populates the control panel forms
  *
  * @param {string} uniqueDesignation - The name of the unit
+ * @memberof Utils
  * @return {undefined} - Inserts values directly into the DOM
  */
 function populateControlPanel(uniqueDesignation) {
@@ -64763,7 +64798,6 @@ function populateControlPanel(uniqueDesignation) {
 }
 
 module.exports = {
-    calculateActionTime: calculateActionTime,
     populateControlPanel: populateControlPanel,
     createButtonSet: createButtonSet
 }

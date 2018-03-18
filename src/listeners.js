@@ -54,6 +54,11 @@ Database.time.on('child_changed', (snapshot) => {
     })
 })
 
+async function testTime (uniqueDesignation) {
+    let sample = await Database.time.once('value')
+    console.log(sample.val())
+}
+
 //testing with the space bar
 $(document).keypress((e) => {
     if (e.which === 32) {
@@ -62,13 +67,23 @@ $(document).keypress((e) => {
         //Unit.update({currentHex: [15, 9]}, 'dingo')
         //Unit.update({facing: 1}, 'panther')
         //Timer.incrementTimer()
-        Timer.addToActionList({
+/*         Timer.addToActionList({
             uniqueDesignation: 'snake',
             time: {phase: 1, impulse: 2},
             action: 'face-1-left-moving'
+        }) */
+
+       
+        let sample = Timer.getTimeAndUnit('snake')
+        sample.then((data) => {
+            let unit = data[0]
+            let time = data[1]
+            let result = Timer.calculateActionTime(8, unit, time)
+            console.log(result)
         })
 
-        Timer.incrementTimer()
+     
+        //Timer.incrementTimer()
         
         //Utils.calculateActionTime(13, 'dingo')
 

@@ -25,16 +25,6 @@
               
                 
                 <li><a
-                  href='#index'
-                  class="">
-                  Index
-                  
-                </a>
-                
-                </li>
-              
-                
-                <li><a
                   href='#actions'
                   class=" toggle-sibling">
                   Actions
@@ -78,12 +68,6 @@
                         href='#utilscreatebuttonset'
                         class='regular pre-open'>
                         .createButtonSet
-                      </a></li>
-                    
-                      <li><a
-                        href='#utilscalculateactiontime'
-                        class='regular pre-open'>
-                        .calculateActionTime
                       </a></li>
                     
                       <li><a
@@ -227,9 +211,19 @@
               
                 
                 <li><a
-                  href='#map'
+                  href='#config'
+                  class="">
+                  Config
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#database'
                   class=" toggle-sibling">
-                  Map
+                  Database
                   <span class='icon'>▸</span>
                 </a>
                 
@@ -239,9 +233,9 @@
                     <li class='h5'><span>Static members</span></li>
                     
                       <li><a
-                        href='#mapgethexfromcoords'
+                        href='#databasesingleunit'
                         class='regular pre-open'>
-                        .getHexFromCoords
+                        .singleUnit
                       </a></li>
                     
                     </ul>
@@ -250,16 +244,6 @@
                   
                   
                 </div>
-                
-                </li>
-              
-                
-                <li><a
-                  href='#config'
-                  class="">
-                  Config
-                  
-                </a>
                 
                 </li>
               
@@ -371,6 +355,12 @@
                       </a></li>
                     
                       <li><a
+                        href='#timercalculateactiontime'
+                        class='regular pre-open'>
+                        .calculateActionTime
+                      </a></li>
+                    
+                      <li><a
                         href='#timerrunactions'
                         class='regular pre-open'>
                         .runActions
@@ -393,9 +383,9 @@
               
                 
                 <li><a
-                  href='#database'
+                  href='#map'
                   class=" toggle-sibling">
-                  Database
+                  Map
                   <span class='icon'>▸</span>
                 </a>
                 
@@ -405,9 +395,9 @@
                     <li class='h5'><span>Static members</span></li>
                     
                       <li><a
-                        href='#databasesingleunit'
+                        href='#mapgethexfromcoords'
                         class='regular pre-open'>
-                        .singleUnit
+                        .getHexFromCoords
                       </a></li>
                     
                     </ul>
@@ -429,6 +419,16 @@
                 
                 </li>
               
+                
+                <li><a
+                  href='#index'
+                  class="">
+                  Index
+                  
+                </a>
+                
+                </li>
+              
             </ul>
           </div>
           <div class='mt1 h6 quiet'>
@@ -437,53 +437,6 @@
         </div>
       </div>
       <div id='split-right' class='relative overflow-auto height-viewport-100'>
-        
-          
-            <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
-    <h3 class='fl m0' id='index'>
-      Index
-    </h3>
-    
-    
-  </div>
-  
-
-  <p>The main entry point of the application</p>
-
-
-  <div class='pre p1 fill-light mt0'>Index</div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-          
         
           
             <section class='p2 mb2 clearfix bg-white minishadow'>
@@ -706,83 +659,6 @@
       <div class='py1 quiet mt1 prose-big'>Returns</div>
       <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></code>:
         Modifies DOM directly
-
-      
-    
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-      </div>
-    </div>
-  
-    <div class='border-bottom' id='utilscalculateactiontime'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>calculateActionTime(actions, uniqueDesignation)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-
-  <p>Adds a specified number of actions to the current game time to determine the correct phase and impulse in the future</p>
-
-
-  <div class='pre p1 fill-light mt0'>calculateActionTime(actions: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>actions</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
-	    A number of combat actions
-
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>uniqueDesignation</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
-	    The name of the unit
-
-          </div>
-          
-        </div>
-      
-    </div>
-  
-
-  
-
-  
-    
-      <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></code>:
-        Returns an object with a correct time object as well as remaining actions {time: next, remaining: actions}
 
       
     
@@ -2141,136 +2017,6 @@
   
   <div class='clearfix'>
     
-    <h3 class='fl m0' id='map'>
-      Map
-    </h3>
-    
-    
-  </div>
-  
-
-  <p>This module handles creating the hex grid and individual hex methods</p>
-
-
-  <div class='pre p1 fill-light mt0'>Map</div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Static Members</div>
-    <div class="clearfix">
-  
-    <div class='border-bottom' id='mapgethexfromcoords'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>getHexFromCoords(pageX, pageY)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-
-  <p>Finds a hex given a coordinate</p>
-
-
-  <div class='pre p1 fill-light mt0'>getHexFromCoords(pageX: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>, pageY: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>): hex</div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>pageX</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>)</code>
-	    A pointer screen coordinates for X
-
-          </div>
-          
-        </div>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>pageY</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>)</code>
-	    A pointer screen coordinates for Y
-
-          </div>
-          
-        </div>
-      
-    </div>
-  
-
-  
-
-  
-    
-      <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code>hex</code>:
-        A Honeycomb hex object
-
-      
-    
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-      </div>
-    </div>
-  
-</div>
-
-  
-
-  
-
-  
-</section>
-
-          
-        
-          
-            <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
     <h3 class='fl m0' id='config'>
       Config
     </h3>
@@ -2302,6 +2048,127 @@
   
 
   
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+            <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='database'>
+      Database
+    </h3>
+    
+    
+  </div>
+  
+
+  <p>This module handles database interaction and database references</p>
+
+
+  <div class='pre p1 fill-light mt0'>Database</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Static Members</div>
+    <div class="clearfix">
+  
+    <div class='border-bottom' id='databasesingleunit'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>singleUnit(uniqueDesignation)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+
+  <p>A reference to a single unit in the database</p>
+
+
+  <div class='pre p1 fill-light mt0'>singleUnit(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>uniqueDesignation</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    The name of the unit
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></code>:
+        A reference to the unit in the database
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+</div>
 
   
 
@@ -3276,6 +3143,92 @@
       </div>
     </div>
   
+    <div class='border-bottom' id='timercalculateactiontime'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>calculateActionTime(combatActions, unit, time)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+
+  <p>Adds a specified number of actions to the current game time to determine the correct phase and impulse in the future</p>
+
+
+  <div class='pre p1 fill-light mt0'>calculateActionTime(combatActions: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, unit: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>, time: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>combatActions</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    A number of combat actions
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>unit</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>)</code>
+	    The database value of the unit
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>time</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>)</code>
+	    The database value of the game time
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></code>:
+        Returns an object with a correct time object as well as remaining actions {time: next, remaining: actions}
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
     <div class='border-bottom' id='timerrunactions'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
@@ -3415,18 +3368,18 @@
   
   <div class='clearfix'>
     
-    <h3 class='fl m0' id='database'>
-      Database
+    <h3 class='fl m0' id='map'>
+      Map
     </h3>
     
     
   </div>
   
 
-  <p>This module handles database interaction and database references</p>
+  <p>This module handles creating the hex grid and individual hex methods</p>
 
 
-  <div class='pre p1 fill-light mt0'>Database</div>
+  <div class='pre p1 fill-light mt0'>Map</div>
   
   
 
@@ -3451,11 +3404,11 @@
     <div class='py1 quiet mt1 prose-big'>Static Members</div>
     <div class="clearfix">
   
-    <div class='border-bottom' id='databasesingleunit'>
+    <div class='border-bottom' id='mapgethexfromcoords'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>singleUnit(uniqueDesignation)</span>
+            <span class='code strong strong truncate'>getHexFromCoords(pageX, pageY)</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -3463,10 +3416,10 @@
 
   
 
-  <p>A reference to a single unit in the database</p>
+  <p>Finds a hex given a coordinate</p>
 
 
-  <div class='pre p1 fill-light mt0'>singleUnit(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></div>
+  <div class='pre p1 fill-light mt0'>getHexFromCoords(pageX: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>, pageY: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>): hex</div>
   
   
 
@@ -3483,8 +3436,17 @@
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>uniqueDesignation</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
-	    The name of the unit
+            <span class='code bold'>pageX</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>)</code>
+	    A pointer screen coordinates for X
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>pageY</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>)</code>
+	    A pointer screen coordinates for Y
 
           </div>
           
@@ -3498,8 +3460,8 @@
   
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></code>:
-        A reference to the unit in the database
+      <code>hex</code>:
+        A Honeycomb hex object
 
       
     
@@ -3555,6 +3517,54 @@
   
   
   
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+            <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='index'>
+      Index
+    </h3>
+    
+    
+  </div>
+  
+
+  
+
+  <div class='pre p1 fill-light mt0'>Index</div>
+  
+  
+
+  
+  
+  
+  <div>Author: Matthew Butler &lt;matthewtbutler@gmail.com&gt;
+
+The main entry point of the application</div>
   
   
 

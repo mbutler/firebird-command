@@ -35,6 +35,64 @@ function incrementTimer() {
     })
 }
 
+
+/**
+ * Adds a specified number of actions to the current game time to determine the correct phase and impulse in the future
+ *
+ * @param {number} combatActions - A number of combat actions
+ * @param {object} unit - The database value of the unit
+ * @param {object} time - The database value of the game time
+ * @memberof Timer
+ * @return {object} - Returns an object with a correct time object as well as remaining actions {time: next, remaining: actions}
+ */
+function calculateActionTime(combatActions, unit, time) {
+    let actions = combatActions
+    let ca = unit.combatActionsPerImpulse
+    let next = time
+    let phase = time.phase
+    let impulse = time.impulse
+    let i = 0
+    
+    ca.shift() // there's an undefined value in index 0 for some reason 
+
+    //while there are still total actions at each impulse
+    while (actions >= ca[i]) {
+        //subtract the impulse's actions from total actions
+        actions = actions - ca[i]
+        i++
+
+        //there are only 4 impulses per phase, so loop around
+        if (i === 4) {
+            i = 0
+        }
+
+        //only increment the time if there are actions left
+        if (actions > 0) {
+            if (impulse === 4) {
+                phase += 1
+                impulse = 1
+            } else {
+                impulse += 1
+            }
+
+            next.impulse = impulse
+            next.phase = phase
+        }
+    }
+
+    return {time: next, remaining: actions}
+}
+
+async function getTimeAndUnit (uniqueDesignation) {
+    let singleUnit = Database.singleUnit(uniqueDesignation).once('value')
+    let currentTime = Database.time.once('value')
+    let values = await Promise.all([singleUnit, currentTime])
+    let unit = values[0].val()
+    let time = values[1].val()
+    
+    return [unit, time]
+}
+
 /**
  * Reads all stored actions in database action list then executes any that match current game time
  * @requires Database
@@ -81,6 +139,8 @@ function addToActionList (action) {
 }
 
 module.exports = {
+    getTimeAndUnit: getTimeAndUnit,
+    calculateActionTime: calculateActionTime,
     incrementTimer: incrementTimer,
     runActions: runActions,
     addToActionList: addToActionList
