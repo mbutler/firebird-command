@@ -7,7 +7,7 @@
 let Database = require('./database')
 let Unit = require('./unit')
 let config = require('./config')
-let actions = require('./actions')
+let Actions = require('./actions')
 let Utils = require('./utils')
 let Timer = require('./timer')
 let _ = require('lodash')
@@ -73,15 +73,7 @@ $(document).keypress((e) => {
             action: 'face-1-left-moving'
         }) */
 
-       
-        let sample = Timer.getTimeAndUnit('snake')
-        sample.then((data) => {
-            let unit = data[0]
-            let time = data[1]
-            let result = Timer.calculateActionTime(8, unit, time)
-            console.log(result)
-        })
-
+        Timer.submitAction('snake', 'climb-window')
      
         //Timer.incrementTimer()
         

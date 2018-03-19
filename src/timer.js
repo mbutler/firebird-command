@@ -138,10 +138,36 @@ function addToActionList (action) {
     Database.actionList.push(action)
 }
 
+/**
+ * Constructs the proper object to submit to addToActionList
+
+ * @param {string} uniqueDesignation - The unit's name
+ * @param {string} actionName - The action's name
+ * @requires Action
+ * @memberof Timer
+ * @return {undefined} - Modifies the database directly
+ */
+function submitAction (actionName, uniqueDesignation) {
+    let sample = getTimeAndUnit(uniqueDesignation)
+    sample.then((data) => {
+        let unit = data[0]
+        let time = data[1]
+        let ca = Action.getActionCost(actionName)
+        let result = calculateActionTime(ca, unit, time)
+        let next = result.time
+        let action = {uniqueDesignation: uniqueDesignation, time: next, action: actionName}
+        addToActionList(action)
+    })
+}
+
+//make submission function available from the DOM
+window.submitAction = submitAction
+
 module.exports = {
     getTimeAndUnit: getTimeAndUnit,
     calculateActionTime: calculateActionTime,
     incrementTimer: incrementTimer,
     runActions: runActions,
-    addToActionList: addToActionList
+    addToActionList: addToActionList,
+    submitAction: submitAction
 }
