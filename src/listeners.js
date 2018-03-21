@@ -46,18 +46,16 @@ Database.allUnits.on('child_changed', (snapshot) => {
     Unit.animateUnitToHex(hex, uniqueDesignation)
 })
 
-Database.time.on('child_changed', (snapshot) => {
-    //don't really need to get a time snapshot here, but can
-    Database.time.once('value').then((snapshot) => {
-        let time = snapshot.val()
-        Timer.runActions()
-    })
-})
-
 async function testTime (uniqueDesignation) {
     let sample = await Database.time.once('value')
     console.log(sample.val())
 }
+
+$(document).keypress((e) => {
+    if (e.which === 84) {
+        Timer.incrementTimer()
+    }
+})
 
 //testing with the space bar
 $(document).keypress((e) => {
@@ -73,7 +71,7 @@ $(document).keypress((e) => {
             action: 'face-1-left-moving'
         }) */
 
-        Timer.submitAction('snake', 'climb-window')
+        Timer.incrementTimer()
      
         //Timer.incrementTimer()
         

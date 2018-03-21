@@ -63966,18 +63966,16 @@ Database.allUnits.on('child_changed', (snapshot) => {
     Unit.animateUnitToHex(hex, uniqueDesignation)
 })
 
-Database.time.on('child_changed', (snapshot) => {
-    //don't really need to get a time snapshot here, but can
-    Database.time.once('value').then((snapshot) => {
-        let time = snapshot.val()
-        Timer.runActions()
-    })
-})
-
 async function testTime (uniqueDesignation) {
     let sample = await Database.time.once('value')
     console.log(sample.val())
 }
+
+$(document).keypress((e) => {
+    if (e.which === 84) {
+        Timer.incrementTimer()
+    }
+})
 
 //testing with the space bar
 $(document).keypress((e) => {
@@ -63993,7 +63991,7 @@ $(document).keypress((e) => {
             action: 'face-1-left-moving'
         }) */
 
-        Timer.submitAction('snake', 'climb-window')
+        Timer.incrementTimer()
      
         //Timer.incrementTimer()
         
@@ -64162,6 +64160,9 @@ let Action = require('./actions')
  * @return {undefined} - Modifies the database directly
  */
 function incrementTimer() {
+    //run actions first so actions scheduled for current implement run
+    runActions()
+
     Database.time.once('value').then((snapshot) => {
         let time = snapshot.val()
         let phase = time.phase
@@ -64263,7 +64264,8 @@ function runActions () {
 
                 //if the unit's action time is the same as current time then run and delete the action from the list
                 if (_.isEqual(actionTime, currentTime)) {
-                    Action(unit.action, unit.uniqueDesignation)
+                    console.log(unit.uniqueDesignation + ' is using ' + unit.action)
+                    Action.action(unit.action, unit.uniqueDesignation)
                     Database.actionList.child(unitKey).remove()
                 }
                 //increment actionKeys index
@@ -64845,6 +64847,8 @@ function populateControlPanel(uniqueDesignation) {
         $('#impulse2').html(unit.combatActionsPerImpulse['2'])
         $('#impulse3').html(unit.combatActionsPerImpulse['3'])
         $('#impulse4').html(unit.combatActionsPerImpulse['4'])
+        $('#stance').html(unit.stance)
+        $('#position').html(unit.position)
         $('#knockout-value').html(unit.knockoutValue)
     })
 }

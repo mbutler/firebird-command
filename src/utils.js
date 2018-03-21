@@ -84,6 +84,8 @@ function populateControlPanel(uniqueDesignation) {
         $('#impulse2').html(unit.combatActionsPerImpulse['2'])
         $('#impulse3').html(unit.combatActionsPerImpulse['3'])
         $('#impulse4').html(unit.combatActionsPerImpulse['4'])
+        $('#stance').html(unit.stance)
+        $('#position').html(unit.position)
         $('#knockout-value').html(unit.knockoutValue)
     })
 }

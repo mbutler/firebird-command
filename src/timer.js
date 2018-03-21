@@ -15,6 +15,9 @@ let Action = require('./actions')
  * @return {undefined} - Modifies the database directly
  */
 function incrementTimer() {
+    //run actions first so actions scheduled for current implement run
+    runActions()
+
     Database.time.once('value').then((snapshot) => {
         let time = snapshot.val()
         let phase = time.phase
@@ -115,8 +118,8 @@ function runActions () {
                 let actionTime = unit.time
 
                 //if the unit's action time is the same as current time then run and delete the action from the list
-                if (_.isEqual(actionTime, currentTime)) {
-                    Action(unit.action, unit.uniqueDesignation)
+                if (_.isEqual(actionTime, currentTime)) {                    
+                    Action.action(unit.action, unit.uniqueDesignation)
                     Database.actionList.child(unitKey).remove()
                 }
                 //increment actionKeys index
