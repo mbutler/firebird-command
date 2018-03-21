@@ -63386,48 +63386,8 @@ function action(selection, uniqueDesignation) {
     act(uniqueDesignation)
 }
 
-function getActionCost (actionName) {
-    let actionCostMap = {
-        'face-1-left-moving': 0,
-        'face-1-right-moving': 0,
-        //
-        'crawling-forward': 3,
-        'crawling-backward': 5,
-        //
-        'crouching-forward': 2,
-        'crouching-backward': 4,
-        //
-        'running-forward': 1,
-        'running-backward': 1,
-        //
-        'face-1-left-immobile': 1,
-        'face-2-left-immobile': 1,
-        'face-1-right-immobile': 1,
-        'face-2-right-immobile': 1,
-        //
-        'assume-firing-stance': 2,
-        'look-over-cover': 1,
-        'throw-grenade': 2,
-        'open-door': 3,
-        'open-window': 6,
-        'reload-weapon': 8,
-        'load-magazine': 4,
-        'drop-weapon': 4,
-        'deploy-bipod': 8,
-        'climb-window': 6,
-        'draw-pistol-shoulder': 3,
-        'draw-pistol-hip': 2,
-        'draw-hand-weapon': 2,
-        'access-backpack': 7
-
-    }
-
-    return actionCostMap[actionName]
-}
-
 module.exports = {
-    action: action,
-    getActionCost: getActionCost
+    action: action
 }
 },{"./game":187}],185:[function(require,module,exports){
 /**
@@ -64231,6 +64191,13 @@ function calculateActionTime(combatActions, unit, time) {
     return {time: next, remaining: actions}
 }
 
+/**
+ * Returns a specified unit as well as the currernt time
+ * @requires Database
+ * @requires Action
+ * @memberof Timer
+ * @return {array} - Returns an array of the unit object and time object
+ */
 async function getTimeAndUnit (uniqueDesignation) {
     let singleUnit = Database.singleUnit(uniqueDesignation).once('value')
     let currentTime = Database.time.once('value')
@@ -64253,24 +64220,27 @@ function runActions () {
         let currentTime = snapshot.val()
         Database.actionList.once('value').then((snapshot) => {
             let actionList = snapshot.val()
-            //get a list of firebase keys for each child in actionList
-            var actionKeys = Object.keys(actionList)
-            //keep track of the index
-            let i = 0
 
-            _.forEach(actionList, (unit) => {
-                let unitKey = actionKeys[i]
-                let actionTime = unit.time
+            //make sure there is an Action List
+            if (actionList !== null) {
+                 //get a list of firebase keys for each child in actionList
+                var actionKeys = Object.keys(actionList)
+                //keep track of the index
+                let i = 0
 
-                //if the unit's action time is the same as current time then run and delete the action from the list
-                if (_.isEqual(actionTime, currentTime)) {
-                    console.log(unit.uniqueDesignation + ' is using ' + unit.action)
-                    Action.action(unit.action, unit.uniqueDesignation)
-                    Database.actionList.child(unitKey).remove()
-                }
-                //increment actionKeys index
-                i++
-            })
+                _.forEach(actionList, (unit) => {
+                    let unitKey = actionKeys[i]
+                    let actionTime = unit.time
+
+                    //if the unit's action time is the same as current time then run and delete the action from the list
+                    if (_.isEqual(actionTime, currentTime)) {                    
+                        Action.action(unit.action, unit.uniqueDesignation)
+                        Database.actionList.child(unitKey).remove()
+                    }
+                    //increment actionKeys index
+                    i++
+                })
+            }           
         })
     })    
 }
@@ -64294,14 +64264,15 @@ function addToActionList (action) {
  * @param {string} actionName - The action's name
  * @requires Action
  * @memberof Timer
- * @return {undefined} - Modifies the database directly
+ * @see Utils.createButtonSet - Called from generated buttons
+ * @return {undefined} - Runs addToActionList directly
  */
-function submitAction (actionName, uniqueDesignation) {
+function submitAction (actionName, uniqueDesignation, ca) {
     let sample = getTimeAndUnit(uniqueDesignation)
     sample.then((data) => {
         let unit = data[0]
         let time = data[1]
-        let ca = Action.getActionCost(actionName)
+        //let ca = Action.getActionCost(actionName)
         let result = calculateActionTime(ca, unit, time)
         let next = result.time
         let action = {uniqueDesignation: uniqueDesignation, time: next, action: actionName}
@@ -64773,16 +64744,17 @@ let Database = require('./database')
  *
  * @param {string} uniqueDesignation - The name of the unit
  * @memberof Utils
+ * @see Unit.create - Calls createButtonSet
  * @return {undefined} - Modifies DOM directly
  */
 function createButtonSet(uniqueDesignation) {
     $('#facing-dropdown').empty()
-    let face1LeftMoving = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-left-moving', '${uniqueDesignation}')">Turn 1 hexside left <span class="badge">0</span></a></li>`
-    let face1RightMoving = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-right-moving', '${uniqueDesignation}')">Turn 1 hexside right <span class="badge">0</span></a></li>`
-    let face1LeftImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-left-immobile', '${uniqueDesignation}')">Turn 1 hexside left <span class="badge">1</span></a></li>`
-    let face2LeftImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-2-left-immobile', '${uniqueDesignation}')">Turn 2 hexside left <span class="badge">1</span></a></li>`
-    let face1RightImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-right-immobile', '${uniqueDesignation}')">Turn 1 hexside right <span class="badge">1</span></a></li>`
-    let face2RightImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-2-right-immobile', '${uniqueDesignation}')">Turn 2 hexside right <span class="badge">1</span></a></li>`
+    let face1LeftMoving = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-left-moving', '${uniqueDesignation}', 0)">Turn 1 hexside left <span class="badge">0</span></a></li>`
+    let face1RightMoving = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-right-moving', '${uniqueDesignation}', 0)">Turn 1 hexside right <span class="badge">0</span></a></li>`
+    let face1LeftImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-left-immobile', '${uniqueDesignation}', 1)">Turn 1 hexside left <span class="badge">1</span></a></li>`
+    let face2LeftImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-2-left-immobile', '${uniqueDesignation}', 1)">Turn 2 hexside left <span class="badge">1</span></a></li>`
+    let face1RightImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-right-immobile', '${uniqueDesignation}', 1)">Turn 1 hexside right <span class="badge">1</span></a></li>`
+    let face2RightImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-2-right-immobile', '${uniqueDesignation}', 1)">Turn 2 hexside right <span class="badge">1</span></a></li>`
     
     $('#facing-dropdown').append(face1LeftMoving)
     $('#facing-dropdown').append(face1RightMoving)
@@ -64790,6 +64762,13 @@ function createButtonSet(uniqueDesignation) {
     $('#facing-dropdown').append(face2LeftImmobile)
     $('#facing-dropdown').append(face1RightImmobile)
     $('#facing-dropdown').append(face2RightImmobile)
+    
+    // add aiming mods 1-12
+    for (let i = 1; i <= 12; i++) {
+        let aiming = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('aiming', '${uniqueDesignation}', ${i})">Aim <span class="badge">${i}</span></a></li>`
+        $('#aiming-dropdown').append(aiming)
+    }
+    
 
     Database.singleUnit(uniqueDesignation).once('value').then((data) => {
         let unit = data.val()
@@ -64797,20 +64776,20 @@ function createButtonSet(uniqueDesignation) {
 
         if (unit.position === 'standing') {
             
-            let runningForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('running-forward', '${uniqueDesignation}')">Move forward one hex <span class="badge">1</span></a></li>`
-            let runningBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('running-backward', '${uniqueDesignation}')">Move backward one hex <span class="badge">2</span></a></li>`
+            let runningForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('running-forward', '${uniqueDesignation}', 1)">Move forward one hex <span class="badge">1</span></a></li>`
+            let runningBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('running-backward', '${uniqueDesignation}', 2)">Move backward one hex <span class="badge">2</span></a></li>`
             
             $('#moving-dropdown').append(runningForward)
             $('#moving-dropdown').append(runningBackward)
         } else if (unit.position === 'kneeling') {
-            let crouchingForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crouching-forward', '${uniqueDesignation}')">Move forward one hex <span class="badge">2</span></a></li>`
-            let crouchingBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crouching-backward', '${uniqueDesignation}')">Move backward one hex <span class="badge">4</span></a></li>`
+            let crouchingForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crouching-forward', '${uniqueDesignation}', 2)">Move forward one hex <span class="badge">2</span></a></li>`
+            let crouchingBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crouching-backward', '${uniqueDesignation}', 4)">Move backward one hex <span class="badge">4</span></a></li>`
 
             $('#moving-dropdown').append(crouchingForward)
             $('#moving-dropdown').append(crouchingBackward)
         } else if (unit.position === 'prone') {
-            let crawlingForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crawling-forward', '${uniqueDesignation}')">Move forward one hex <span class="badge">3</span></a></li>`
-            let crawlingBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crawling-backward', '${uniqueDesignation}')">Move backward one hex <span class="badge">5</span></a></li>`
+            let crawlingForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crawling-forward', '${uniqueDesignation}', 3)">Move forward one hex <span class="badge">3</span></a></li>`
+            let crawlingBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crawling-backward', '${uniqueDesignation}', 5)">Move backward one hex <span class="badge">5</span></a></li>`
 
             $('#moving-dropdown').append(crawlingForward)
             $('#moving-dropdown').append(crawlingBackward)

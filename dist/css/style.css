@@ -53,13 +53,14 @@ svg:not(:root) {
 }
 
 .action-buttons {
-    color: white;
+    color: white;  
 }
 
 .btn-primary {
     color: #fff;
     background-color: #0495c9;
     border-color: #357ebd;
+    margin: 5px;
 }
 .btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active, .open>.dropdown-toggle.btn-primary {
     color: #fff;
@@ -73,4 +74,8 @@ svg:not(:root) {
 
 #moving-dropdown {
     left: -30px;
+}
+
+.panel-row {
+    margin-left: 0px;
 }

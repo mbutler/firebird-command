@@ -296,27 +296,40 @@
             </div>
 
             <div class="tab-pane" id="actions">
-                <div class="dropdown btn btn-primary">
-                    <a id="facing-button" class="action-buttons" href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
-                        Facing
+                <div class="row panel-row">
+                    <div class="dropdown btn btn-primary col-xs-3">
+                        <a id="facing-button" class="action-buttons" href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
+                            Facing
+                            <span class="caret"></span>
+                        </a>
+                        <ul id="facing-dropdown" class="dropdown-menu" role="menu" aria-labelledby="facing-button"></ul>
+                    </div>
+                    <div class="dropdown btn btn-primary col-xs-3">
+                        <a id="moving-button" class="action-buttons" href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
+                            Moving
                         <span class="caret"></span>
-                    </a>
-                    <ul id="facing-dropdown" class="dropdown-menu" role="menu" aria-labelledby="facing-button"></ul>
+                        </a>
+                        <ul id="moving-dropdown" class="dropdown-menu" role="menu" aria-labelledby="moving-button"></ul>
+                    </div>
+                    <div class="dropdown btn btn-primary col-xs-3">
+                        <a id="aiming-button" class="action-buttons" href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
+                            Aiming
+                            <span class="caret"></span>
+                        </a>
+                        <ul id="aiming-dropdown" class="dropdown-menu" role="menu" aria-labelledby="aiming-button"></ul>
+                    </div>
                 </div>
-                <div class="dropdown btn btn-primary">
-                    <a id="moving-button" class="action-buttons" href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
-                        Moving
-                      <span class="caret"></span>
-                    </a>
-                    <ul id="moving-dropdown" class="dropdown-menu" role="menu" aria-labelledby="moving-button"></ul>
+                
+                <div class="row panel-row">
+                    <div class="dropdown btn btn-primary">
+                        <a id="equiping-button" class="action-buttons" href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
+                            Equiping
+                            <span class="caret"></span>
+                        </a>
+                        <ul id="equiping-dropdown" class="dropdown-menu" role="menu" aria-labelledby="equiping-button"></ul>
+                    </div>
                 </div>
-                <div class="dropdown btn btn-primary">
-                    <a id="aiming-button" class="action-buttons" href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
-                        Aiming
-                        <span class="caret"></span>
-                    </a>
-                    <ul id="aiming-dropdown" class="dropdown-menu" role="menu" aria-labelledby="aiming-button"></ul>
-                </div>
+
             </div>
         </div>
     </nav>

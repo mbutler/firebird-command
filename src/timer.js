@@ -86,6 +86,13 @@ function calculateActionTime(combatActions, unit, time) {
     return {time: next, remaining: actions}
 }
 
+/**
+ * Returns a specified unit as well as the currernt time
+ * @requires Database
+ * @requires Action
+ * @memberof Timer
+ * @return {array} - Returns an array of the unit object and time object
+ */
 async function getTimeAndUnit (uniqueDesignation) {
     let singleUnit = Database.singleUnit(uniqueDesignation).once('value')
     let currentTime = Database.time.once('value')
@@ -108,23 +115,27 @@ function runActions () {
         let currentTime = snapshot.val()
         Database.actionList.once('value').then((snapshot) => {
             let actionList = snapshot.val()
-            //get a list of firebase keys for each child in actionList
-            var actionKeys = Object.keys(actionList)
-            //keep track of the index
-            let i = 0
 
-            _.forEach(actionList, (unit) => {
-                let unitKey = actionKeys[i]
-                let actionTime = unit.time
+            //make sure there is an Action List
+            if (actionList !== null) {
+                 //get a list of firebase keys for each child in actionList
+                var actionKeys = Object.keys(actionList)
+                //keep track of the index
+                let i = 0
 
-                //if the unit's action time is the same as current time then run and delete the action from the list
-                if (_.isEqual(actionTime, currentTime)) {                    
-                    Action.action(unit.action, unit.uniqueDesignation)
-                    Database.actionList.child(unitKey).remove()
-                }
-                //increment actionKeys index
-                i++
-            })
+                _.forEach(actionList, (unit) => {
+                    let unitKey = actionKeys[i]
+                    let actionTime = unit.time
+
+                    //if the unit's action time is the same as current time then run and delete the action from the list
+                    if (_.isEqual(actionTime, currentTime)) {                    
+                        Action.action(unit.action, unit.uniqueDesignation)
+                        Database.actionList.child(unitKey).remove()
+                    }
+                    //increment actionKeys index
+                    i++
+                })
+            }           
         })
     })    
 }
@@ -148,14 +159,15 @@ function addToActionList (action) {
  * @param {string} actionName - The action's name
  * @requires Action
  * @memberof Timer
- * @return {undefined} - Modifies the database directly
+ * @see Utils.createButtonSet - Called from generated buttons
+ * @return {undefined} - Runs addToActionList directly
  */
-function submitAction (actionName, uniqueDesignation) {
+function submitAction (actionName, uniqueDesignation, ca) {
     let sample = getTimeAndUnit(uniqueDesignation)
     sample.then((data) => {
         let unit = data[0]
         let time = data[1]
-        let ca = Action.getActionCost(actionName)
+        //let ca = Action.getActionCost(actionName)
         let result = calculateActionTime(ca, unit, time)
         let next = result.time
         let action = {uniqueDesignation: uniqueDesignation, time: next, action: actionName}

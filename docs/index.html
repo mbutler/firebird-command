@@ -371,6 +371,12 @@
                       </a></li>
                     
                       <li><a
+                        href='#timergettimeandunit'
+                        class='regular pre-open'>
+                        .getTimeAndUnit
+                      </a></li>
+                    
+                      <li><a
                         href='#timerrunactions'
                         class='regular pre-open'>
                         .runActions
@@ -3282,6 +3288,73 @@
       </div>
     </div>
   
+    <div class='border-bottom' id='timergettimeandunit'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getTimeAndUnit(uniqueDesignation)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+
+  <p>Returns a specified unit as well as the currernt time</p>
+
+
+  <div class='pre p1 fill-light mt0'>getTimeAndUnit(uniqueDesignation: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>uniqueDesignation</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a></code>:
+        Returns an array of the unit object and time object
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
     <div class='border-bottom' id='timerrunactions'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
@@ -3408,7 +3481,7 @@
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>submitAction(actionName, uniqueDesignation)</span>
+            <span class='code strong strong truncate'>submitAction(actionName, uniqueDesignation, ca)</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -3419,7 +3492,7 @@
   <p>Constructs the proper object to submit to addToActionList</p>
 
 
-  <div class='pre p1 fill-light mt0'>submitAction(actionName: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
+  <div class='pre p1 fill-light mt0'>submitAction(actionName: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, ca: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
   
   
 
@@ -3452,6 +3525,14 @@
           
         </div>
       
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>ca</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
     </div>
   
 
@@ -3461,7 +3542,7 @@
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
       <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></code>:
-        Modifies the database directly
+        Runs addToActionList directly
 
       
     
