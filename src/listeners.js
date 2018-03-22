@@ -46,10 +46,13 @@ Database.allUnits.on('child_changed', (snapshot) => {
     Unit.animateUnitToHex(hex, uniqueDesignation)
 })
 
-async function testTime (uniqueDesignation) {
-    let sample = await Database.time.once('value')
-    console.log(sample.val())
-}
+Database.time.on('child_changed', (snapshot) => {
+    //don't really need to get a time snapshot here, but can
+    Database.time.once('value').then((snapshot) => {
+        let time = snapshot.val()
+        //Timer.runActions()
+    })
+})
 
 $(document).keypress((e) => {
     if (e.which === 84) {
@@ -61,26 +64,5 @@ $(document).keypress((e) => {
 $(document).keypress((e) => {
     if (e.which === 32) {
 
-        //Unit.update({currentHex: [6, 9]}, 'panther')
-        //Unit.update({currentHex: [15, 9]}, 'dingo')
-        //Unit.update({facing: 1}, 'panther')
-        //Timer.incrementTimer()
-/*         Timer.addToActionList({
-            uniqueDesignation: 'snake',
-            time: {phase: 1, impulse: 2},
-            action: 'face-1-left-moving'
-        }) */
-
-        Timer.incrementTimer()
-     
-        //Timer.incrementTimer()
-        
-        //Utils.calculateActionTime(13, 'dingo')
-
-        /* Unit.updateUnit({
-          agility: 69,
-          strength: 20,
-          health: 100
-        }, 'snake') */
     }
 })

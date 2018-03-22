@@ -24,10 +24,16 @@ function singleUnit (uniqueDesignation) {
   return firebase.database().ref(path)
 }
 
+function singleUnitActionList (uniqueDesignation) {
+  let path = '/Games/' + config.gameID + '/Units/' + uniqueDesignation + '/actionList'
+  return firebase.database().ref(path)
+}
+
 module.exports = {
   allUnits: allUnits,
   firebaseRoot: firebase,
   singleUnit: singleUnit,
   time: time,
-  actionList: actionList
+  actionList: actionList,
+  singleUnitActionList: singleUnitActionList
 }

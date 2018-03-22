@@ -63442,12 +63442,18 @@ function singleUnit (uniqueDesignation) {
   return firebase.database().ref(path)
 }
 
+function singleUnitActionList (uniqueDesignation) {
+  let path = '/Games/' + config.gameID + '/Units/' + uniqueDesignation + '/actionList'
+  return firebase.database().ref(path)
+}
+
 module.exports = {
   allUnits: allUnits,
   firebaseRoot: firebase,
   singleUnit: singleUnit,
   time: time,
-  actionList: actionList
+  actionList: actionList,
+  singleUnitActionList: singleUnitActionList
 }
 
 },{"./config":185,"firebase":164}],187:[function(require,module,exports){
@@ -63926,10 +63932,13 @@ Database.allUnits.on('child_changed', (snapshot) => {
     Unit.animateUnitToHex(hex, uniqueDesignation)
 })
 
-async function testTime (uniqueDesignation) {
-    let sample = await Database.time.once('value')
-    console.log(sample.val())
-}
+Database.time.on('child_changed', (snapshot) => {
+    //don't really need to get a time snapshot here, but can
+    Database.time.once('value').then((snapshot) => {
+        let time = snapshot.val()
+        //Timer.runActions()
+    })
+})
 
 $(document).keypress((e) => {
     if (e.which === 84) {
@@ -63941,27 +63950,6 @@ $(document).keypress((e) => {
 $(document).keypress((e) => {
     if (e.which === 32) {
 
-        //Unit.update({currentHex: [6, 9]}, 'panther')
-        //Unit.update({currentHex: [15, 9]}, 'dingo')
-        //Unit.update({facing: 1}, 'panther')
-        //Timer.incrementTimer()
-/*         Timer.addToActionList({
-            uniqueDesignation: 'snake',
-            time: {phase: 1, impulse: 2},
-            action: 'face-1-left-moving'
-        }) */
-
-        Timer.incrementTimer()
-     
-        //Timer.incrementTimer()
-        
-        //Utils.calculateActionTime(13, 'dingo')
-
-        /* Unit.updateUnit({
-          agility: 69,
-          strength: 20,
-          health: 100
-        }, 'snake') */
     }
 })
 },{"../vendor/jquery.panzoom":195,"./actions":184,"./config":185,"./database":186,"./timer":191,"./unit":193,"./utils":194,"lodash":169,"panzoom":171,"slideout":180}],190:[function(require,module,exports){
@@ -64112,6 +64100,7 @@ module.exports = {
 let Database = require('./database')
 let _ = require('lodash')
 let Action = require('./actions')
+let Unit = require('./unit')
 
 /**
  * Advances the game timer one impulse
@@ -64120,9 +64109,6 @@ let Action = require('./actions')
  * @return {undefined} - Modifies the database directly
  */
 function incrementTimer() {
-    //run actions first so actions scheduled for current implement run
-    runActions()
-
     Database.time.once('value').then((snapshot) => {
         let time = snapshot.val()
         let phase = time.phase
@@ -64188,7 +64174,7 @@ function calculateActionTime(combatActions, unit, time) {
         }
     }
 
-    return {time: next, remaining: actions}
+    return {time: next, remaining: ca[impulse] - actions}
 }
 
 /**
@@ -64254,12 +64240,13 @@ function runActions () {
  * @return {undefined} - Modifies the database directly
  */
 function addToActionList (action) {
+    let uniqueDesignation = action.uniqueDesignation
     Database.actionList.push(action)
+    Database.singleUnitActionList(uniqueDesignation).push(action)
 }
 
 /**
  * Constructs the proper object to submit to addToActionList
-
  * @param {string} uniqueDesignation - The unit's name
  * @param {string} actionName - The action's name
  * @requires Action
@@ -64275,7 +64262,8 @@ function submitAction (actionName, uniqueDesignation, ca) {
         //let ca = Action.getActionCost(actionName)
         let result = calculateActionTime(ca, unit, time)
         let next = result.time
-        let action = {uniqueDesignation: uniqueDesignation, time: next, action: actionName}
+        let remain = result.remaining
+        let action = {uniqueDesignation: uniqueDesignation, time: next, action: actionName, remainingActions: remain}
         addToActionList(action)
     })
 }
@@ -64291,7 +64279,7 @@ module.exports = {
     addToActionList: addToActionList,
     submitAction: submitAction
 }
-},{"./actions":184,"./database":186,"lodash":169}],192:[function(require,module,exports){
+},{"./actions":184,"./database":186,"./unit":193,"lodash":169}],192:[function(require,module,exports){
 let unitsToggleList = []
 
 let unitList = [
@@ -64774,23 +64762,19 @@ function createButtonSet(uniqueDesignation) {
         let unit = data.val()
         $('#moving-dropdown').empty()
 
-        if (unit.position === 'standing') {
-            
-            let runningForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('running-forward', '${uniqueDesignation}', 1)">Move forward one hex <span class="badge">1</span></a></li>`
-            let runningBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('running-backward', '${uniqueDesignation}', 2)">Move backward one hex <span class="badge">2</span></a></li>`
-            
+        if (unit.position === 'standing') {            
+            let runningForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('running-forward', '${uniqueDesignation}', 1)">Run forward one hex <span class="badge">1</span></a></li>`
+            let runningBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('running-backward', '${uniqueDesignation}', 2)">Run backward one hex <span class="badge">2</span></a></li>`            
             $('#moving-dropdown').append(runningForward)
             $('#moving-dropdown').append(runningBackward)
         } else if (unit.position === 'kneeling') {
-            let crouchingForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crouching-forward', '${uniqueDesignation}', 2)">Move forward one hex <span class="badge">2</span></a></li>`
-            let crouchingBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crouching-backward', '${uniqueDesignation}', 4)">Move backward one hex <span class="badge">4</span></a></li>`
-
+            let crouchingForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crouching-forward', '${uniqueDesignation}', 2)">Crouch forward one hex <span class="badge">2</span></a></li>`
+            let crouchingBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crouching-backward', '${uniqueDesignation}', 4)">Crouch backward one hex <span class="badge">4</span></a></li>`
             $('#moving-dropdown').append(crouchingForward)
             $('#moving-dropdown').append(crouchingBackward)
         } else if (unit.position === 'prone') {
-            let crawlingForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crawling-forward', '${uniqueDesignation}', 3)">Move forward one hex <span class="badge">3</span></a></li>`
-            let crawlingBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crawling-backward', '${uniqueDesignation}', 5)">Move backward one hex <span class="badge">5</span></a></li>`
-
+            let crawlingForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crawling-forward', '${uniqueDesignation}', 3)">Crawl forward one hex <span class="badge">3</span></a></li>`
+            let crawlingBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crawling-backward', '${uniqueDesignation}', 5)">Crawl backward one hex <span class="badge">5</span></a></li>`
             $('#moving-dropdown').append(crawlingForward)
             $('#moving-dropdown').append(crawlingBackward)
         }

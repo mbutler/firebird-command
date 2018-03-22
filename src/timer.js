@@ -7,6 +7,7 @@
 let Database = require('./database')
 let _ = require('lodash')
 let Action = require('./actions')
+let Unit = require('./unit')
 
 /**
  * Advances the game timer one impulse
@@ -15,9 +16,6 @@ let Action = require('./actions')
  * @return {undefined} - Modifies the database directly
  */
 function incrementTimer() {
-    //run actions first so actions scheduled for current implement run
-    runActions()
-
     Database.time.once('value').then((snapshot) => {
         let time = snapshot.val()
         let phase = time.phase
@@ -82,8 +80,8 @@ function calculateActionTime(combatActions, unit, time) {
             next.phase = phase
         }
     }
-
-    return {time: next, remaining: actions}
+    //subtract the impulse amount from actions to get remaining
+    return {time: next, remaining: ca[impulse] - actions}
 }
 
 /**
@@ -149,12 +147,13 @@ function runActions () {
  * @return {undefined} - Modifies the database directly
  */
 function addToActionList (action) {
+    let uniqueDesignation = action.uniqueDesignation
     Database.actionList.push(action)
+    Database.singleUnitActionList(uniqueDesignation).push(action)
 }
 
 /**
  * Constructs the proper object to submit to addToActionList
-
  * @param {string} uniqueDesignation - The unit's name
  * @param {string} actionName - The action's name
  * @requires Action
@@ -170,7 +169,8 @@ function submitAction (actionName, uniqueDesignation, ca) {
         //let ca = Action.getActionCost(actionName)
         let result = calculateActionTime(ca, unit, time)
         let next = result.time
-        let action = {uniqueDesignation: uniqueDesignation, time: next, action: actionName}
+        let remain = result.remaining
+        let action = {uniqueDesignation: uniqueDesignation, time: next, action: actionName, remainingActions: remain}
         addToActionList(action)
     })
 }
