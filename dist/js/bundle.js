@@ -63389,7 +63389,26 @@ function action(selection, uniqueDesignation) {
 module.exports = {
     action: action
 }
-},{"./game":187}],185:[function(require,module,exports){
+},{"./game":188}],185:[function(require,module,exports){
+/**
+ * This module handles character creation
+ * @module Character
+ * @namespace
+ */
+
+let Database = require('./database')
+
+function formSubmit () {
+    let submission = document.getElementById("character-creation-form").submit()
+    console.log(submission)
+}
+
+window.formSubmit = formSubmit
+
+module.exports = {
+    formSubmit: formSubmit
+}
+},{"./database":187}],186:[function(require,module,exports){
 /**
  * Configuration file for setting up the map, document, and database connection
  * @module Config
@@ -63415,7 +63434,7 @@ let config = {
 
 module.exports = config
 
-},{}],186:[function(require,module,exports){
+},{}],187:[function(require,module,exports){
 /**
  * This module handles database interaction and database references
  * @module Database
@@ -63456,7 +63475,7 @@ module.exports = {
   singleUnitActionList: singleUnitActionList
 }
 
-},{"./config":185,"firebase":164}],187:[function(require,module,exports){
+},{"./config":186,"firebase":164}],188:[function(require,module,exports){
 /**
  * This module handles primary game logic
  * @module Game
@@ -63850,7 +63869,7 @@ module.exports = {
   accessBackpack: accessBackpack
 }
 
-},{"./config":185,"./database":186,"./map":190,"./unit":193,"lodash":169}],188:[function(require,module,exports){
+},{"./config":186,"./database":187,"./map":191,"./unit":194,"lodash":169}],189:[function(require,module,exports){
 /**
  * @author Matthew Butler <matthewtbutler@gmail.com>
  * 
@@ -63867,6 +63886,7 @@ let Database = require('./database')
 let config = require('./config')
 let unitList = require('./unit-list')
 require('./listeners')
+require('./character')
 
 Database.allUnits.once('value').then((snapshot) => {
     let units = snapshot.val()
@@ -63883,7 +63903,7 @@ Database.allUnits.once('value').then((snapshot) => {
         unitList.unitsToggleList.push(name)
     })
 })
-},{"./config":185,"./database":186,"./listeners":189,"./map":190,"./unit":193,"./unit-list":192,"bootstrap":158,"jquery":168,"lodash":169}],189:[function(require,module,exports){
+},{"./character":185,"./config":186,"./database":187,"./listeners":190,"./map":191,"./unit":194,"./unit-list":193,"bootstrap":158,"jquery":168,"lodash":169}],190:[function(require,module,exports){
 /**
  * This module handles all event listeners
  * @module Listeners
@@ -63952,7 +63972,7 @@ $(document).keypress((e) => {
 
     }
 })
-},{"../vendor/jquery.panzoom":195,"./actions":184,"./config":185,"./database":186,"./timer":191,"./unit":193,"./utils":194,"lodash":169,"panzoom":171,"slideout":180}],190:[function(require,module,exports){
+},{"../vendor/jquery.panzoom":196,"./actions":184,"./config":186,"./database":187,"./timer":192,"./unit":194,"./utils":195,"lodash":169,"panzoom":171,"slideout":180}],191:[function(require,module,exports){
 /**
  * This module handles creating the hex grid and individual hex methods
  * @module Map
@@ -64090,7 +64110,7 @@ module.exports = {
     grid: grid,
     getHexFromCoords: getHexFromCoords
 }
-},{"./config":185,"honeycomb-grid":167,"lodash":169,"svg.js":181}],191:[function(require,module,exports){
+},{"./config":186,"honeycomb-grid":167,"lodash":169,"svg.js":181}],192:[function(require,module,exports){
 /**
  * This module handles game time in increments of phase and impulse
  * @module Timer
@@ -64173,7 +64193,7 @@ function calculateActionTime(combatActions, unit, time) {
             next.phase = phase
         }
     }
-
+    //subtract the impulse amount from actions to get remaining
     return {time: next, remaining: ca[impulse] - actions}
 }
 
@@ -64279,7 +64299,7 @@ module.exports = {
     addToActionList: addToActionList,
     submitAction: submitAction
 }
-},{"./actions":184,"./database":186,"./unit":193,"lodash":169}],192:[function(require,module,exports){
+},{"./actions":184,"./database":187,"./unit":194,"lodash":169}],193:[function(require,module,exports){
 let unitsToggleList = []
 
 let unitList = [
@@ -64455,7 +64475,7 @@ module.exports = {
   unitList: unitList
 }
 
-},{}],193:[function(require,module,exports){
+},{}],194:[function(require,module,exports){
 /**
  * This module handles creating, controlling, and updating units
  * @module Unit
@@ -64719,7 +64739,7 @@ module.exports = {
     changeFacing: changeFacing,
     update: update
 }
-},{"./config":185,"./database":186,"./map":190,"./unit-list":192,"./utils":194,"lodash":169,"milsymbol":170}],194:[function(require,module,exports){
+},{"./config":186,"./database":187,"./map":191,"./unit-list":193,"./utils":195,"lodash":169,"milsymbol":170}],195:[function(require,module,exports){
 /**
  * This module handles various utility functions
  * @module Utils
@@ -64743,28 +64763,28 @@ function createButtonSet(uniqueDesignation) {
     let face2LeftImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-2-left-immobile', '${uniqueDesignation}', 1)">Turn 2 hexside left <span class="badge">1</span></a></li>`
     let face1RightImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-right-immobile', '${uniqueDesignation}', 1)">Turn 1 hexside right <span class="badge">1</span></a></li>`
     let face2RightImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-2-right-immobile', '${uniqueDesignation}', 1)">Turn 2 hexside right <span class="badge">1</span></a></li>`
-    
+
     $('#facing-dropdown').append(face1LeftMoving)
     $('#facing-dropdown').append(face1RightMoving)
     $('#facing-dropdown').append(face1LeftImmobile)
     $('#facing-dropdown').append(face2LeftImmobile)
     $('#facing-dropdown').append(face1RightImmobile)
     $('#facing-dropdown').append(face2RightImmobile)
-    
+
     // add aiming mods 1-12
     for (let i = 1; i <= 12; i++) {
         let aiming = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('aiming', '${uniqueDesignation}', ${i})">Aim <span class="badge">${i}</span></a></li>`
         $('#aiming-dropdown').append(aiming)
     }
-    
+
 
     Database.singleUnit(uniqueDesignation).once('value').then((data) => {
         let unit = data.val()
         $('#moving-dropdown').empty()
 
-        if (unit.position === 'standing') {            
+        if (unit.position === 'standing') {
             let runningForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('running-forward', '${uniqueDesignation}', 1)">Run forward one hex <span class="badge">1</span></a></li>`
-            let runningBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('running-backward', '${uniqueDesignation}', 2)">Run backward one hex <span class="badge">2</span></a></li>`            
+            let runningBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('running-backward', '${uniqueDesignation}', 2)">Run backward one hex <span class="badge">2</span></a></li>`
             $('#moving-dropdown').append(runningForward)
             $('#moving-dropdown').append(runningBackward)
         } else if (unit.position === 'kneeling') {
@@ -64820,7 +64840,7 @@ module.exports = {
     populateControlPanel: populateControlPanel,
     createButtonSet: createButtonSet
 }
-},{"./database":186}],195:[function(require,module,exports){
+},{"./database":187}],196:[function(require,module,exports){
 /**
  * @license jquery.panzoom.js v3.2.2
  * Updated: Wed Sep 20 2017
@@ -66124,4 +66144,4 @@ module.exports = {
 	return Panzoom;
 }));
 
-},{"jquery":168}]},{},[188]);
+},{"jquery":168}]},{},[189]);

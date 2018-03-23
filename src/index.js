@@ -14,6 +14,7 @@ let Database = require('./database')
 let config = require('./config')
 let unitList = require('./unit-list')
 require('./listeners')
+require('./character')
 
 Database.allUnits.once('value').then((snapshot) => {
     let units = snapshot.val()
