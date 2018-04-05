@@ -1,0 +1,33 @@
+html,
+body {
+    padding: 0px;
+    margin: 0px;
+    overflow: hidden;
+    height: 100%;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #0495c9;
+    border-color: #357ebd;
+    margin: 5px;
+}
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active, .open>.dropdown-toggle.btn-primary {
+    color: #fff;
+    background-color: #00b3db;
+    border-color: #285e8e;
+}
+
+#aiming-dropdown {
+    left: -60px;
+}
+
+#moving-dropdown {
+    left: -30px;
+}
+
+.panel-row {
+    margin-left: 0px;
+}
+
+.character-form .row{ margin-top: 10px; }

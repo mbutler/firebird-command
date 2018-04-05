@@ -1,0 +1,160 @@
+<!doctype html>
+<!--[if lt IE 7]>      <html class="no-js lt-ie9 lt-ie8 lt-ie7" lang=""> <![endif]-->
+<!--[if IE 7]>         <html class="no-js lt-ie9 lt-ie8" lang=""> <![endif]-->
+<!--[if IE 8]>         <html class="no-js lt-ie9" lang=""> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="en">
+<!--<![endif]-->
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Firebird Command</title>
+    <meta name="description" content="">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <form id="character-creation-form"action="#" class="character-form">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+
+                <div class="row">
+                    <div class="col-md-4">
+                        <input id="unique-designation" type="text" class="form-control" placeholder="Unique Designation" />
+                    </div>
+                    <div class="col-md-2">
+                        <input id="skill-level" type="number" class="form-control" placeholder="Skill Level" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">
+                        <input id="strength" type="number" class="form-control" placeholder="Strength" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">
+                        <input id="intelligence" type="number" class="form-control" placeholder="Intelligence" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">
+                        <input id="will" type="number" class="form-control" placeholder="Will" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">
+                        <input id="health" type="number" class="form-control" placeholder="Health" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">
+                        <input id="agility" type="number" class="form-control" placeholder="Agility" />
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3">
+                        <select id="armor">
+                            <option value="clothing">Clothing</option>
+                            <option value="light-flexible">Light Flexible</option>
+                            <option value="medium-flexible">Medium Flexible</option>
+                            <option value="heavy-flexible">Heavy Flexible</option>
+                            <option value="light-rigid">Light Rigid</option>
+                            <option value="medium-rigid">Medium Rigid</option>
+                            <option value="heavy-rigid">Heavy Rigid</option>
+                        </select>
+                    </div>
+                </div>
+                <h3>Equipment</h3>
+                <div class="row checkbox">
+                    <div class="col-md-3">
+                        <label>
+                            <input id="bayonet" name="equipment" type="checkbox" class="text-muted">Bayonet</label>
+                    </div>
+                    <div class="col-md-3">
+                        <label>
+                            <input id="binoculars" name="equipment" type="checkbox" class="text-muted">Binoculars</label>
+                    </div>
+                    <div class="col-md-3">
+                        <label>
+                            <input id="bipod" name="equipment" type="checkbox" class="text-muted">Bipod</label>
+                    </div>
+                </div>
+                <div class="row checkbox">
+                    <div class="col-md-3">
+                        <label>
+                            <input id="canteen" name="equipment" type="checkbox" class="text-muted">Canteen</label>
+                    </div>
+                    <div class="col-md-3">
+                        <label>
+                            <input id="clothing" name="equipment" type="checkbox" class="text-muted">Clothing</label>
+                    </div>
+                    <div class="col-md-3">
+                        <label>
+                            <input id="entrenching-tool" name="equipment" type="checkbox" class="text-muted">Entrenching Tool</label>
+                    </div>
+                </div>
+                <div class="row checkbox">
+                    <div class="col-md-3">
+                        <label>
+                            <input id="field-radio" name="equipment" type="checkbox" class="text-muted">Field Radio</label>
+                    </div>
+                    <div class="col-md-3">
+                        <label>
+                            <input id="fighting-harness" name="equipment" type="checkbox" class="text-muted">Fighting Harness</label>
+                    </div>
+                    <div class="col-md-3">
+                        <label>
+                            <input id="holster" name="equipment" type="checkbox" class="text-muted">Holster</label>
+                    </div>
+                </div>
+
+                <div class="row checkbox">
+                    <div class="col-md-3">
+                        <label>
+                            <input id="magazine-pouch" name="equipment" type="checkbox" class="text-muted">Magazine Pouch (2 mags)</label>
+                    </div>
+                    <div class="col-md-3">
+                        <label>
+                            <input id="optical-scope" name="equipment" type="checkbox" class="text-muted">Optical Scope</label>
+                    </div>
+                    <div class="col-md-3">
+                        <label>
+                            <input id="smoke-grenade" name="equipment" type="checkbox" class="text-muted">Smoke Grenade</label>
+                    </div>
+                </div>
+                <h3>Weapons</h3>
+                <div class="row checkbox">
+                    <div class="col-md-3">
+                        <label>
+                            <input id="m16a1" name="weapon" type="checkbox" class="text-muted">M16A1</label>
+                    </div>
+                    <div class="col-md-3">
+                        <label>
+                            <input id="colt-45" name="weapon" type="checkbox" class="text-muted">Colt .45</label>
+                    </div>
+                    <div class="col-md-3">
+                        <label>
+                            <input id="uzi-9mm" name="weapon"  type="checkbox" class="text-muted">Uzi 9mm</label>
+                    </div>
+                </div>
+                <div class="row ">
+                    <div class="col-md-6 col-sm-6 col-xs-6 pad-adjust">
+                        <input type="submit" class="btn btn-danger" onclick="formSubmit()" value="CREATE" />
+                    </div>
+                </div>
+            </div>
+    </form>
+</body>
+
+<script src="js/bundle.js" type="text/javascript"></script>
+
+<script>
+</script>
+
+</html>

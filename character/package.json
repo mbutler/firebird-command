@@ -1,0 +1,22 @@
+{
+  "name": "character",
+  "version": "1.0.0",
+  "description": "Character creator for Firebird",
+  "main": "character.js",
+  "scripts": {
+    "build": "browserify src/character.js -o dist/js/bundle.js",
+    "start": "http-server ./dist"
+  },
+  "author": "Matthew Butler",
+  "license": "MIT",
+  "devDependencies": {
+    "browserify": "^16.1.1",
+    "http-server": "^0.11.1"
+  },
+  "dependencies": {
+    "bootstrap": "^3.3.7",
+    "firebase": "^4.12.0",
+    "jquery": "^3.3.1",
+    "lodash": "^4.17.5"
+  }
+}
