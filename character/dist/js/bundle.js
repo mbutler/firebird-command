@@ -56471,12 +56471,15 @@ const bootstrap = require('bootstrap')
 const weight = require('./weight')
 const speedChart = require('./baseSpeed')
 const maxSpeedChart = require('./maxSpeed')
+const combatActionChart = require('./combatActions')
+const capiChart = require('./combatActionsPerImpulse')
 
-console.log(maxSpeedChart)
+console.log(combatActionChart)
 
 function formSubmit () {
-    let encumberance = 0, baseSpeed, maxSpeed, str, agi
+    let encumberance = 0, baseSpeed, maxSpeed, str, agi, sal, isf, ca, ms, combatActions, capi = {}, kv
     let uniqueDesignation = document.getElementById("unique-designation").value
+    let skillLevel = document.getElementById("skill-level").value
     let strength = document.getElementById("strength").value
     let intelligence = document.getElementById("intelligence").value
     let will = document.getElementById("will").value
@@ -56485,6 +56488,7 @@ function formSubmit () {
     let armor = document.getElementById("armor").value
     let equipmentCheckboxes = document.getElementsByName('equipment')
     let selectedEquipment = []
+
     for (let i = 0; i < equipmentCheckboxes.length; i++) {
         if (equipmentCheckboxes[i].checked) {
             selectedEquipment.push(equipmentCheckboxes[i].id)
@@ -56492,6 +56496,7 @@ function formSubmit () {
     }
     let weaponCheckboxes = document.getElementsByName('weapon')
     let selectedWeapons = []
+
     for (let i = 0; i < weaponCheckboxes.length; i++) {
       if (weaponCheckboxes[i].checked) {
           selectedWeapons.push(weaponCheckboxes[i].id)
@@ -56511,6 +56516,9 @@ function formSubmit () {
     //round up to nearest 5
     encumberance = Math.ceil(encumberance/5) * 5
 
+    console.log('encumberance', encumberance)
+
+    //table 1A
     _.forEach(speedChart, (col) => {
         if (col.STR == strength) {            
             str = col
@@ -56519,8 +56527,10 @@ function formSubmit () {
 
     baseSpeed = str[_.toString(encumberance)]
 
+    console.log('base speed', baseSpeed)
+
+    //table 1B
     _.forEach(maxSpeedChart, (col) => {
-        console.log(col.AGI)
         if (col.AGI == agility) {
             agi = col
         }
@@ -56528,16 +56538,476 @@ function formSubmit () {
 
     maxSpeed = agi[_.toString(baseSpeed)]
 
-    alert(maxSpeed)
+    console.log('max speed', maxSpeed)
+
+    //curve fitted linear equation just because it's a cool way to do it instead of yet another chart
+    //Skill Accuracy Level
+    sal = _.round(2147609 + (0.6880844 - 2147609)/(1 + (Number(skillLevel)/1635843000) ** 0.6249486))
+
+    //table 1D
+    isf = Number(intelligence) + sal
+    isf = 2 * Math.floor(isf / 2) + 1
+
+    console.log('isf', isf)
+
+    _.forEach(combatActionChart, (col) => {
+        if (col.MS == maxSpeed) {
+            ms = col
+        }
+    })
+
+    ca = ms[_.toString(isf)]
+
+    console.log('ca', ca)
+
+    //table 1E
+    _.forEach(capiChart, (col) => {
+        if (col.combatActions == ca) {
+            combatActions = col
+        }
+    })
+
+    capi['1'] = combatActions.impulse1
+    capi['2'] = combatActions.impulse2
+    capi['3'] = combatActions.impulse3
+    capi['4'] = combatActions.impulse4
+
+    console.log('capi', capi)
+
+    //knockout value
+    kv = _.round(0.5 * Number(will) * Number(skillLevel))
+
+    console.log('kv', kv)
+
+
 
 }
+
+
 
 window.formSubmit = formSubmit
 
 module.exports = {
     formSubmit: formSubmit
 }
-},{"./baseSpeed":182,"./maxSpeed":184,"./weight":185,"bootstrap":158,"firebase":174,"jquery":177,"lodash":178}],184:[function(require,module,exports){
+},{"./baseSpeed":182,"./combatActions":184,"./combatActionsPerImpulse":185,"./maxSpeed":186,"./weight":187,"bootstrap":158,"firebase":174,"jquery":177,"lodash":178}],184:[function(require,module,exports){
+let combatActions = [
+  {
+    "MS": 1,
+    "7": 1,
+    "9": 1,
+    "11": 1,
+    "13": 1,
+    "15": 1,
+    "17": 1,
+    "19": 1,
+    "21": 1,
+    "23": 1,
+    "25": 1,
+    "27": 1,
+    "29": 1,
+    "31": 2,
+    "33": 2,
+    "35": 2,
+    "37": 2,
+    "39": 2
+  },
+  {
+    "MS": 2,
+    "7": 1,
+    "9": 1,
+    "11": 1,
+    "13": 2,
+    "15": 2,
+    "17": 2,
+    "19": 2,
+    "21": 2,
+    "23": 2,
+    "25": 3,
+    "27": 3,
+    "29": 3,
+    "31": 3,
+    "33": 3,
+    "35": 3,
+    "37": 4,
+    "39": 4
+  },
+  {
+    "MS": 3,
+    "7": 1,
+    "9": 2,
+    "11": 2,
+    "13": 2,
+    "15": 3,
+    "17": 3,
+    "19": 3,
+    "21": 3,
+    "23": 4,
+    "25": 4,
+    "27": 4,
+    "29": 4,
+    "31": 5,
+    "33": 5,
+    "35": 5,
+    "37": 5,
+    "39": 6
+  },
+  {
+    "MS": 4,
+    "7": 2,
+    "9": 2,
+    "11": 3,
+    "13": 3,
+    "15": 4,
+    "17": 4,
+    "19": 4,
+    "21": 5,
+    "23": 5,
+    "25": 5,
+    "27": 6,
+    "29": 6,
+    "31": 6,
+    "33": 7,
+    "35": 7,
+    "37": 7,
+    "39": 7
+  },
+  {
+    "MS": 5,
+    "7": 2,
+    "9": 3,
+    "11": 3,
+    "13": 4,
+    "15": 4,
+    "17": 5,
+    "19": 5,
+    "21": 6,
+    "23": 6,
+    "25": 7,
+    "27": 7,
+    "29": 7,
+    "31": 8,
+    "33": 8,
+    "35": 8,
+    "37": 9,
+    "39": 9
+  },
+  {
+    "MS": 6,
+    "7": 3,
+    "9": 3,
+    "11": 4,
+    "13": 5,
+    "15": 5,
+    "17": 6,
+    "19": 6,
+    "21": 7,
+    "23": 7,
+    "25": 8,
+    "27": 8,
+    "29": 9,
+    "31": 9,
+    "33": 10,
+    "35": 10,
+    "37": 11,
+    "39": 11
+  },
+  {
+    "MS": 7,
+    "7": 3,
+    "9": 4,
+    "11": 5,
+    "13": 5,
+    "15": 6,
+    "17": 7,
+    "19": 7,
+    "21": 8,
+    "23": 9,
+    "25": 9,
+    "27": 10,
+    "29": 10,
+    "31": 11,
+    "33": 11,
+    "35": 12,
+    "37": 12,
+    "39": 13
+  },
+  {
+    "MS": 8,
+    "7": 3,
+    "9": 4,
+    "11": 5,
+    "13": 6,
+    "15": 7,
+    "17": 8,
+    "19": 9,
+    "21": 9,
+    "23": 10,
+    "25": 11,
+    "27": 11,
+    "29": 12,
+    "31": 12,
+    "33": 13,
+    "35": 14,
+    "37": 14,
+    "39": 15
+  },
+  {
+    "MS": 9,
+    "7": 4,
+    "9": 5,
+    "11": 6,
+    "13": 7,
+    "15": 8,
+    "17": 9,
+    "19": 10,
+    "21": 10,
+    "23": 11,
+    "25": 12,
+    "27": 13,
+    "29": 13,
+    "31": 14,
+    "33": 15,
+    "35": 15,
+    "37": 16,
+    "39": 17
+  },
+  {
+    "MS": 10,
+    "7": 4,
+    "9": 6,
+    "11": 7,
+    "13": 8,
+    "15": 9,
+    "17": 10,
+    "19": 11,
+    "21": 12,
+    "23": 12,
+    "25": 13,
+    "27": 14,
+    "29": 15,
+    "31": 16,
+    "33": 16,
+    "35": 17,
+    "37": 18,
+    "39": 18
+  },
+  {
+    "MS": 11,
+    "7": 5,
+    "9": 6,
+    "11": 7,
+    "13": 9,
+    "15": 10,
+    "17": 11,
+    "19": 12,
+    "21": 13,
+    "23": 14,
+    "25": 15,
+    "27": 15,
+    "29": 16,
+    "31": 17,
+    "33": 18,
+    "35": 19,
+    "37": 19,
+    "39": 20
+  },
+  {
+    "MS": 12,
+    "7": 5,
+    "9": 7,
+    "11": 8,
+    "13": 10,
+    "15": 11,
+    "17": 12,
+    "19": 13,
+    "21": 14,
+    "23": 15,
+    "25": 16,
+    "27": 17,
+    "29": 18,
+    "31": 19,
+    "33": 20,
+    "35": 21,
+    "37": 21,
+    "39": 22
+  },
+  {
+    "MS": 13,
+    "7": 6,
+    "9": 7,
+    "11": 9,
+    "13": 11,
+    "15": 12,
+    "17": 13,
+    "19": 14,
+    "21": 15,
+    "23": 16,
+    "25": 17,
+    "27": 18,
+    "29": 19,
+    "31": 20,
+    "33": 21,
+    "35": 22,
+    "37": 23,
+    "39": 24
+  }
+ ]
+
+ module.exports = combatActions
+},{}],185:[function(require,module,exports){
+let capi = [
+ {
+   "combatActions": 1,
+   "impulse1": 1,
+   "impulse2": 0,
+   "impulse3": 0,
+   "impulse4": 0
+ },
+ {
+   "combatActions": 2,
+   "impulse1": 1,
+   "impulse2": 0,
+   "impulse3": 1,
+   "impulse4": 0
+ },
+ {
+   "combatActions": 3,
+   "impulse1": 1,
+   "impulse2": 0,
+   "impulse3": 1,
+   "impulse4": 1
+ },
+ {
+   "combatActions": 4,
+   "impulse1": 1,
+   "impulse2": 1,
+   "impulse3": 1,
+   "impulse4": 1
+ },
+ {
+   "combatActions": 5,
+   "impulse1": 2,
+   "impulse2": 1,
+   "impulse3": 1,
+   "impulse4": 1
+ },
+ {
+   "combatActions": 6,
+   "impulse1": 2,
+   "impulse2": 1,
+   "impulse3": 2,
+   "impulse4": 1
+ },
+ {
+   "combatActions": 7,
+   "impulse1": 2,
+   "impulse2": 1,
+   "impulse3": 2,
+   "impulse4": 2
+ },
+ {
+   "combatActions": 8,
+   "impulse1": 2,
+   "impulse2": 2,
+   "impulse3": 2,
+   "impulse4": 2
+ },
+ {
+   "combatActions": 9,
+   "impulse1": 3,
+   "impulse2": 2,
+   "impulse3": 2,
+   "impulse4": 2
+ },
+ {
+   "combatActions": 10,
+   "impulse1": 3,
+   "impulse2": 2,
+   "impulse3": 3,
+   "impulse4": 2
+ },
+ {
+   "combatActions": 11,
+   "impulse1": 3,
+   "impulse2": 2,
+   "impulse3": 3,
+   "impulse4": 3
+ },
+ {
+   "combatActions": 12,
+   "impulse1": 3,
+   "impulse2": 3,
+   "impulse3": 3,
+   "impulse4": 3
+ },
+ {
+   "combatActions": 13,
+   "impulse1": 4,
+   "impulse2": 3,
+   "impulse3": 3,
+   "impulse4": 3
+ },
+ {
+   "combatActions": 14,
+   "impulse1": 4,
+   "impulse2": 3,
+   "impulse3": 4,
+   "impulse4": 3
+ },
+ {
+   "combatActions": 15,
+   "impulse1": 4,
+   "impulse2": 3,
+   "impulse3": 4,
+   "impulse4": 4
+ },
+ {
+   "combatActions": 16,
+   "impulse1": 4,
+   "impulse2": 4,
+   "impulse3": 4,
+   "impulse4": 4
+ },
+ {
+   "combatActions": 17,
+   "impulse1": 5,
+   "impulse2": 4,
+   "impulse3": 4,
+   "impulse4": 4
+ },
+ {
+   "combatActions": 18,
+   "impulse1": 5,
+   "impulse2": 4,
+   "impulse3": 5,
+   "impulse4": 4
+ },
+ {
+   "combatActions": 19,
+   "impulse1": 5,
+   "impulse2": 4,
+   "impulse3": 5,
+   "impulse4": 5
+ },
+ {
+   "combatActions": 20,
+   "impulse1": 5,
+   "impulse2": 5,
+   "impulse3": 5,
+   "impulse4": 5
+ },
+ {
+   "combatActions": 21,
+   "impulse1": 6,
+   "impulse2": 5,
+   "impulse3": 5,
+   "impulse4": 5
+ }
+]
+
+module.exports = capi
+},{}],186:[function(require,module,exports){
 let maxSpeed = [
  {
    "AGI": 21,
@@ -56773,7 +57243,7 @@ let maxSpeed = [
 ]
 
 module.exports = maxSpeed
-},{}],185:[function(require,module,exports){
+},{}],187:[function(require,module,exports){
 let weight = {
     'bayonet': 1.0,
     'binoculars': 2.0,
