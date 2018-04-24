@@ -8,9 +8,28 @@ const maxSpeedChart = require('./maxSpeed')
 const combatActionChart = require('./combatActions')
 const capiChart = require('./combatActionsPerImpulse')
 
-console.log(combatActionChart)
+let config = {
+    mapWidth: 100,
+    mapHeight: 100,
+    hexSize: 25,
+    divContainer: 'stage',
+    gameID: '-L6D8cz625nLzyargSEO',
+    newGame: false,
+    firebase: {
+      apiKey: 'AIzaSyBKxAP8VRE18XIqhkZlI6z3xbCgaPCwVc0',
+      authDomain: 'firebird-f30dc.firebaseapp.com',
+      databaseURL: 'https://firebird-f30dc.firebaseio.com',
+      projectId: 'firebird-f30dc',
+      storageBucket: 'firebird-f30dc.appspot.com',
+      messagingSenderId: '274623842874'
+    }
+  }
+
+  firebase.initializeApp(config.firebase)
+  let allUnits = firebase.database().ref('/Games/' + config.gameID + '/Units')
 
 function formSubmit () {
+    let newUnit = {}
     let encumberance = 0, baseSpeed, maxSpeed, str, agi, sal, isf, ca, ms, combatActions, capi = {}, kv
     let uniqueDesignation = document.getElementById("unique-designation").value
     let skillLevel = document.getElementById("skill-level").value
@@ -22,6 +41,9 @@ function formSubmit () {
     let armor = document.getElementById("armor").value
     let equipmentCheckboxes = document.getElementsByName('equipment')
     let selectedEquipment = []
+
+    newUnit.uniqueDesignation = uniqueDesignation
+    newUnit.skillLevel = skillLevel
 
     for (let i = 0; i < equipmentCheckboxes.length; i++) {
         if (equipmentCheckboxes[i].checked) {
@@ -111,9 +133,9 @@ function formSubmit () {
     //knockout value
     kv = _.round(0.5 * Number(will) * Number(skillLevel))
 
-    console.log('kv', kv)
 
 
+    firebase.database().ref('/Games/' + config.gameID + '/Units/' + uniqueDesignation).set(newUnit)
 
 }
 
