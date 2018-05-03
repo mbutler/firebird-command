@@ -56474,10 +56474,29 @@ const maxSpeedChart = require('./maxSpeed')
 const combatActionChart = require('./combatActions')
 const capiChart = require('./combatActionsPerImpulse')
 
-console.log(combatActionChart)
+let config = {
+    mapWidth: 100,
+    mapHeight: 100,
+    hexSize: 25,
+    divContainer: 'stage',
+    gameID: '-L6D8cz625nLzyargSEO',
+    newGame: false,
+    firebase: {
+      apiKey: 'AIzaSyBKxAP8VRE18XIqhkZlI6z3xbCgaPCwVc0',
+      authDomain: 'firebird-f30dc.firebaseapp.com',
+      databaseURL: 'https://firebird-f30dc.firebaseio.com',
+      projectId: 'firebird-f30dc',
+      storageBucket: 'firebird-f30dc.appspot.com',
+      messagingSenderId: '274623842874'
+    }
+  }
+
+  firebase.initializeApp(config.firebase)
+  let allUnits = firebase.database().ref('/Games/' + config.gameID + '/Units')
 
 function formSubmit () {
-    let encumberance = 0, baseSpeed, maxSpeed, str, agi, sal, isf, ca, ms, combatActions, capi = {}, kv
+    let newUnit = {}
+    let encumberance = 0, baseSpeed, maxSpeed, str, agi, sal, isf, ca, ms, combatActions, capi = {}, kv, symbol = {}
     let uniqueDesignation = document.getElementById("unique-designation").value
     let skillLevel = document.getElementById("skill-level").value
     let strength = document.getElementById("strength").value
@@ -56577,9 +56596,41 @@ function formSubmit () {
     //knockout value
     kv = _.round(0.5 * Number(will) * Number(skillLevel))
 
-    console.log('kv', kv)
+    symbol = {
+        'sidc': 'SHG-UCFM-------',
+        'options': {
+          'size': 0,
+          'additionalInformation': '',
+          'infoFields': false
+        }
+    }
 
+    newUnit.name = uniqueDesignation
+    newUnit.skillLevel = skillLevel
+    newUnit.strength = strength
+    newUnit.intelligence = intelligence
+    newUnit.will = will
+    newUnit.health = health
+    newUnit.agility = agility
+    newUnit.baseSpeed = baseSpeed
+    newUnit.maximumSpeed = maxSpeed
+    newUnit.skillAccuracyLevel = sal
+    newUnit.intSkillFactor = isf
+    newUnit.combatActions = ca
+    newUnit.combatActionsPerImpulse = capi
+    newUnit.knockoutValue = kv
+    newUnit.weapons = selectedWeapons
+    newUnit.bodyArmor = armor
+    newUnit.equipment = selectedEquipment
+    newUnit.encumberance = encumberance
+    newUnit.symbol = symbol
+    newUnit.symbol.uniqueDesignation = uniqueDesignation
+    newUnit.position = 'standing'
+    newUnit.currentHex = [12, 9]
+    newUnit.facing = 4
+    newUnit.stance = 'running'
 
+    firebase.database().ref('/Games/' + config.gameID + '/Units/' + uniqueDesignation).set(newUnit)
 
 }
 

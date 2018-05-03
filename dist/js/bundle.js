@@ -63348,6 +63348,7 @@ let Game = require('./game')
  */
 function action(selection, uniqueDesignation) {
     let actionMap = {
+        'aiming': Game.aiming,
         'face-1-left-moving': Game.face1LeftMoving,
         'face-1-right-moving': Game.face1RightMoving,
         //
@@ -63383,32 +63384,14 @@ function action(selection, uniqueDesignation) {
     }
 
     let act = actionMap[selection]
+    console.log(act)
     act(uniqueDesignation)
 }
 
 module.exports = {
     action: action
 }
-},{"./game":188}],185:[function(require,module,exports){
-/**
- * This module handles character creation
- * @module Character
- * @namespace
- */
-
-let Database = require('./database')
-
-function formSubmit () {
-    let submission = document.getElementById("character-creation-form").submit()
-    console.log(submission)
-}
-
-window.formSubmit = formSubmit
-
-module.exports = {
-    formSubmit: formSubmit
-}
-},{"./database":187}],186:[function(require,module,exports){
+},{"./game":187}],185:[function(require,module,exports){
 /**
  * Configuration file for setting up the map, document, and database connection
  * @module Config
@@ -63434,7 +63417,7 @@ let config = {
 
 module.exports = config
 
-},{}],187:[function(require,module,exports){
+},{}],186:[function(require,module,exports){
 /**
  * This module handles database interaction and database references
  * @module Database
@@ -63461,21 +63444,15 @@ function singleUnit (uniqueDesignation) {
   return firebase.database().ref(path)
 }
 
-function singleUnitActionList (uniqueDesignation) {
-  let path = '/Games/' + config.gameID + '/Units/' + uniqueDesignation + '/actionList'
-  return firebase.database().ref(path)
-}
-
 module.exports = {
   allUnits: allUnits,
   firebaseRoot: firebase,
   singleUnit: singleUnit,
   time: time,
-  actionList: actionList,
-  singleUnitActionList: singleUnitActionList
+  actionList: actionList
 }
 
-},{"./config":186,"firebase":164}],188:[function(require,module,exports){
+},{"./config":185,"firebase":164}],187:[function(require,module,exports){
 /**
  * This module handles primary game logic
  * @module Game
@@ -63581,6 +63558,13 @@ function face1LeftMoving (uniqueDesignation) {
     let newFace = findFace(unit.facing, 'left', 1)
 
     Unit.update({facing: newFace}, uniqueDesignation)
+  })
+}
+
+function aiming (uniqueDesignation) {
+  Database.singleUnit(uniqueDesignation).once('value').then((data) => {
+    let unit = data.val()  
+    console.log("fire!")
   })
 }
 
@@ -63866,10 +63850,11 @@ module.exports = {
   drawPistolShoulder: drawPistolShoulder,
   drawPistolHip: drawPistolHip,
   drawHandWeapon: drawHandWeapon,
-  accessBackpack: accessBackpack
+  accessBackpack: accessBackpack,
+  aiming: aiming
 }
 
-},{"./config":186,"./database":187,"./map":191,"./unit":194,"lodash":169}],189:[function(require,module,exports){
+},{"./config":185,"./database":186,"./map":190,"./unit":193,"lodash":169}],188:[function(require,module,exports){
 /**
  * @author Matthew Butler <matthewtbutler@gmail.com>
  * 
@@ -63886,7 +63871,6 @@ let Database = require('./database')
 let config = require('./config')
 let unitList = require('./unit-list')
 require('./listeners')
-require('./character')
 
 Database.allUnits.once('value').then((snapshot) => {
     let units = snapshot.val()
@@ -63901,9 +63885,10 @@ Database.allUnits.once('value').then((snapshot) => {
         Unit.create(hex, unit.symbol.sidc, unit.symbol.options)
         Unit.changeFacing(face, name)
         unitList.unitsToggleList.push(name)
+        console.log(unitList.unitsToggleList)
     })
 })
-},{"./character":185,"./config":186,"./database":187,"./listeners":190,"./map":191,"./unit":194,"./unit-list":193,"bootstrap":158,"jquery":168,"lodash":169}],190:[function(require,module,exports){
+},{"./config":185,"./database":186,"./listeners":189,"./map":190,"./unit":193,"./unit-list":192,"bootstrap":158,"jquery":168,"lodash":169}],189:[function(require,module,exports){
 /**
  * This module handles all event listeners
  * @module Listeners
@@ -63953,10 +63938,15 @@ Database.allUnits.on('child_changed', (snapshot) => {
 })
 
 Database.time.on('child_changed', (snapshot) => {
+    console.log(snapshot.val())
     //don't really need to get a time snapshot here, but can
     Database.time.once('value').then((snapshot) => {
         let time = snapshot.val()
-        //Timer.runActions()
+        console.log("timer running")
+
+        Timer.runActions()
+
+        
     })
 })
 
@@ -63972,7 +63962,7 @@ $(document).keypress((e) => {
 
     }
 })
-},{"../vendor/jquery.panzoom":196,"./actions":184,"./config":186,"./database":187,"./timer":192,"./unit":194,"./utils":195,"lodash":169,"panzoom":171,"slideout":180}],191:[function(require,module,exports){
+},{"../vendor/jquery.panzoom":195,"./actions":184,"./config":185,"./database":186,"./timer":191,"./unit":193,"./utils":194,"lodash":169,"panzoom":171,"slideout":180}],190:[function(require,module,exports){
 /**
  * This module handles creating the hex grid and individual hex methods
  * @module Map
@@ -64110,7 +64100,7 @@ module.exports = {
     grid: grid,
     getHexFromCoords: getHexFromCoords
 }
-},{"./config":186,"honeycomb-grid":167,"lodash":169,"svg.js":181}],192:[function(require,module,exports){
+},{"./config":185,"honeycomb-grid":167,"lodash":169,"svg.js":181}],191:[function(require,module,exports){
 /**
  * This module handles game time in increments of phase and impulse
  * @module Timer
@@ -64146,6 +64136,7 @@ function incrementTimer() {
         next.phase = phase
 
         Database.time.update(next)
+        console.log(next)
     })
 }
 
@@ -64226,6 +64217,7 @@ function runActions () {
         let currentTime = snapshot.val()
         Database.actionList.once('value').then((snapshot) => {
             let actionList = snapshot.val()
+            console.log(actionList)
 
             //make sure there is an Action List
             if (actionList !== null) {
@@ -64235,11 +64227,13 @@ function runActions () {
                 let i = 0
 
                 _.forEach(actionList, (unit) => {
+                    console.log(unit)
                     let unitKey = actionKeys[i]
                     let actionTime = unit.time
 
                     //if the unit's action time is the same as current time then run and delete the action from the list
-                    if (_.isEqual(actionTime, currentTime)) {                    
+                    if (_.isEqual(actionTime, currentTime)) {
+                        console.log("actions running")                 
                         Action.action(unit.action, unit.uniqueDesignation)
                         Database.actionList.child(unitKey).remove()
                     }
@@ -64262,7 +64256,6 @@ function runActions () {
 function addToActionList (action) {
     let uniqueDesignation = action.uniqueDesignation
     Database.actionList.push(action)
-    Database.singleUnitActionList(uniqueDesignation).push(action)
 }
 
 /**
@@ -64299,7 +64292,7 @@ module.exports = {
     addToActionList: addToActionList,
     submitAction: submitAction
 }
-},{"./actions":184,"./database":187,"./unit":194,"lodash":169}],193:[function(require,module,exports){
+},{"./actions":184,"./database":186,"./unit":193,"lodash":169}],192:[function(require,module,exports){
 let unitsToggleList = []
 
 let unitList = [
@@ -64475,7 +64468,7 @@ module.exports = {
   unitList: unitList
 }
 
-},{}],194:[function(require,module,exports){
+},{}],193:[function(require,module,exports){
 /**
  * This module handles creating, controlling, and updating units
  * @module Unit
@@ -64707,8 +64700,10 @@ function update(updates, uniqueDesignation) {
 
     for (var i = 0; i <= keys.length - 1; i++) {
         changedValue['/' + uniqueDesignation + '/' + keys[i]] = updates[keys[i]]
-    }
 
+        
+    }
+    console.log(changedValue)
     Database.allUnits.update(changedValue)
 }
 
@@ -64739,7 +64734,7 @@ module.exports = {
     changeFacing: changeFacing,
     update: update
 }
-},{"./config":186,"./database":187,"./map":191,"./unit-list":193,"./utils":195,"lodash":169,"milsymbol":170}],195:[function(require,module,exports){
+},{"./config":185,"./database":186,"./map":190,"./unit-list":192,"./utils":194,"lodash":169,"milsymbol":170}],194:[function(require,module,exports){
 /**
  * This module handles various utility functions
  * @module Utils
@@ -64840,7 +64835,7 @@ module.exports = {
     populateControlPanel: populateControlPanel,
     createButtonSet: createButtonSet
 }
-},{"./database":187}],196:[function(require,module,exports){
+},{"./database":186}],195:[function(require,module,exports){
 /**
  * @license jquery.panzoom.js v3.2.2
  * Updated: Wed Sep 20 2017
@@ -66144,4 +66139,4 @@ module.exports = {
 	return Panzoom;
 }));
 
-},{"jquery":168}]},{},[189]);
+},{"jquery":168}]},{},[188]);

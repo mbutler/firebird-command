@@ -106,6 +106,13 @@ function face1LeftMoving (uniqueDesignation) {
   })
 }
 
+function aiming (uniqueDesignation) {
+  Database.singleUnit(uniqueDesignation).once('value').then((data) => {
+    let unit = data.val()  
+    console.log("fire!")
+  })
+}
+
 /**
  * Changes facing 1 to the right if in moving
  *
@@ -388,5 +395,6 @@ module.exports = {
   drawPistolShoulder: drawPistolShoulder,
   drawPistolHip: drawPistolHip,
   drawHandWeapon: drawHandWeapon,
-  accessBackpack: accessBackpack
+  accessBackpack: accessBackpack,
+  aiming: aiming
 }

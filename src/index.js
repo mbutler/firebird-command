@@ -14,7 +14,6 @@ let Database = require('./database')
 let config = require('./config')
 let unitList = require('./unit-list')
 require('./listeners')
-require('./character')
 
 Database.allUnits.once('value').then((snapshot) => {
     let units = snapshot.val()
@@ -29,5 +28,6 @@ Database.allUnits.once('value').then((snapshot) => {
         Unit.create(hex, unit.symbol.sidc, unit.symbol.options)
         Unit.changeFacing(face, name)
         unitList.unitsToggleList.push(name)
+        console.log(unitList.unitsToggleList)
     })
 })

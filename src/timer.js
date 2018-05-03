@@ -33,6 +33,7 @@ function incrementTimer() {
         next.phase = phase
 
         Database.time.update(next)
+        console.log(next)
     })
 }
 
@@ -113,6 +114,7 @@ function runActions () {
         let currentTime = snapshot.val()
         Database.actionList.once('value').then((snapshot) => {
             let actionList = snapshot.val()
+            console.log(actionList)
 
             //make sure there is an Action List
             if (actionList !== null) {
@@ -122,11 +124,13 @@ function runActions () {
                 let i = 0
 
                 _.forEach(actionList, (unit) => {
+                    console.log(unit)
                     let unitKey = actionKeys[i]
                     let actionTime = unit.time
 
                     //if the unit's action time is the same as current time then run and delete the action from the list
-                    if (_.isEqual(actionTime, currentTime)) {                    
+                    if (_.isEqual(actionTime, currentTime)) {
+                        console.log("actions running")                 
                         Action.action(unit.action, unit.uniqueDesignation)
                         Database.actionList.child(unitKey).remove()
                     }
@@ -149,7 +153,6 @@ function runActions () {
 function addToActionList (action) {
     let uniqueDesignation = action.uniqueDesignation
     Database.actionList.push(action)
-    Database.singleUnitActionList(uniqueDesignation).push(action)
 }
 
 /**

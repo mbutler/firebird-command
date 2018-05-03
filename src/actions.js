@@ -16,6 +16,7 @@ let Game = require('./game')
  */
 function action(selection, uniqueDesignation) {
     let actionMap = {
+        'aiming': Game.aiming,
         'face-1-left-moving': Game.face1LeftMoving,
         'face-1-right-moving': Game.face1RightMoving,
         //
@@ -51,6 +52,7 @@ function action(selection, uniqueDesignation) {
     }
 
     let act = actionMap[selection]
+    console.log(act)
     act(uniqueDesignation)
 }
 

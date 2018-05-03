@@ -91,8 +91,6 @@ function formSubmit () {
 
     maxSpeed = agi[_.toString(baseSpeed)]
 
-    console.log('max speed', maxSpeed)
-
     //curve fitted linear equation just because it's a cool way to do it instead of yet another chart
     //Skill Accuracy Level
     sal = _.round(2147609 + (0.6880844 - 2147609)/(1 + (Number(skillLevel)/1635843000) ** 0.6249486))
@@ -101,8 +99,6 @@ function formSubmit () {
     isf = Number(intelligence) + sal
     isf = 2 * Math.floor(isf / 2) + 1
 
-    console.log('isf', isf)
-
     _.forEach(combatActionChart, (col) => {
         if (col.MS == maxSpeed) {
             ms = col
@@ -110,8 +106,6 @@ function formSubmit () {
     })
 
     ca = ms[_.toString(isf)]
-
-    console.log('ca', ca)
 
     //table 1E
     _.forEach(capiChart, (col) => {
@@ -125,7 +119,6 @@ function formSubmit () {
     capi['3'] = combatActions.impulse3
     capi['4'] = combatActions.impulse4
 
-    console.log('capi', capi)
 
     //knockout value
     kv = _.round(0.5 * Number(will) * Number(skillLevel))

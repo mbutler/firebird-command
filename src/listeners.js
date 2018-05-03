@@ -50,7 +50,8 @@ Database.time.on('child_changed', (snapshot) => {
     //don't really need to get a time snapshot here, but can
     Database.time.once('value').then((snapshot) => {
         let time = snapshot.val()
-        //Timer.runActions()
+        console.log("timer running")
+        Timer.runActions()        
     })
 })
 
