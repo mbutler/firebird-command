@@ -47,11 +47,17 @@ Database.allUnits.on('child_changed', (snapshot) => {
 })
 
 Database.time.on('child_changed', (snapshot) => {
+    let timeType = snapshot.ref.path.pieces_[3]
     //don't really need to get a time snapshot here, but can
     Database.time.once('value').then((snapshot) => {
         let time = snapshot.val()
         console.log("timer running")
-        Timer.runActions()        
+
+        //don't run this if the update is phase since it will also run for the impulse change
+        if (timeType !== "phase") {
+            Timer.runActions()
+        }
+                
     })
 })
 
