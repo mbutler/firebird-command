@@ -174,7 +174,7 @@ function submitAction (actionName, uniqueDesignation, ca) {
         let next = result.time
         let remain = result.remaining
         let action = {uniqueDesignation: uniqueDesignation, time: next, action: actionName, remainingActions: remain}
-        addToActionList(action)
+        addToActionList(action)        
     })
 }
 

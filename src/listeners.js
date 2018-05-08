@@ -61,6 +61,10 @@ Database.time.on('child_changed', (snapshot) => {
     })
 })
 
+Database.actionList.on('child_changed', (snapshot) => {
+    Timer.runActions()
+})
+
 $(document).keypress((e) => {
     if (e.which === 84) {
         Timer.incrementTimer()
