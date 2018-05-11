@@ -7,6 +7,7 @@ let Database = require('./database')
 let config = require('./config')
 let Unit = require('./unit')
 let Map = require('./map')
+let Weapons = require('./weapons')
 let _ = require('lodash')
 
 /**
@@ -108,8 +109,19 @@ function face1LeftMoving (uniqueDesignation) {
 
 function aiming (uniqueDesignation) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
-    let unit = data.val()  
-    console.log("fire!")
+    let unit = data.val()
+    let weaponName = unit.weapons[0]
+    let aimTime
+    let sal = unit.skillAccuracyLevel
+    let shotAccuracy
+    
+    _.forEach(Weapons, (gun) => {
+      if (gun.name === weaponName) {
+        aimTime = gun.aimTime
+      }
+      console.log("fire!", aimTime)
+    })
+    
   })
 }
 

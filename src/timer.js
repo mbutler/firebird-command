@@ -169,11 +169,10 @@ function submitAction (actionName, uniqueDesignation, ca) {
     sample.then((data) => {
         let unit = data[0]
         let time = data[1]
-        //let ca = Action.getActionCost(actionName)
         let result = calculateActionTime(ca, unit, time)
         let next = result.time
         let remain = result.remaining
-        let action = {uniqueDesignation: uniqueDesignation, time: next, action: actionName, remainingActions: remain}
+        let action = {uniqueDesignation: uniqueDesignation, time: next, action: actionName, remainingActions: remain, totalActions: ca}
         addToActionList(action)        
     })
 }
