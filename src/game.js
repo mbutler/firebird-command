@@ -107,20 +107,25 @@ function face1LeftMoving (uniqueDesignation) {
   })
 }
 
-function aiming (uniqueDesignation) {
+//need to pull in number of actions spent aiming
+//
+function aiming (uniqueDesignation, totalActions) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
     let weaponName = unit.weapons[0]
-    let aimTime
+    let aimTimeMods
+    let aimTime = totalActions
     let sal = unit.skillAccuracyLevel
     let shotAccuracy
     
     _.forEach(Weapons, (gun) => {
-      if (gun.name === weaponName) {
-        aimTime = gun.aimTime
+      if (gun.name == weaponName) {
+        aimTimeMods = gun.aimTime
       }
-      console.log("fire!", aimTime)
     })
+
+    shotAccuracy = aimTimeMods[aimTime] + sal
+    console.log(shotAccuracy)
     
   })
 }

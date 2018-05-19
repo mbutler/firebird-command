@@ -14,7 +14,7 @@ let Game = require('./game')
  * @memberof Actions
  * @return {undefined} - Runs a function directly
  */
-function action(selection, uniqueDesignation) {
+function action(selection, uniqueDesignation, totalActions) {
     let actionMap = {
         'aiming': Game.aiming,
         'face-1-left-moving': Game.face1LeftMoving,
@@ -52,8 +52,7 @@ function action(selection, uniqueDesignation) {
     }
 
     let act = actionMap[selection]
-    console.log(act)
-    act(uniqueDesignation)
+    act(uniqueDesignation, totalActions)
 }
 
 module.exports = {

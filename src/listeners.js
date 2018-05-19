@@ -51,7 +51,6 @@ Database.time.on('child_changed', (snapshot) => {
     //don't really need to get a time snapshot here, but can
     Database.time.once('value').then((snapshot) => {
         let time = snapshot.val()
-        console.log("timer running")
 
         //don't run this if the update is phase since it will also run for the impulse change
         if (timeType !== "phase") {
@@ -61,7 +60,8 @@ Database.time.on('child_changed', (snapshot) => {
     })
 })
 
-Database.actionList.on('child_changed', (snapshot) => {
+Database.actionList.on('child_added', (snapshot) => {
+    console.log(snapshot)
     Timer.runActions()
 })
 
