@@ -329,7 +329,31 @@
                         <ul id="equiping-dropdown" class="dropdown-menu" role="menu" aria-labelledby="equiping-button"></ul>
                     </div>
                 </div>
-
+                <div class="row panel-row">
+                    <div class="dropdown btn btn-primary">
+                        <a id="equiping-button" class="action-buttons" href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
+                            Range
+                            <span class="caret"></span>
+                        </a>
+                        <ul id="range-dropdown" class="dropdown-menu" role="menu" aria-labelledby="range-button">
+                            <li role="presentation" value="1"><a role="menuitem">1 foot</a></li>
+                            <li role="presentation" value="1"><a role="menuitem">2 feet</a></li>
+                            <li role="presentation" value="2"><a role="menuitem">3 feet</a></li>
+                            <li role="presentation" value="3"><a role="menuitem">4 feet</a></li>
+                            <li role="presentation" value="4"><a role="menuitem" >5 feet</a></li>
+                            <li role="presentation" value="4"><a role="menuitem">6 feet</a></li>
+                            <li role="presentation" value="5"><a role="menuitem">7 feet</a></li>
+                            <li role="presentation" value="6"><a role="menuitem">8-14 feet</a></li>
+                            <li role="presentation"  value="7"><a role="menuitem">15-29 feet</a></li>
+                            <li role="presentation" value="8"><a role="menuitem">30-54 feet</a></li>
+                            <li role="presentation" value="9"><a role="menuitem">55-84 feet</a></li>
+                            <li role="presentation" value="10"><a role="menuitem">85-149 feet</a></li>
+                            <li role="presentation" value="11"><a role="menuitem">150-249</a></li>
+                            <li role="presentation" value="12"><a role="menuitem">250+ feet</a></li>
+                        </ul>
+                    </div>
+                </div>
+                Selected Range: <span id="range-value"></span>          
             </div>
         </div>
     </nav>
@@ -338,9 +362,15 @@
 
 </body>
 
-<script src="js/bundle.js" type="text/javascript"></script>
-
-<script>
+<script src="js/bundle.js"></script>
+<script type="text/javascript">
+    window.$('#range-dropdown li').click(function(e) {
+        window.$("#range-dropdown li").removeClass("selected")
+        window.$(this).addClass('selected')
+        console.log(this)
+        let rangeVal = window.$(this).find('a')
+        window.$('#range-value').html(rangeVal.text())
+    })
 </script>
 
 </html>

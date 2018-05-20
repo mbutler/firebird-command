@@ -201,7 +201,7 @@ function animateUnitToHex(point, uniqueDesignation) {
 }
 
 /**
- * Find the hex for a given unit
+ * Changes a unit's facing
  *
  * @param {number} face - A number 0-5 representing the face of the hexagon as documented in Honeycomb
  * @param {string} uniqueDesignation - The name of the unit

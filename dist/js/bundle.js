@@ -63346,7 +63346,7 @@ let Game = require('./game')
  * @memberof Actions
  * @return {undefined} - Runs a function directly
  */
-function action(selection, uniqueDesignation) {
+function action(selection, uniqueDesignation, totalActions) {
     let actionMap = {
         'aiming': Game.aiming,
         'face-1-left-moving': Game.face1LeftMoving,
@@ -63384,8 +63384,7 @@ function action(selection, uniqueDesignation) {
     }
 
     let act = actionMap[selection]
-    console.log(act)
-    act(uniqueDesignation)
+    act(uniqueDesignation, totalActions)
 }
 
 module.exports = {
@@ -63462,7 +63461,9 @@ let Database = require('./database')
 let config = require('./config')
 let Unit = require('./unit')
 let Map = require('./map')
+let Weapons = require('./weapons')
 let _ = require('lodash')
+let Tables = require('./tables')
 
 /**
  * Wraps an array index around the end of an array like a loop
@@ -63561,11 +63562,44 @@ function face1LeftMoving (uniqueDesignation) {
   })
 }
 
-function aiming (uniqueDesignation) {
+//need to pull in number of actions spent aiming
+//
+function aiming (uniqueDesignation, totalActions) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
-    let unit = data.val()  
-    console.log("fire!")
+    let unit = data.val()
+    let weaponName = unit.weapons[0]
+    let aimTimeMods
+    let aimTime = totalActions
+    let sal = unit.skillAccuracyLevel
+    let shotAccuracy
+    let roll = _.random(1, 100)
+    let odds
+    let range = $('#range-dropdown').find('li.selected').val()
+    let response = "miss!"
+
+    console.log(range)
+    
+    _.forEach(Weapons, (gun) => {
+      if (gun.name == weaponName) {
+        aimTimeMods = gun.aimTime
+      }
+    })
+
+    shotAccuracy = aimTimeMods[aimTime] + sal
+    odds = Tables.oddsOfHitting(shotAccuracy, range)
+
+    if (roll <= odds) {
+      response = "hit!"
+    }
+
+    console.log(`accuracy: ${shotAccuracy}, roll: ${roll}, response: ${response}`)
+    
+    
   })
+
+  function newFunction(shotAccuracy) {
+    console.log(shotAccuracy);
+  }
 }
 
 /**
@@ -63854,7 +63888,7 @@ module.exports = {
   aiming: aiming
 }
 
-},{"./config":185,"./database":186,"./map":190,"./unit":193,"lodash":169}],188:[function(require,module,exports){
+},{"./config":185,"./database":186,"./map":190,"./tables":191,"./unit":194,"./weapons":196,"lodash":169}],188:[function(require,module,exports){
 /**
  * @author Matthew Butler <matthewtbutler@gmail.com>
  * 
@@ -63888,7 +63922,7 @@ Database.allUnits.once('value').then((snapshot) => {
         console.log(unitList.unitsToggleList)
     })
 })
-},{"./config":185,"./database":186,"./listeners":189,"./map":190,"./unit":193,"./unit-list":192,"bootstrap":158,"jquery":168,"lodash":169}],189:[function(require,module,exports){
+},{"./config":185,"./database":186,"./listeners":189,"./map":190,"./unit":194,"./unit-list":193,"bootstrap":158,"jquery":168,"lodash":169}],189:[function(require,module,exports){
 /**
  * This module handles all event listeners
  * @module Listeners
@@ -63938,16 +63972,22 @@ Database.allUnits.on('child_changed', (snapshot) => {
 })
 
 Database.time.on('child_changed', (snapshot) => {
-    console.log(snapshot.val())
+    //whether it's an impulse or a phase
+    let timeType = snapshot.ref.path.pieces_[3]
     //don't really need to get a time snapshot here, but can
     Database.time.once('value').then((snapshot) => {
         let time = snapshot.val()
-        console.log("timer running")
 
-        Timer.runActions()
-
-        
+        //don't run this if the timeType is phase since it will also run for the impulse change
+        if (timeType !== "phase") {
+            Timer.runActions()
+        }
+                
     })
+})
+
+Database.actionList.on('child_added', (snapshot) => {
+    Timer.runActions()
 })
 
 $(document).keypress((e) => {
@@ -63962,7 +64002,7 @@ $(document).keypress((e) => {
 
     }
 })
-},{"../vendor/jquery.panzoom":195,"./actions":184,"./config":185,"./database":186,"./timer":191,"./unit":193,"./utils":194,"lodash":169,"panzoom":171,"slideout":180}],190:[function(require,module,exports){
+},{"../vendor/jquery.panzoom":197,"./actions":184,"./config":185,"./database":186,"./timer":192,"./unit":194,"./utils":195,"lodash":169,"panzoom":171,"slideout":180}],190:[function(require,module,exports){
 /**
  * This module handles creating the hex grid and individual hex methods
  * @module Map
@@ -64101,6 +64141,121 @@ module.exports = {
     getHexFromCoords: getHexFromCoords
 }
 },{"./config":185,"honeycomb-grid":167,"lodash":169,"svg.js":181}],191:[function(require,module,exports){
+let _ = require('lodash')
+
+let oddsOfHittingTable = [
+    [-28, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [-27, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [-26, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [-25, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [-24, 3, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [-23, 4, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [-22, 5, 2, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [-21, 6, 3, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+    [-20, 7, 4, 2, 1, 1, 0, 0, 0, 0, 0, 0, 0],
+    [-19, 9, 5, 3, 1, 1, 0, 0, 0, 0, 0, 0, 0],
+    [-18, 12, 6, 4, 2, 1, 0, 0, 0, 0, 0, 0, 0],
+    [-17, 15, 8, 5, 2, 1, 0, 0, 0, 0, 0, 0, 0],
+    [-16, 18, 9, 6, 3, 2, 1, 0, 0, 0, 0, 0, 0],
+    [-15, 23, 12, 7, 4, 3, 1, 0, 0, 0, 0, 0, 0],
+    [-14, 27, 15, 9, 5, 4, 2, 0, 0, 0, 0, 0, 0],
+    [-13, 33, 19, 12, 6, 5, 2, 1, 0, 0, 0, 0, 0],
+    [-12, 39, 22, 15, 7, 6, 3, 1, 0, 0, 0, 0, 0],
+    [-11, 46, 27, 18, 9, 7, 4, 1, 0, 0, 0, 0, 0],
+    [-10, 53, 33, 22, 12, 9, 5, 1, 0, 0, 0, 0, 0],
+    [-9, 60, 39, 27, 15, 12, 6, 2, 0, 0, 0, 0, 0],
+    [-8, 67, 46, 33, 18, 15, 7, 2, 1, 0, 0, 0, 0],
+    [-7, 74, 53, 39, 22, 18, 9, 3, 1, 0, 0, 0, 0],
+    [-6, 80, 60, 46, 27, 22, 12, 4, 1, 0, 0, 0, 0],
+    [-5, 86, 67, 53, 33, 27, 15, 5, 2, 0, 0, 0, 0],
+    [-4, 90, 74, 60, 39, 33, 18, 6, 2, 0, 0, 0, 0],
+    [-3, 94, 80, 67, 46, 39, 22, 7, 3, 1, 0, 0, 0],
+    [-2, 96, 86, 74, 53, 46, 27, 9, 4, 1, 0, 0, 0],
+    [-1, 98, 90, 80, 60, 53, 33, 12, 5, 1, 1, 0, 0],
+    [0, 100, 94, 86, 67, 60, 39, 15, 6, 2, 1, 0, 0],
+    [1, 100, 96, 90, 74, 67, 46, 18, 7, 2, 10, 0, 0],
+    [2, 100, 98, 94, 80, 74, 53, 22, 9, 3, 2, 0, 0],
+    [3, 100, 100, 96, 86, 80, 60, 27, 12, 4, 2, 0, 0],
+    [4, 100, 100, 98, 90, 86, 67, 33, 15, 5, 3, 1, 0],
+    [5, 100, 100, 100, 94, 90, 74, 39, 18, 6, 4, 1, 0],
+    [6, 100, 100, 100, 96, 94, 80, 46, 22, 7, 5, 1, 0],
+    [7, 100, 100, 100, 98, 96, 86, 53, 27, 9, 6, 2, 1],
+    [8, 100, 100, 100, 100, 98, 90, 60, 33, 12, 7, 2, 1],
+    [9, 100, 100, 100, 100, 100, 94, 67, 39, 15, 9, 3, 1],
+    [10, 100, 100, 100, 100, 100, 96, 74, 46, 18, 12, 4, 2],
+    [11, 100, 100, 100, 100, 100, 98, 80, 53, 22, 15, 5, 2],
+    [12, 100, 100, 100, 100, 100, 100, 86, 60, 27, 18, 6, 3],
+    [13, 100, 100, 100, 100, 100, 100, 90, 67, 33, 22, 7, 4],
+    [14, 100, 100, 100, 100, 100, 100, 94, 74, 39, 27, 9, 5],
+    [15, 100, 100, 100, 100, 100, 100, 96, 80, 46, 33, 12, 6],
+    [16, 100, 100, 100, 100, 100, 100, 98, 86, 53, 39, 15, 7],
+    [17, 100, 100, 100, 100, 100, 100, 100, 90, 60, 46, 18, 9],
+    [18, 100, 100, 100, 100, 100, 100, 100, 94, 67, 53, 22, 12],
+    [19, 100, 100, 100, 100, 100, 100, 100, 96, 74, 60, 27, 15],
+    [20, 100, 100, 100, 100, 100, 100, 100, 98, 80, 67, 33, 18],
+    [21, 100, 100, 100, 100, 100, 100, 100, 100, 86, 74, 39, 22],
+    [22, 100, 100, 100, 100, 100, 100, 100, 100, 90, 80, 46, 27],
+    [23, 100, 100, 100, 100, 100, 100, 100, 100, 94, 86, 53, 33],
+    [24, 100, 100, 100, 100, 100, 100, 100, 100, 96, 90, 60, 39],
+    [25, 100, 100, 100, 100, 100, 100, 100, 100, 98, 94, 67, 46],
+    [26, 100, 100, 100, 100, 100, 100, 100, 100, 100, 96, 74, 53],
+    [27, 100, 100, 100, 100, 100, 100, 100, 100, 100, 98, 80, 60],
+    [28, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 86, 67],
+    [29, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 90, 74],
+    [30, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 94, 80],
+    [31, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 96, 86],
+    [32, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 98, 90],
+    [33, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 94],
+    [34, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 96]
+]
+
+function oddsOfHitting(accuracy, range) {
+    let odds = 0
+    let rangeIndex = getIndexOfRange(range)
+
+    if (accuracy < -28) {
+        odds = 0
+    }
+
+    if (accuracy > 34) {
+        odds = 100
+    }
+
+    _.forEach(oddsOfHittingTable, (val) => {
+        if (accuracy === val[0]) {
+            odds = val[rangeIndex]
+        }
+    })
+
+    return odds
+}
+
+function getIndexOfRange(distance) {
+    let index
+
+    if (_.inRange(distance, 250, 999)) index = 12
+    if (_.inRange(distance, 150, 250)) index = 11
+    if (_.inRange(distance, 85, 150)) index = 10
+    if (_.inRange(distance, 55, 85)) index = 9
+    if (_.inRange(distance, 30, 55)) index = 8
+    if (_.inRange(distance, 15, 30)) index = 7
+    if (_.inRange(distance, 8, 15)) index = 6
+    if (distance === 7) index = 5
+    if (distance === 6) index = 4
+    if (distance === 5) index = 4
+    if (distance === 4) index = 3
+    if (distance === 3) index = 2
+    if (distance === 2) index = 1
+    if (distance === 1) index = 1
+
+    return index
+    
+}
+
+module.exports = {
+    oddsOfHitting: oddsOfHitting
+}
+},{"lodash":169}],192:[function(require,module,exports){
 /**
  * This module handles game time in increments of phase and impulse
  * @module Timer
@@ -64136,7 +64291,6 @@ function incrementTimer() {
         next.phase = phase
 
         Database.time.update(next)
-        console.log(next)
     })
 }
 
@@ -64158,7 +64312,7 @@ function calculateActionTime(combatActions, unit, time) {
     let impulse = time.impulse
     let i = 0
     
-    ca.shift() // there's an undefined value in index 0 for some reason 
+    ca.shift() // there's an undefined value in index 0 for some reason, probably Firebase's index 0 on the time array
 
     //while there are still total actions at each impulse
     while (actions >= ca[i]) {
@@ -64217,7 +64371,6 @@ function runActions () {
         let currentTime = snapshot.val()
         Database.actionList.once('value').then((snapshot) => {
             let actionList = snapshot.val()
-            console.log(actionList)
 
             //make sure there is an Action List
             if (actionList !== null) {
@@ -64227,14 +64380,12 @@ function runActions () {
                 let i = 0
 
                 _.forEach(actionList, (unit) => {
-                    console.log(unit)
                     let unitKey = actionKeys[i]
                     let actionTime = unit.time
 
                     //if the unit's action time is the same as current time then run and delete the action from the list
-                    if (_.isEqual(actionTime, currentTime)) {
-                        console.log("actions running")                 
-                        Action.action(unit.action, unit.uniqueDesignation)
+                    if (_.isEqual(actionTime, currentTime)) {              
+                        Action.action(unit.action, unit.uniqueDesignation, unit.totalActions)
                         Database.actionList.child(unitKey).remove()
                     }
                     //increment actionKeys index
@@ -64272,12 +64423,11 @@ function submitAction (actionName, uniqueDesignation, ca) {
     sample.then((data) => {
         let unit = data[0]
         let time = data[1]
-        //let ca = Action.getActionCost(actionName)
         let result = calculateActionTime(ca, unit, time)
         let next = result.time
         let remain = result.remaining
-        let action = {uniqueDesignation: uniqueDesignation, time: next, action: actionName, remainingActions: remain}
-        addToActionList(action)
+        let action = {uniqueDesignation: uniqueDesignation, time: next, action: actionName, remainingActions: remain, totalActions: ca}
+        addToActionList(action)        
     })
 }
 
@@ -64292,7 +64442,7 @@ module.exports = {
     addToActionList: addToActionList,
     submitAction: submitAction
 }
-},{"./actions":184,"./database":186,"./unit":193,"lodash":169}],192:[function(require,module,exports){
+},{"./actions":184,"./database":186,"./unit":194,"lodash":169}],193:[function(require,module,exports){
 let unitsToggleList = []
 
 let unitList = [
@@ -64468,7 +64618,7 @@ module.exports = {
   unitList: unitList
 }
 
-},{}],193:[function(require,module,exports){
+},{}],194:[function(require,module,exports){
 /**
  * This module handles creating, controlling, and updating units
  * @module Unit
@@ -64672,7 +64822,7 @@ function animateUnitToHex(point, uniqueDesignation) {
 }
 
 /**
- * Find the hex for a given unit
+ * Changes a unit's facing
  *
  * @param {number} face - A number 0-5 representing the face of the hexagon as documented in Honeycomb
  * @param {string} uniqueDesignation - The name of the unit
@@ -64734,7 +64884,7 @@ module.exports = {
     changeFacing: changeFacing,
     update: update
 }
-},{"./config":185,"./database":186,"./map":190,"./unit-list":192,"./utils":194,"lodash":169,"milsymbol":170}],194:[function(require,module,exports){
+},{"./config":185,"./database":186,"./map":190,"./unit-list":193,"./utils":195,"lodash":169,"milsymbol":170}],195:[function(require,module,exports){
 /**
  * This module handles various utility functions
  * @module Utils
@@ -64772,7 +64922,6 @@ function createButtonSet(uniqueDesignation) {
         $('#aiming-dropdown').append(aiming)
     }
 
-
     Database.singleUnit(uniqueDesignation).once('value').then((data) => {
         let unit = data.val()
         $('#moving-dropdown').empty()
@@ -64806,6 +64955,8 @@ function createButtonSet(uniqueDesignation) {
  * @return {undefined} - Inserts values directly into the DOM
  */
 function populateControlPanel(uniqueDesignation) {
+    let rangeSlider
+
     Database.singleUnit(uniqueDesignation).once('value').then((data) => {
         let unit = data.val()
         $('#panelUniqueDesignation h3').html(uniqueDesignation)
@@ -64835,7 +64986,20 @@ module.exports = {
     populateControlPanel: populateControlPanel,
     createButtonSet: createButtonSet
 }
-},{"./database":186}],195:[function(require,module,exports){
+},{"./database":186}],196:[function(require,module,exports){
+let weapons = [
+    {
+        name: "m16a1",
+        aimTime: [-99, -22, -12, -9, -7, -6, -5, -4, -3, -2, -1, 0]
+    },
+    {
+        name: "colt-45",
+        aimTime: [-99, -18, -11, -10, -9, -8, -7]
+    }
+]
+
+module.exports = weapons
+},{}],197:[function(require,module,exports){
 /**
  * @license jquery.panzoom.js v3.2.2
  * Updated: Wed Sep 20 2017

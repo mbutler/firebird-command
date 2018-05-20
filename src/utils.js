@@ -35,7 +35,6 @@ function createButtonSet(uniqueDesignation) {
         $('#aiming-dropdown').append(aiming)
     }
 
-
     Database.singleUnit(uniqueDesignation).once('value').then((data) => {
         let unit = data.val()
         $('#moving-dropdown').empty()

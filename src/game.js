@@ -120,8 +120,10 @@ function aiming (uniqueDesignation, totalActions) {
     let shotAccuracy
     let roll = _.random(1, 100)
     let odds
-    let range = 5 // TEST VALUE
+    let range = $('#range-dropdown').find('li.selected').val()
     let response = "miss!"
+
+    console.log(range)
     
     _.forEach(Weapons, (gun) => {
       if (gun.name == weaponName) {

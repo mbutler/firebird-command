@@ -54,7 +54,7 @@ function calculateActionTime(combatActions, unit, time) {
     let impulse = time.impulse
     let i = 0
     
-    ca.shift() // there's an undefined value in index 0 for some reason 
+    ca.shift() // there's an undefined value in index 0 for some reason, probably Firebase's index 0 on the time array
 
     //while there are still total actions at each impulse
     while (actions >= ca[i]) {
