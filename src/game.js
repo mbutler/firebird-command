@@ -9,6 +9,7 @@ let Unit = require('./unit')
 let Map = require('./map')
 let Weapons = require('./weapons')
 let _ = require('lodash')
+let Tables = require('./tables')
 
 /**
  * Wraps an array index around the end of an array like a loop
@@ -117,6 +118,10 @@ function aiming (uniqueDesignation, totalActions) {
     let aimTime = totalActions
     let sal = unit.skillAccuracyLevel
     let shotAccuracy
+    let roll = _.random(1, 100)
+    let odds
+    let range = 5 // TEST VALUE
+    let response = "miss!"
     
     _.forEach(Weapons, (gun) => {
       if (gun.name == weaponName) {
@@ -125,9 +130,20 @@ function aiming (uniqueDesignation, totalActions) {
     })
 
     shotAccuracy = aimTimeMods[aimTime] + sal
-    console.log(shotAccuracy)
+    odds = Tables.oddsOfHitting(shotAccuracy, range)
+
+    if (roll <= odds) {
+      response = "hit!"
+    }
+
+    console.log(`accuracy: ${shotAccuracy}, roll: ${roll}, response: ${response}`)
+    
     
   })
+
+  function newFunction(shotAccuracy) {
+    console.log(shotAccuracy);
+  }
 }
 
 /**
