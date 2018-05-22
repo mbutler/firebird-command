@@ -4,6 +4,8 @@
  * @namespace
  */
 let Database = require('./database')
+let Weapons = require('./weapons')
+let _ = require('lodash')
 
 /**
  * Adds a set of buttons for the specified unit to control actions.
@@ -37,6 +39,7 @@ function createButtonSet(uniqueDesignation) {
 
     Database.singleUnit(uniqueDesignation).once('value').then((data) => {
         let unit = data.val()
+
         $('#moving-dropdown').empty()
 
         if (unit.position === 'standing') {
@@ -54,7 +57,7 @@ function createButtonSet(uniqueDesignation) {
             let crawlingBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crawling-backward', '${uniqueDesignation}', 5)">Crawl backward one hex <span class="badge">5</span></a></li>`
             $('#moving-dropdown').append(crawlingForward)
             $('#moving-dropdown').append(crawlingBackward)
-        }
+        }        
     })
 }
 
@@ -70,6 +73,8 @@ function createButtonSet(uniqueDesignation) {
 function populateControlPanel(uniqueDesignation) {
     Database.singleUnit(uniqueDesignation).once('value').then((data) => {
         let unit = data.val()
+        let weapon = Weapons.getWeapon(unit.weapons[0])
+
         $('#panelUniqueDesignation h3').html(uniqueDesignation)
         $('#skill-level').html(unit.skillLevel)
         $('#strength').html(unit.strength)
@@ -90,6 +95,22 @@ function populateControlPanel(uniqueDesignation) {
         $('#stance').html(unit.stance)
         $('#position').html(unit.position)
         $('#knockout-value').html(unit.knockoutValue)
+        $('#weapon-name').html(weapon.name)
+        $('#reload-time').html(weapon.reloadTime)
+        $('#rate-of-fire').html(weapon.rateOfFire)
+        $('#ammunition-capacity').html(weapon.ammoCap)
+        $('#ammunition-weight').html(weapon.ammoWeight)
+
+        for (let i = 1; i <= weapon.aimTime.length-1; i++) {
+            let tr = `
+                <tr>
+                    <td class="text-center">${i}</td>
+                    <td id="aim-time-mod-${i}" class="text-center">${weapon.aimTime[i]}</td>
+                    <td id="shot-accuracy-${i}" class="text-center">${weapon.aimTime[i] + unit.skillAccuracyLevel}</td>
+                </tr>
+            `
+            $('#weapon-table').append(tr)
+        }
     })
 }
 

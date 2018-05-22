@@ -113,8 +113,8 @@ function face1LeftMoving (uniqueDesignation) {
 function aiming (uniqueDesignation, totalActions) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
-    let weaponName = unit.weapons[0]
-    let aimTimeMods
+    let weapon = Weapons.getWeapon(unit.weapons[0])
+    let aimTimeMods = weapon.aimTime
     let aimTime = totalActions
     let sal = unit.skillAccuracyLevel
     let shotAccuracy
@@ -122,15 +122,7 @@ function aiming (uniqueDesignation, totalActions) {
     let odds
     let range = $('#range-dropdown').find('li.selected').val()
     let response = "miss!"
-
-    console.log(range)
-    
-    _.forEach(Weapons, (gun) => {
-      if (gun.name == weaponName) {
-        aimTimeMods = gun.aimTime
-      }
-    })
-
+  
     shotAccuracy = aimTimeMods[aimTime] + sal
     odds = Tables.oddsOfHitting(shotAccuracy, range)
 

@@ -63567,8 +63567,8 @@ function face1LeftMoving (uniqueDesignation) {
 function aiming (uniqueDesignation, totalActions) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
-    let weaponName = unit.weapons[0]
-    let aimTimeMods
+    let weapon = Weapons.getWeapon(unit.weapons[0])
+    let aimTimeMods = weapon.aimTime
     let aimTime = totalActions
     let sal = unit.skillAccuracyLevel
     let shotAccuracy
@@ -63576,15 +63576,7 @@ function aiming (uniqueDesignation, totalActions) {
     let odds
     let range = $('#range-dropdown').find('li.selected').val()
     let response = "miss!"
-
-    console.log(range)
-    
-    _.forEach(Weapons, (gun) => {
-      if (gun.name == weaponName) {
-        aimTimeMods = gun.aimTime
-      }
-    })
-
+  
     shotAccuracy = aimTimeMods[aimTime] + sal
     odds = Tables.oddsOfHitting(shotAccuracy, range)
 
@@ -64891,6 +64883,8 @@ module.exports = {
  * @namespace
  */
 let Database = require('./database')
+let Weapons = require('./weapons')
+let _ = require('lodash')
 
 /**
  * Adds a set of buttons for the specified unit to control actions.
@@ -64924,6 +64918,7 @@ function createButtonSet(uniqueDesignation) {
 
     Database.singleUnit(uniqueDesignation).once('value').then((data) => {
         let unit = data.val()
+
         $('#moving-dropdown').empty()
 
         if (unit.position === 'standing') {
@@ -64941,7 +64936,7 @@ function createButtonSet(uniqueDesignation) {
             let crawlingBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crawling-backward', '${uniqueDesignation}', 5)">Crawl backward one hex <span class="badge">5</span></a></li>`
             $('#moving-dropdown').append(crawlingForward)
             $('#moving-dropdown').append(crawlingBackward)
-        }
+        }        
     })
 }
 
@@ -64955,10 +64950,10 @@ function createButtonSet(uniqueDesignation) {
  * @return {undefined} - Inserts values directly into the DOM
  */
 function populateControlPanel(uniqueDesignation) {
-    let rangeSlider
-
     Database.singleUnit(uniqueDesignation).once('value').then((data) => {
         let unit = data.val()
+        let weapon = Weapons.getWeapon(unit.weapons[0])
+
         $('#panelUniqueDesignation h3').html(uniqueDesignation)
         $('#skill-level').html(unit.skillLevel)
         $('#strength').html(unit.strength)
@@ -64979,6 +64974,22 @@ function populateControlPanel(uniqueDesignation) {
         $('#stance').html(unit.stance)
         $('#position').html(unit.position)
         $('#knockout-value').html(unit.knockoutValue)
+        $('#weapon-name').html(weapon.name)
+        $('#reload-time').html(weapon.reloadTime)
+        $('#rate-of-fire').html(weapon.rateOfFire)
+        $('#ammunition-capacity').html(weapon.ammoCap)
+        $('#ammunition-weight').html(weapon.ammoWeight)
+
+        for (let i = 1; i <= weapon.aimTime.length-1; i++) {
+            let tr = `
+                <tr>
+                    <td class="text-center">${i}</td>
+                    <td id="aim-time-mod-${i}" class="text-center">${weapon.aimTime[i]}</td>
+                    <td id="shot-accuracy-${i}" class="text-center">${weapon.aimTime[i] + unit.skillAccuracyLevel}</td>
+                </tr>
+            `
+            $('#weapon-table').append(tr)
+        }
     })
 }
 
@@ -64986,11 +64997,17 @@ module.exports = {
     populateControlPanel: populateControlPanel,
     createButtonSet: createButtonSet
 }
-},{"./database":186}],196:[function(require,module,exports){
+},{"./database":186,"./weapons":196,"lodash":169}],196:[function(require,module,exports){
+let _ = require('lodash')
+
 let weapons = [
     {
         name: "m16a1",
-        aimTime: [-99, -22, -12, -9, -7, -6, -5, -4, -3, -2, -1, 0]
+        aimTime: [-99, -22, -12, -9, -7, -6, -5, -4, -3, -2, -1, 0],
+        reloadTime: 8,
+        rateOfFire: 7,
+        ammoCap: 30,
+        ammoWeight: 1
     },
     {
         name: "colt-45",
@@ -64998,8 +65015,22 @@ let weapons = [
     }
 ]
 
-module.exports = weapons
-},{}],197:[function(require,module,exports){
+function getWeapon(weaponName) {
+    let weapon 
+
+    _.forEach(weapons, (gun) => {
+        if (gun.name === weaponName) {
+            weapon = gun
+        }
+    })
+
+    return weapon
+}
+
+module.exports = {
+    getWeapon: getWeapon
+}
+},{"lodash":169}],197:[function(require,module,exports){
 /**
  * @license jquery.panzoom.js v3.2.2
  * Updated: Wed Sep 20 2017
