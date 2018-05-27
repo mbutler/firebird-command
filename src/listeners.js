@@ -31,6 +31,10 @@ $('.close').on('touchstart mousedown', (e) => {
     controlPanel.close()
 })
 
+$('#next-impulse').on('mousedown', (e) => {
+    Timer.incrementTimer()
+})
+
 //listen for panzooming
 //seems insane to use two panzoom libraries, but it works... for now
 $('#' + config.divContainer).panzoom({ cursor: 'default' })
@@ -44,12 +48,22 @@ Database.allUnits.on('child_changed', (snapshot) => {
 
     Unit.changeFacing(face, uniqueDesignation)
     Unit.animateUnitToHex(hex, uniqueDesignation)
+
+    $('#impulse1').html(unit.currentActionsPerImpulse['1'])
+    $('#impulse2').html(unit.currentActionsPerImpulse['2'])
+    $('#impulse3').html(unit.currentActionsPerImpulse['3'])
+    $('#impulse4').html(unit.currentActionsPerImpulse['4'])
 })
 
-Database.time.on('child_changed', (snapshot) => {
+Database.time.on('child_changed', (snapshot) => {    
     //whether it's an impulse or a phase
     let timeType = snapshot.ref.path.pieces_[3]
-    //don't really need to get a time snapshot here, but can
+
+    Database.time.once('value').then((snapshot) => {
+        let time = snapshot.val()
+        $('#current-time').html(`Phase: ${time.phase}, Impulse: ${time.impulse}`)
+    })
+    
     Database.allUnits.once('value').then((snapshot) => {
         let units = snapshot.val()
         console.log(units)

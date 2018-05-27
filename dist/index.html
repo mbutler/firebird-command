@@ -30,6 +30,11 @@
             </button>
         </div>
         <div class="row">
+            <div id="panelCurrentTime" class="col-xs-10">
+                <span id="current-time"><span>
+            </div>
+        </div>
+        <div class="row">
             <div id="panelUniqueDesignation" class="col-xs-10">
                 <h3></h3>
             </div>
@@ -225,7 +230,13 @@
             </div>
 
             <div class="tab-pane" id="actions">
+                <strong>Selected Range:</strong> <span id="range-value">none</span>
                 <div class="row panel-row">
+                    <div class="col-xs-3">
+                        <button id="next-impulse" type="button" class="btn btn-danger">Next Impulse</button>
+                    </div>
+                </div> 
+                <div class="row panel-row">                         
                     <div class="dropdown btn btn-primary col-xs-3">
                         <a id="facing-button" class="action-buttons" href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
                             Facing
@@ -250,39 +261,36 @@
                 </div>
                 
                 <div class="row panel-row">
-                    <div class="dropdown btn btn-primary">
+                    <div class="dropdown btn btn-primary col-xs-3">
                         <a id="equiping-button" class="action-buttons" href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
                             Equiping
                             <span class="caret"></span>
                         </a>
                         <ul id="equiping-dropdown" class="dropdown-menu" role="menu" aria-labelledby="equiping-button"></ul>
                     </div>
-                </div>
-                <div class="row panel-row">
-                    <div class="dropdown btn btn-primary">
+                    <div class="dropdown btn btn-primary col-xs-3">
                         <a id="equiping-button" class="action-buttons" href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
                             Range
                             <span class="caret"></span>
                         </a>
                         <ul id="range-dropdown" class="dropdown-menu" role="menu" aria-labelledby="range-button">
-                            <li role="presentation" value="1"><a role="menuitem">1 foot</a></li>
-                            <li role="presentation" value="1"><a role="menuitem">2 feet</a></li>
-                            <li role="presentation" value="2"><a role="menuitem">3 feet</a></li>
-                            <li role="presentation" value="3"><a role="menuitem">4 feet</a></li>
-                            <li role="presentation" value="4"><a role="menuitem" >5 feet</a></li>
-                            <li role="presentation" value="4"><a role="menuitem">6 feet</a></li>
-                            <li role="presentation" value="5"><a role="menuitem">7 feet</a></li>
-                            <li role="presentation" value="6"><a role="menuitem">8-14 feet</a></li>
-                            <li role="presentation"  value="7"><a role="menuitem">15-29 feet</a></li>
-                            <li role="presentation" value="8"><a role="menuitem">30-54 feet</a></li>
-                            <li role="presentation" value="9"><a role="menuitem">55-84 feet</a></li>
-                            <li role="presentation" value="10"><a role="menuitem">85-149 feet</a></li>
+                            <li role="presentation" value="1"><a role="menuitem">1 inch</a></li>
+                            <li role="presentation" value="1"><a role="menuitem">2 inches</a></li>
+                            <li role="presentation" value="2"><a role="menuitem">3 inches</a></li>
+                            <li role="presentation" value="3"><a role="menuitem">4 inches</a></li>
+                            <li role="presentation" value="4"><a role="menuitem" >5 inches</a></li>
+                            <li role="presentation" value="4"><a role="menuitem">6 inches</a></li>
+                            <li role="presentation" value="5"><a role="menuitem">7 inches</a></li>
+                            <li role="presentation" value="6"><a role="menuitem">8-14 inches</a></li>
+                            <li role="presentation"  value="7"><a role="menuitem">15-29 inches</a></li>
+                            <li role="presentation" value="8"><a role="menuitem">30-54 inches</a></li>
+                            <li role="presentation" value="9"><a role="menuitem">55-84 inches</a></li>
+                            <li role="presentation" value="10"><a role="menuitem">85-149 inches</a></li>
                             <li role="presentation" value="11"><a role="menuitem">150-249</a></li>
-                            <li role="presentation" value="12"><a role="menuitem">250+ feet</a></li>
+                            <li role="presentation" value="12"><a role="menuitem">250+ inches</a></li>
                         </ul>
                     </div>
-                </div>
-                Selected Range: <span id="range-value"></span>          
+                </div>                   
             </div>
         </div>
     </nav>

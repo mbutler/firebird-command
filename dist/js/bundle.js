@@ -63948,6 +63948,10 @@ $('.close').on('touchstart mousedown', (e) => {
     controlPanel.close()
 })
 
+$('#next-impulse').on('mousedown', (e) => {
+    Timer.incrementTimer()
+})
+
 //listen for panzooming
 //seems insane to use two panzoom libraries, but it works... for now
 $('#' + config.divContainer).panzoom({ cursor: 'default' })
@@ -63961,14 +63965,31 @@ Database.allUnits.on('child_changed', (snapshot) => {
 
     Unit.changeFacing(face, uniqueDesignation)
     Unit.animateUnitToHex(hex, uniqueDesignation)
+
+    $('#impulse1').html(unit.currentActionsPerImpulse['1'])
+    $('#impulse2').html(unit.currentActionsPerImpulse['2'])
+    $('#impulse3').html(unit.currentActionsPerImpulse['3'])
+    $('#impulse4').html(unit.currentActionsPerImpulse['4'])
 })
 
-Database.time.on('child_changed', (snapshot) => {
+Database.time.on('child_changed', (snapshot) => {    
     //whether it's an impulse or a phase
     let timeType = snapshot.ref.path.pieces_[3]
-    //don't really need to get a time snapshot here, but can
+
     Database.time.once('value').then((snapshot) => {
         let time = snapshot.val()
+        $('#current-time').html(`Phase: ${time.phase}, Impulse: ${time.impulse}`)
+    })
+    
+    Database.allUnits.once('value').then((snapshot) => {
+        let units = snapshot.val()
+        console.log(units)
+
+        //reset all unit's capi to default
+        _.forEach(units, (unit) => {
+            let capi = unit.combatActionsPerImpulse
+            Unit.update({currentActionsPerImpulse: capi}, unit.name)
+        })
 
         //don't run this if the timeType is phase since it will also run for the impulse change
         if (timeType !== "phase") {
@@ -64258,6 +64279,7 @@ let Database = require('./database')
 let _ = require('lodash')
 let Action = require('./actions')
 let Unit = require('./unit')
+let Utils = require('./utils')
 
 /**
  * Advances the game timer one impulse
@@ -64298,13 +64320,11 @@ function incrementTimer() {
  */
 function calculateActionTime(combatActions, unit, time) {
     let actions = combatActions
-    let ca = unit.combatActionsPerImpulse
+    let ca = unit.currentActionsPerImpulse
     let next = time
     let phase = time.phase
     let impulse = time.impulse
-    let i = 0
-    
-    ca.shift() // there's an undefined value in index 0 for some reason, probably Firebase's index 0 on the time array
+    let i = impulse
 
     //while there are still total actions at each impulse
     while (actions >= ca[i]) {
@@ -64313,8 +64333,8 @@ function calculateActionTime(combatActions, unit, time) {
         i++
 
         //there are only 4 impulses per phase, so loop around
-        if (i === 4) {
-            i = 0
+        if (i > 4) {
+            i = 1
         }
 
         //only increment the time if there are actions left
@@ -64331,11 +64351,11 @@ function calculateActionTime(combatActions, unit, time) {
         }
     }
     //subtract the impulse amount from actions to get remaining
-    return {time: next, remaining: ca[impulse] - actions}
+    return {time: next, remaining: actions}
 }
 
 /**
- * Returns a specified unit as well as the currernt time
+ * Returns a specified unit as well as the current time
  * @requires Database
  * @requires Action
  * @memberof Timer
@@ -64376,9 +64396,17 @@ function runActions () {
                     let actionTime = unit.time
 
                     //if the unit's action time is the same as current time then run and delete the action from the list
-                    if (_.isEqual(actionTime, currentTime)) {              
-                        Action.action(unit.action, unit.uniqueDesignation, unit.totalActions)
-                        Database.actionList.child(unitKey).remove()
+                    if (_.isEqual(actionTime, currentTime)) {
+                        Database.singleUnit(unit.uniqueDesignation).once('value').then((data) => {
+                            let guy = data.val()
+                            let currentImpulse = currentTime.impulse
+                            let newActionValue = guy.combatActionsPerImpulse
+                            newActionValue[currentImpulse] = unit.remainingActions
+                            Unit.update({currentActionsPerImpulse: newActionValue}, unit.uniqueDesignation)           
+                            Action.action(unit.action, unit.uniqueDesignation, unit.totalActions)
+                            Database.actionList.child(unitKey).remove()
+                            Utils.populateControlPanel(guy.name)
+                        })                        
                     }
                     //increment actionKeys index
                     i++
@@ -64419,7 +64447,9 @@ function submitAction (actionName, uniqueDesignation, ca) {
         let next = result.time
         let remain = result.remaining
         let action = {uniqueDesignation: uniqueDesignation, time: next, action: actionName, remainingActions: remain, totalActions: ca}
-        addToActionList(action)        
+                
+        addToActionList(action)     
+                
     })
 }
 
@@ -64434,7 +64464,7 @@ module.exports = {
     addToActionList: addToActionList,
     submitAction: submitAction
 }
-},{"./actions":184,"./database":186,"./unit":194,"lodash":169}],193:[function(require,module,exports){
+},{"./actions":184,"./database":186,"./unit":194,"./utils":195,"lodash":169}],193:[function(require,module,exports){
 let unitsToggleList = []
 
 let unitList = [
@@ -64656,6 +64686,10 @@ function create(hex, sidc, options) {
     setUnitCoords(hex, options.uniqueDesignation)
 
     $(container).on('touchstart mousedown', (e) => {
+        Database.time.once('value').then((snapshot) => {
+            let time = snapshot.val()
+            $('#current-time').html(`Phase: ${time.phase}, Impulse: ${time.impulse}`)
+        })
         Utils.populateControlPanel(options.uniqueDesignation)
         Utils.createButtonSet(options.uniqueDesignation)
         controlPanel.open()
@@ -64841,11 +64875,9 @@ function update(updates, uniqueDesignation) {
     let keys = _.keys(updates)
 
     for (var i = 0; i <= keys.length - 1; i++) {
-        changedValue['/' + uniqueDesignation + '/' + keys[i]] = updates[keys[i]]
-
-        
+        changedValue['/' + uniqueDesignation + '/' + keys[i]] = updates[keys[i]]        
     }
-    console.log(changedValue)
+
     Database.allUnits.update(changedValue)
 }
 
@@ -64967,10 +64999,10 @@ function populateControlPanel(uniqueDesignation) {
         $('#skill-accuracy-level').html(unit.skillAccuracyLevel)
         $('#int-skill-factor').html(unit.intSkillFactor)
         $('#combat-actions').html(unit.combatActions)
-        $('#impulse1').html(unit.combatActionsPerImpulse['1'])
-        $('#impulse2').html(unit.combatActionsPerImpulse['2'])
-        $('#impulse3').html(unit.combatActionsPerImpulse['3'])
-        $('#impulse4').html(unit.combatActionsPerImpulse['4'])
+        $('#impulse1').html(unit.currentActionsPerImpulse['1'])
+        $('#impulse2').html(unit.currentActionsPerImpulse['2'])
+        $('#impulse3').html(unit.currentActionsPerImpulse['3'])
+        $('#impulse4').html(unit.currentActionsPerImpulse['4'])
         $('#stance').html(unit.stance)
         $('#position').html(unit.position)
         $('#knockout-value').html(unit.knockoutValue)
@@ -65011,7 +65043,11 @@ let weapons = [
     },
     {
         name: "colt-45",
-        aimTime: [-99, -18, -11, -10, -9, -8, -7]
+        aimTime: [-99, -18, -11, -10, -9, -8, -7],
+        reloadTime: 4,
+        rateOfFire: 1,
+        ammoCap: 7,
+        ammoWeight: 0.7
     }
 ]
 

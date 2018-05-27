@@ -62,6 +62,13 @@ svg:not(:root) {
     border-color: #357ebd;
     margin: 5px;
 }
+
+.btn-danger {
+    margin-left: -9px;
+    margin-bottom: 15px;
+    margin-top: 5px;
+}
+
 .btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active, .open>.dropdown-toggle.btn-primary {
     color: #fff;
     background-color: #00b3db;

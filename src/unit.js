@@ -43,6 +43,10 @@ function create(hex, sidc, options) {
     setUnitCoords(hex, options.uniqueDesignation)
 
     $(container).on('touchstart mousedown', (e) => {
+        Database.time.once('value').then((snapshot) => {
+            let time = snapshot.val()
+            $('#current-time').html(`Phase: ${time.phase}, Impulse: ${time.impulse}`)
+        })
         Utils.populateControlPanel(options.uniqueDesignation)
         Utils.createButtonSet(options.uniqueDesignation)
         controlPanel.open()
