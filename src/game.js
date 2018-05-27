@@ -135,8 +135,13 @@ function aiming (uniqueDesignation, totalActions) {
     let odds
     let range = $('#range-dropdown').find('li.selected').val()
     let response = "miss!"
+    let penalty = 0
 
-    shotAccuracy = aimTimeMods[aimTime] + sal + getShooterPositionModifier(unit.position)
+    if (totalActions === 1) {
+      penalty = -6
+    }
+
+    shotAccuracy = aimTimeMods[aimTime] + sal + getShooterPositionModifier(unit.position) + penalty
     odds = Tables.oddsOfHitting(shotAccuracy, range)
 
     if (roll <= odds) {
