@@ -29,6 +29,10 @@ function action(selection, uniqueDesignation, totalActions) {
         'running-forward': Game.runningForward,
         'running-backward': Game.runningBackward,
         //
+        'to-kneeling': Game.toKneeling,
+        'to-standing': Game.toStanding,
+        'to-prone': Game.toProne,
+        //
         'face-1-left-immobile': Game.face1LeftImmobile,
         'face-2-left-immobile': Game.face2LeftImmobile,
         'face-1-right-immobile': Game.face1RightImmobile,

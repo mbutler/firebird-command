@@ -60,6 +60,19 @@ function faceToDirection (face) {
   return map[faceString]
 }
 
+function getShooterPositionModifier(position) {
+  let mod = 0
+  if (position === 'kneeling') {
+    mod = 3
+  }
+
+  if (position === 'prone') {
+    mod = 6
+  }
+
+  return mod
+}
+
 /**
  * Looks ahead and finds a hex based on a given face
  *
@@ -122,8 +135,8 @@ function aiming (uniqueDesignation, totalActions) {
     let odds
     let range = $('#range-dropdown').find('li.selected').val()
     let response = "miss!"
-  
-    shotAccuracy = aimTimeMods[aimTime] + sal
+
+    shotAccuracy = aimTimeMods[aimTime] + sal + getShooterPositionModifier(unit.position)
     odds = Tables.oddsOfHitting(shotAccuracy, range)
 
     if (roll <= odds) {
@@ -134,10 +147,21 @@ function aiming (uniqueDesignation, totalActions) {
     
     
   })
+}
 
-  function newFunction(shotAccuracy) {
-    console.log(shotAccuracy);
-  }
+function toStanding(uniqueDesignation, totalActions) {
+  Unit.update({position: 'standing'}, uniqueDesignation)
+  console.log(`${uniqueDesignation} stands up`)
+}
+
+function toKneeling(uniqueDesignation, totalActions) {
+  Unit.update({position: 'kneeling'}, uniqueDesignation)
+  console.log(`${uniqueDesignation} kneels`)
+}
+
+function toProne(uniqueDesignation, totalActions) {
+  Unit.update({position: 'prone'}, uniqueDesignation)
+  console.log(`${uniqueDesignation} goes prone`)
 }
 
 /**
@@ -423,5 +447,8 @@ module.exports = {
   drawPistolHip: drawPistolHip,
   drawHandWeapon: drawHandWeapon,
   accessBackpack: accessBackpack,
-  aiming: aiming
+  aiming: aiming,
+  toStanding: toStanding,
+  toKneeling: toKneeling,
+  toProne: toProne
 }

@@ -49,6 +49,8 @@ Database.allUnits.on('child_changed', (snapshot) => {
     Unit.changeFacing(face, uniqueDesignation)
     Unit.animateUnitToHex(hex, uniqueDesignation)
 
+    Utils.createButtonSet(uniqueDesignation)
+
     $('#impulse1').html(unit.currentActionsPerImpulse['1'])
     $('#impulse2').html(unit.currentActionsPerImpulse['2'])
     $('#impulse3').html(unit.currentActionsPerImpulse['3'])

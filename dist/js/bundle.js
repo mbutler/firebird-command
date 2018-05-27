@@ -63361,6 +63361,10 @@ function action(selection, uniqueDesignation, totalActions) {
         'running-forward': Game.runningForward,
         'running-backward': Game.runningBackward,
         //
+        'to-kneeling': Game.toKneeling,
+        'to-standing': Game.toStanding,
+        'to-prone': Game.toProne,
+        //
         'face-1-left-immobile': Game.face1LeftImmobile,
         'face-2-left-immobile': Game.face2LeftImmobile,
         'face-1-right-immobile': Game.face1RightImmobile,
@@ -63514,6 +63518,19 @@ function faceToDirection (face) {
   return map[faceString]
 }
 
+function getShooterPositionModifier(position) {
+  let mod = 0
+  if (position === 'kneeling') {
+    mod = 3
+  }
+
+  if (position === 'prone') {
+    mod = 6
+  }
+
+  return mod
+}
+
 /**
  * Looks ahead and finds a hex based on a given face
  *
@@ -63576,8 +63593,8 @@ function aiming (uniqueDesignation, totalActions) {
     let odds
     let range = $('#range-dropdown').find('li.selected').val()
     let response = "miss!"
-  
-    shotAccuracy = aimTimeMods[aimTime] + sal
+    console.log(aimTimeMods[aimTime], sal, getShooterPositionModifier(unit.position))
+    shotAccuracy = aimTimeMods[aimTime] + sal + getShooterPositionModifier(unit.position)
     odds = Tables.oddsOfHitting(shotAccuracy, range)
 
     if (roll <= odds) {
@@ -63588,10 +63605,21 @@ function aiming (uniqueDesignation, totalActions) {
     
     
   })
+}
 
-  function newFunction(shotAccuracy) {
-    console.log(shotAccuracy);
-  }
+function toStanding(uniqueDesignation, totalActions) {
+  Unit.update({position: 'standing'}, uniqueDesignation)
+  console.log(`${uniqueDesignation} stands up`)
+}
+
+function toKneeling(uniqueDesignation, totalActions) {
+  Unit.update({position: 'kneeling'}, uniqueDesignation)
+  console.log(`${uniqueDesignation} kneels`)
+}
+
+function toProne(uniqueDesignation, totalActions) {
+  Unit.update({position: 'prone'}, uniqueDesignation)
+  console.log(`${uniqueDesignation} goes prone`)
 }
 
 /**
@@ -63877,7 +63905,10 @@ module.exports = {
   drawPistolHip: drawPistolHip,
   drawHandWeapon: drawHandWeapon,
   accessBackpack: accessBackpack,
-  aiming: aiming
+  aiming: aiming,
+  toStanding: toStanding,
+  toKneeling: toKneeling,
+  toProne: toProne
 }
 
 },{"./config":185,"./database":186,"./map":190,"./tables":191,"./unit":194,"./weapons":196,"lodash":169}],188:[function(require,module,exports){
@@ -63965,6 +63996,8 @@ Database.allUnits.on('child_changed', (snapshot) => {
 
     Unit.changeFacing(face, uniqueDesignation)
     Unit.animateUnitToHex(hex, uniqueDesignation)
+
+    Utils.createButtonSet(uniqueDesignation)
 
     $('#impulse1').html(unit.currentActionsPerImpulse['1'])
     $('#impulse2').html(unit.currentActionsPerImpulse['2'])
@@ -64929,6 +64962,7 @@ let _ = require('lodash')
 function createButtonSet(uniqueDesignation) {
     $('#facing-dropdown').empty()
     $('#aiming-dropdown').empty()
+    $('#moving-dropdown').empty()
     let face1LeftMoving = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-left-moving', '${uniqueDesignation}', 0)">Turn 1 hexside left <span class="badge">0</span></a></li>`
     let face1RightMoving = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-right-moving', '${uniqueDesignation}', 0)">Turn 1 hexside right <span class="badge">0</span></a></li>`
     let face1LeftImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-left-immobile', '${uniqueDesignation}', 1)">Turn 1 hexside left <span class="badge">1</span></a></li>`
@@ -64958,22 +64992,33 @@ function createButtonSet(uniqueDesignation) {
         if (unit.position === 'standing') {
             let runningForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('running-forward', '${uniqueDesignation}', 1)">Run forward one hex <span class="badge">1</span></a></li>`
             let runningBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('running-backward', '${uniqueDesignation}', 2)">Run backward one hex <span class="badge">2</span></a></li>`
+            let toKneeling = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('to-kneeling', '${uniqueDesignation}', 1)">Kneel <span class="badge">1</span></a></li>`
+            let toProne = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('to-prone', '${uniqueDesignation}', 2)">Go prone <span class="badge">2</span></a></li>`
             $('#moving-dropdown').append(runningForward)
             $('#moving-dropdown').append(runningBackward)
+            $('#moving-dropdown').append(toKneeling)
+            $('#moving-dropdown').append(toProne)
         } else if (unit.position === 'kneeling') {
             let crouchingForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crouching-forward', '${uniqueDesignation}', 2)">Crouch forward one hex <span class="badge">2</span></a></li>`
             let crouchingBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crouching-backward', '${uniqueDesignation}', 4)">Crouch backward one hex <span class="badge">4</span></a></li>`
+            let toProne = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('to-prone', '${uniqueDesignation}', 1)">Go prone <span class="badge">1</span></a></li>`
+            let toStanding = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('to-standing', '${uniqueDesignation}', 1)">Stand up <span class="badge">1</span></a></li>`
             $('#moving-dropdown').append(crouchingForward)
             $('#moving-dropdown').append(crouchingBackward)
+            $('#moving-dropdown').append(toProne)
+            $('#moving-dropdown').append(toStanding)
         } else if (unit.position === 'prone') {
             let crawlingForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crawling-forward', '${uniqueDesignation}', 3)">Crawl forward one hex <span class="badge">3</span></a></li>`
             let crawlingBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crawling-backward', '${uniqueDesignation}', 5)">Crawl backward one hex <span class="badge">5</span></a></li>`
+            let toStanding = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('to-standing', '${uniqueDesignation}', 3)">Stand up <span class="badge">3</span></a></li>`
+            let toKneeling = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('to-kneeling', '${uniqueDesignation}', 2)">Kneel <span class="badge">2</span></a></li>`
             $('#moving-dropdown').append(crawlingForward)
             $('#moving-dropdown').append(crawlingBackward)
+            $('#moving-dropdown').append(toStanding)
+            $('#moving-dropdown').append(toKneeling)
         }        
     })
 }
-
 
 
 /**
@@ -65041,7 +65086,21 @@ let weapons = [
         reloadTime: 8,
         rateOfFire: 7,
         ammoCap: 30,
-        ammoWeight: 1
+        ammoWeight: 1,
+        ammoType: {
+            fmj: {
+                pen: 17,
+                dc: 6
+            },
+            jhp: {
+                pen: 16,
+                dc: 8
+            },
+            ap: {
+                pen: 28,
+                dc: 8
+            }
+        }
     },
     {
         name: "colt-45",

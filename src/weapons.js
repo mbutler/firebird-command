@@ -7,7 +7,21 @@ let weapons = [
         reloadTime: 8,
         rateOfFire: 7,
         ammoCap: 30,
-        ammoWeight: 1
+        ammoWeight: 1,
+        ammoType: {
+            fmj: {
+                pen: 17,
+                dc: 6
+            },
+            jhp: {
+                pen: 16,
+                dc: 8
+            },
+            ap: {
+                pen: 28,
+                dc: 8
+            }
+        }
     },
     {
         name: "colt-45",
