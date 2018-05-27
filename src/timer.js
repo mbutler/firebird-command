@@ -52,9 +52,9 @@ function calculateActionTime(combatActions, unit, time) {
     let next = time
     let phase = time.phase
     let impulse = time.impulse
-    let i = 0
+    let i = impulse
     
-    ca.shift() // there's an undefined value in index 0 for some reason, probably Firebase's index 0 on the time array
+    //ca.shift() // there's an undefined value in index 0 for some reason, probably Firebase's index 0 on the time array
 
     //while there are still total actions at each impulse
     while (actions >= ca[i]) {
@@ -63,10 +63,10 @@ function calculateActionTime(combatActions, unit, time) {
         i++
 
         //there are only 4 impulses per phase, so loop around
-        if (i === 4) {
-            i = 0
+        if (i > 4) {
+            i = 1
         }
-
+        console.log(i, impulse)
         //only increment the time if there are actions left
         if (actions > 0) {
             if (impulse === 4) {
@@ -81,11 +81,11 @@ function calculateActionTime(combatActions, unit, time) {
         }
     }
     //subtract the impulse amount from actions to get remaining
-    return {time: next, remaining: ca[impulse] - actions}
+    return {time: next, remaining: actions}
 }
 
 /**
- * Returns a specified unit as well as the currernt time
+ * Returns a specified unit as well as the current time
  * @requires Database
  * @requires Action
  * @memberof Timer
