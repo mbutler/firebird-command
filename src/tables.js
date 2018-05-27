@@ -1,3 +1,8 @@
+/**
+ * This module handles table lookups
+ * @module Tables
+ */
+
 let _ = require('lodash')
 
 let oddsOfHittingTable = [

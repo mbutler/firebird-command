@@ -1,3 +1,8 @@
+/**
+ * This module handles weapon data
+ * @module Weapons
+ */
+
 let _ = require('lodash')
 
 let weapons = [
