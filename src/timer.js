@@ -8,6 +8,7 @@ let Database = require('./database')
 let _ = require('lodash')
 let Action = require('./actions')
 let Unit = require('./unit')
+let Utils = require('./utils')
 
 /**
  * Advances the game timer one impulse
@@ -48,13 +49,11 @@ function incrementTimer() {
  */
 function calculateActionTime(combatActions, unit, time) {
     let actions = combatActions
-    let ca = unit.combatActionsPerImpulse
+    let ca = unit.currentActionsPerImpulse
     let next = time
     let phase = time.phase
     let impulse = time.impulse
     let i = impulse
-    
-    //ca.shift() // there's an undefined value in index 0 for some reason, probably Firebase's index 0 on the time array
 
     //while there are still total actions at each impulse
     while (actions >= ca[i]) {
@@ -66,7 +65,7 @@ function calculateActionTime(combatActions, unit, time) {
         if (i > 4) {
             i = 1
         }
-        console.log(i, impulse)
+
         //only increment the time if there are actions left
         if (actions > 0) {
             if (impulse === 4) {
@@ -126,9 +125,17 @@ function runActions () {
                     let actionTime = unit.time
 
                     //if the unit's action time is the same as current time then run and delete the action from the list
-                    if (_.isEqual(actionTime, currentTime)) {              
-                        Action.action(unit.action, unit.uniqueDesignation, unit.totalActions)
-                        Database.actionList.child(unitKey).remove()
+                    if (_.isEqual(actionTime, currentTime)) {
+                        Database.singleUnit(unit.uniqueDesignation).once('value').then((data) => {
+                            let guy = data.val()
+                            let currentImpulse = currentTime.impulse
+                            let newActionValue = guy.combatActionsPerImpulse
+                            newActionValue[currentImpulse] = unit.remainingActions
+                            Unit.update({currentActionsPerImpulse: newActionValue}, unit.uniqueDesignation)           
+                            Action.action(unit.action, unit.uniqueDesignation, unit.totalActions)
+                            Database.actionList.child(unitKey).remove()
+                            Utils.populateControlPanel(guy.name)
+                        })                        
                     }
                     //increment actionKeys index
                     i++
@@ -169,7 +176,9 @@ function submitAction (actionName, uniqueDesignation, ca) {
         let next = result.time
         let remain = result.remaining
         let action = {uniqueDesignation: uniqueDesignation, time: next, action: actionName, remainingActions: remain, totalActions: ca}
-        addToActionList(action)        
+                
+        addToActionList(action)     
+                
     })
 }
 

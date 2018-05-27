@@ -50,8 +50,15 @@ Database.time.on('child_changed', (snapshot) => {
     //whether it's an impulse or a phase
     let timeType = snapshot.ref.path.pieces_[3]
     //don't really need to get a time snapshot here, but can
-    Database.time.once('value').then((snapshot) => {
-        let time = snapshot.val()
+    Database.allUnits.once('value').then((snapshot) => {
+        let units = snapshot.val()
+        console.log(units)
+
+        //reset all unit's capi to default
+        _.forEach(units, (unit) => {
+            let capi = unit.combatActionsPerImpulse
+            Unit.update({currentActionsPerImpulse: capi}, unit.name)
+        })
 
         //don't run this if the timeType is phase since it will also run for the impulse change
         if (timeType !== "phase") {

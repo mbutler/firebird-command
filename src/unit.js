@@ -228,11 +228,9 @@ function update(updates, uniqueDesignation) {
     let keys = _.keys(updates)
 
     for (var i = 0; i <= keys.length - 1; i++) {
-        changedValue['/' + uniqueDesignation + '/' + keys[i]] = updates[keys[i]]
-
-        
+        changedValue['/' + uniqueDesignation + '/' + keys[i]] = updates[keys[i]]        
     }
-    console.log(changedValue)
+
     Database.allUnits.update(changedValue)
 }
 
