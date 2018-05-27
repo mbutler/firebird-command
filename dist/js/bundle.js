@@ -64928,6 +64928,7 @@ let _ = require('lodash')
  */
 function createButtonSet(uniqueDesignation) {
     $('#facing-dropdown').empty()
+    $('#aiming-dropdown').empty()
     let face1LeftMoving = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-left-moving', '${uniqueDesignation}', 0)">Turn 1 hexside left <span class="badge">0</span></a></li>`
     let face1RightMoving = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-right-moving', '${uniqueDesignation}', 0)">Turn 1 hexside right <span class="badge">0</span></a></li>`
     let face1LeftImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-left-immobile', '${uniqueDesignation}', 1)">Turn 1 hexside left <span class="badge">1</span></a></li>`
@@ -64946,6 +64947,7 @@ function createButtonSet(uniqueDesignation) {
     for (let i = 1; i <= 12; i++) {
         let aiming = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('aiming', '${uniqueDesignation}', ${i})">Aim <span class="badge">${i}</span></a></li>`
         $('#aiming-dropdown').append(aiming)
+        console.log('aiming dropdown')
     }
 
     Database.singleUnit(uniqueDesignation).once('value').then((data) => {

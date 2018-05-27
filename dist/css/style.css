@@ -75,7 +75,7 @@ svg:not(:root) {
     border-color: #285e8e;
 }
 
-#aiming-dropdown {
+#equiping-dropdown {
     left: -60px;
 }
 
@@ -88,3 +88,12 @@ svg:not(:root) {
 }
 
 .character-form .row{ margin-top: 10px; }
+
+.vert-text {
+    margin-top: 20px;
+
+}
+
+#aim-button {
+    margin-top: 20px;
+}
