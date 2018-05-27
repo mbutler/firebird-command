@@ -117,6 +117,12 @@
                       </a></li>
                     
                       <li><a
+                        href='#gamegetshooterpositionmodifier'
+                        class='regular pre-open'>
+                        .getShooterPositionModifier
+                      </a></li>
+                    
+                      <li><a
                         href='#gamefindneighbor'
                         class='regular pre-open'>
                         .findNeighbor
@@ -126,6 +132,30 @@
                         href='#gameface1leftmoving'
                         class='regular pre-open'>
                         .face1LeftMoving
+                      </a></li>
+                    
+                      <li><a
+                        href='#gameaiming'
+                        class='regular pre-open'>
+                        .aiming
+                      </a></li>
+                    
+                      <li><a
+                        href='#gametostanding'
+                        class='regular pre-open'>
+                        .toStanding
+                      </a></li>
+                    
+                      <li><a
+                        href='#gametokneeling'
+                        class='regular pre-open'>
+                        .toKneeling
+                      </a></li>
+                    
+                      <li><a
+                        href='#gametoprone'
+                        class='regular pre-open'>
+                        .toProne
                       </a></li>
                     
                       <li><a
@@ -211,6 +241,16 @@
               
                 
                 <li><a
+                  href='#config'
+                  class="">
+                  Config
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
                   href='#database'
                   class=" toggle-sibling">
                   Database
@@ -234,26 +274,6 @@
                   
                   
                 </div>
-                
-                </li>
-              
-                
-                <li><a
-                  href='#listeners'
-                  class="">
-                  Listeners
-                  
-                </a>
-                
-                </li>
-              
-                
-                <li><a
-                  href='#config'
-                  class="">
-                  Config
-                  
-                </a>
                 
                 </li>
               
@@ -433,9 +453,49 @@
               
                 
                 <li><a
+                  href='#listeners'
+                  class="">
+                  Listeners
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
                   href='#index'
                   class="">
                   Index
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#getweapon'
+                  class="">
+                  getWeapon
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#oddsofhitting'
+                  class="">
+                  oddsOfHitting
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
+                  href='#getindexofrange'
+                  class="">
+                  getIndexOfRange
                   
                 </a>
                 
@@ -496,7 +556,7 @@
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>action(selection, uniqueDesignation)</span>
+            <span class='code strong strong truncate'>action(selection, uniqueDesignation, totalActions)</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -507,7 +567,7 @@
   <p>Map to the action functions in the Game module</p>
 
 
-  <div class='pre p1 fill-light mt0'>action(selection: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
+  <div class='pre p1 fill-light mt0'>action(selection: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, totalActions: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
   
   
 
@@ -536,6 +596,14 @@
             <span class='code bold'>uniqueDesignation</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
 	    The name of the unit
 
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>totalActions</span> <code class='quiet'>(any)</code>
+	    
           </div>
           
         </div>
@@ -1042,6 +1110,74 @@
       </div>
     </div>
   
+    <div class='border-bottom' id='gamegetshooterpositionmodifier'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getShooterPositionModifier(position)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+
+  <p>Returns the proper accuracy modifier based on shooter's position</p>
+
+
+  <div class='pre p1 fill-light mt0'>getShooterPositionModifier(position: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>position</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	     Either standing, kneeling, or prone
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></code>:
+        A number to be added to the accuracy
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
     <div class='border-bottom' id='gamefindneighbor'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
@@ -1177,6 +1313,314 @@
       <div class='py1 quiet mt1 prose-big'>Returns</div>
       <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></code>:
         Modifies the database directly
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='gameaiming'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>aiming(uniqueDesignation, totalActions)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+
+  <p>Calculates aiming and aim mods</p>
+
+
+  <div class='pre p1 fill-light mt0'>aiming(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, totalActions: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>uniqueDesignation</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    The name of the unit
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>totalActions</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    The number of actions used for the aim
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></code>:
+        Modifies the database directly
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='gametostanding'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>toStanding(uniqueDesignation, totalActions)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+
+  <p>Changes the position to standing</p>
+
+
+  <div class='pre p1 fill-light mt0'>toStanding(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, totalActions: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>uniqueDesignation</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	     The unit's name
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>totalActions</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	     The amount of actions used
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></code>:
+        Updates the unit directly
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='gametokneeling'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>toKneeling(uniqueDesignation, totalActions)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+
+  <p>Changes the position to kneeling</p>
+
+
+  <div class='pre p1 fill-light mt0'>toKneeling(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, totalActions: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>uniqueDesignation</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	     The unit's name
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>totalActions</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	     The amount of actions used
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></code>:
+        Updates the unit directly
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='gametoprone'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>toProne(uniqueDesignation, totalActions)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+
+  <p>Changes the position to prone</p>
+
+
+  <div class='pre p1 fill-light mt0'>toProne(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, totalActions: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>uniqueDesignation</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	     The unit's name
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>totalActions</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	     The amount of actions used
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></code>:
+        Updates the unit directly
 
       
     
@@ -2029,6 +2473,53 @@
   
   <div class='clearfix'>
     
+    <h3 class='fl m0' id='config'>
+      Config
+    </h3>
+    
+    
+  </div>
+  
+
+  <p>Configuration file for setting up the map, document, and database connection</p>
+
+
+  <div class='pre p1 fill-light mt0'>Config</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+            <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
     <h3 class='fl m0' id='database'>
       Database
     </h3>
@@ -2134,100 +2625,6 @@
     </div>
   
 </div>
-
-  
-
-  
-
-  
-</section>
-
-          
-        
-          
-            <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
-    <h3 class='fl m0' id='listeners'>
-      Listeners
-    </h3>
-    
-    
-  </div>
-  
-
-  <p>This module handles all event listeners</p>
-
-
-  <div class='pre p1 fill-light mt0'>Listeners</div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-          
-        
-          
-            <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
-    <h3 class='fl m0' id='config'>
-      Config
-    </h3>
-    
-    
-  </div>
-  
-
-  <p>Configuration file for setting up the map, document, and database connection</p>
-
-
-  <div class='pre p1 fill-light mt0'>Config</div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-
-  
-
-  
-
-  
-
-  
 
   
 
@@ -2881,7 +3278,7 @@
 
   
 
-  <p>Find the hex for a given unit</p>
+  <p>Changes a unit's facing</p>
 
 
   <div class='pre p1 fill-light mt0'>changeFacing(face: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
@@ -3300,7 +3697,7 @@
 
   
 
-  <p>Returns a specified unit as well as the currernt time</p>
+  <p>Returns a specified unit as well as the current time</p>
 
 
   <div class='pre p1 fill-light mt0'>getTimeAndUnit(uniqueDesignation: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a></div>
@@ -3709,6 +4106,53 @@
   
   <div class='clearfix'>
     
+    <h3 class='fl m0' id='listeners'>
+      Listeners
+    </h3>
+    
+    
+  </div>
+  
+
+  <p>This module handles all event listeners</p>
+
+
+  <div class='pre p1 fill-light mt0'>Listeners</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+            <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
     <h3 class='fl m0' id='index'>
       Index
     </h3>
@@ -3736,6 +4180,222 @@ The main entry point of the application</div>
 
   
 
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+            <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='getweapon'>
+      getWeapon
+    </h3>
+    
+    
+  </div>
+  
+
+  <p>Gets the weapon of a given unit</p>
+
+
+  <div class='pre p1 fill-light mt0'>getWeapon(weaponName: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>weaponName</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	     The unit's weapon name
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></code>:
+        The weapon object from the weapons list
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+            <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='oddsofhitting'>
+      oddsOfHitting
+    </h3>
+    
+    
+  </div>
+  
+
+  <p>The odds of hitting a target</p>
+
+
+  <div class='pre p1 fill-light mt0'>oddsOfHitting(accuracy: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, range: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>accuracy</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	     The unit's accuracy number
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>range</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	     The distance in inches
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></code>:
+        The percentage chance of hitting
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+            <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='getindexofrange'>
+      getIndexOfRange
+    </h3>
+    
+    
+  </div>
+  
+
+  <p>Gets the correct index for aim mods array</p>
+
+
+  <div class='pre p1 fill-light mt0'>getIndexOfRange(distance: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>distance</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	     The number of inches to target
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></code>:
+        The index of the weapon's aim mods array
+
+      
+    
   
 
   

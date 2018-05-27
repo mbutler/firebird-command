@@ -60,6 +60,13 @@ function faceToDirection (face) {
   return map[faceString]
 }
 
+/**
+ * Returns the proper accuracy modifier based on shooter's position
+ *
+ * @param {string} position -  Either standing, kneeling, or prone
+ * @memberof Game
+ * @return {number} - A number to be added to the accuracy
+ */
 function getShooterPositionModifier(position) {
   let mod = 0
   if (position === 'kneeling') {
@@ -121,8 +128,16 @@ function face1LeftMoving (uniqueDesignation) {
   })
 }
 
-//need to pull in number of actions spent aiming
-//
+/**
+ * Calculates aiming and aim mods
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @param {number} totalActions - The number of actions used for the aim
+ * @requires Database
+ * @requires Weapons
+ * @memberof Game
+ * @return {undefined} - Modifies the database directly
+ */
 function aiming (uniqueDesignation, totalActions) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
@@ -154,16 +169,43 @@ function aiming (uniqueDesignation, totalActions) {
   })
 }
 
+/**
+ * Changes the position to standing
+ *
+ * @param {string} uniqueDesignation -  The unit's name
+ * @param {number} totalActions -  The amount of actions used
+ * @requires Unit
+ * @memberof Game
+ * @return {undefined} - Updates the unit directly
+ */
 function toStanding(uniqueDesignation, totalActions) {
   Unit.update({position: 'standing'}, uniqueDesignation)
   console.log(`${uniqueDesignation} stands up`)
 }
 
+/**
+ * Changes the position to kneeling
+ *
+ * @param {string} uniqueDesignation -  The unit's name
+ * @param {number} totalActions -  The amount of actions used
+ * @requires Unit
+ * @memberof Game
+ * @return {undefined} - Updates the unit directly
+ */
 function toKneeling(uniqueDesignation, totalActions) {
   Unit.update({position: 'kneeling'}, uniqueDesignation)
   console.log(`${uniqueDesignation} kneels`)
 }
 
+/**
+ * Changes the position to prone
+ *
+ * @param {string} uniqueDesignation -  The unit's name
+ * @param {number} totalActions -  The amount of actions used
+ * @requires Unit
+ * @memberof Game
+ * @return {undefined} - Updates the unit directly
+ */
 function toProne(uniqueDesignation, totalActions) {
   Unit.update({position: 'prone'}, uniqueDesignation)
   console.log(`${uniqueDesignation} goes prone`)

@@ -33,6 +33,13 @@ let weapons = [
     }
 ]
 
+/**
+ * Gets the weapon of a given unit
+ *
+ * @param {string} weaponName -  The unit's weapon name
+ * @memberof Weapons
+ * @return {object} - The weapon object from the weapons list
+ */
 function getWeapon(weaponName) {
     let weapon 
 

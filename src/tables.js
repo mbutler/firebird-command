@@ -66,6 +66,14 @@ let oddsOfHittingTable = [
     [34, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 96]
 ]
 
+/**
+ * The odds of hitting a target
+ *
+ * @param {number} accuracy -  The unit's accuracy number
+ * @param {number} range -  The distance in inches
+ * @memberof Tables
+ * @return {number} - The percentage chance of hitting
+ */
 function oddsOfHitting(accuracy, range) {
     let odds = 0
     let rangeIndex = getIndexOfRange(range)
@@ -87,6 +95,13 @@ function oddsOfHitting(accuracy, range) {
     return odds
 }
 
+/**
+ * Gets the correct index for aim mods array
+ *
+ * @param {number} distance -  The number of inches to target
+ * @memberof Tables
+ * @return {number} - The index of the weapon's aim mods array
+ */
 function getIndexOfRange(distance) {
     let index
 
