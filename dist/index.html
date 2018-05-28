@@ -132,6 +132,10 @@
                     <div id="disabling-injuries" class="col-xs-4"></div>
                 </div>
                 <div class="row">
+                        <div class="col-xs-8"><strong>Cover</strong></div>
+                        <div id="cover" class="col-xs-4"></div>
+                    </div>
+                <div class="row">
                     <div class="col-xs-8"><strong>Stance</strong></div>
                     <div id="stance" class="col-xs-4"></div>
                 </div>
@@ -270,26 +274,36 @@
                 </div>
                 <div class="row panel-row">
                     <div class="vert-text"><strong>Selected Range:</strong> <span id="range-value">none</span></div>
+                    <div><strong>Target to import:</strong> <span id="target-value">none</span></div>
                     <div class="dropdown btn btn-primary col-xs-3">
-                            <a id="equiping-button" class="action-buttons" href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
-                                Range
+                        <a class="action-buttons" href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
+                            Range
+                            <span class="caret"></span>
+                        </a>
+                        <ul id="range-dropdown" class="dropdown-menu" role="menu" aria-labelledby="range-button">
+                            <li role="presentation" value="1"><a role="menuitem">1 inch</a></li>
+                            <li role="presentation" value="1"><a role="menuitem">2 inches</a></li>
+                            <li role="presentation" value="2"><a role="menuitem">3 inches</a></li>
+                            <li role="presentation" value="3"><a role="menuitem">4 inches</a></li>
+                            <li role="presentation" value="4"><a role="menuitem" >5 inches</a></li>
+                            <li role="presentation" value="4"><a role="menuitem">6 inches</a></li>
+                            <li role="presentation" value="5"><a role="menuitem">7 inches</a></li>
+                            <li role="presentation" value="6"><a role="menuitem">8-14 inches</a></li>
+                            <li role="presentation" value="7"><a role="menuitem">15-29 inches</a></li>
+                            <li role="presentation" value="8"><a role="menuitem">30-54 inches</a></li>
+                            <li role="presentation" value="9"><a role="menuitem">55-84 inches</a></li>
+                            <li role="presentation" value="10"><a role="menuitem">85-149 inches</a></li>
+                            <li role="presentation" value="11"><a role="menuitem">150-249</a></li>
+                            <li role="presentation" value="12"><a role="menuitem">250+ inches</a></li>
+                        </ul>
+                    </div>
+                    <div id="import-target-button" class="dropdown btn btn-primary col-xs-3">
+                            <a id="target-button" class="action-buttons" href="#" class="dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" role="button" aria-expanded="false">
+                                Target
                                 <span class="caret"></span>
                             </a>
-                            <ul id="range-dropdown" class="dropdown-menu" role="menu" aria-labelledby="range-button">
-                                <li role="presentation" value="1"><a role="menuitem">1 inch</a></li>
-                                <li role="presentation" value="1"><a role="menuitem">2 inches</a></li>
-                                <li role="presentation" value="2"><a role="menuitem">3 inches</a></li>
-                                <li role="presentation" value="3"><a role="menuitem">4 inches</a></li>
-                                <li role="presentation" value="4"><a role="menuitem" >5 inches</a></li>
-                                <li role="presentation" value="4"><a role="menuitem">6 inches</a></li>
-                                <li role="presentation" value="5"><a role="menuitem">7 inches</a></li>
-                                <li role="presentation" value="6"><a role="menuitem">8-14 inches</a></li>
-                                <li role="presentation"  value="7"><a role="menuitem">15-29 inches</a></li>
-                                <li role="presentation" value="8"><a role="menuitem">30-54 inches</a></li>
-                                <li role="presentation" value="9"><a role="menuitem">55-84 inches</a></li>
-                                <li role="presentation" value="10"><a role="menuitem">85-149 inches</a></li>
-                                <li role="presentation" value="11"><a role="menuitem">150-249</a></li>
-                                <li role="presentation" value="12"><a role="menuitem">250+ inches</a></li>
+                            <ul id="target-dropdown" class="dropdown-menu" role="menu" aria-labelledby="target-button">
+                                    <li role="presentation" value="none"><a role="menuitem">none</a></li>
                             </ul>
                         </div>
                 </div>                 
@@ -306,9 +320,24 @@
     window.$('#range-dropdown li').click(function(e) {
         window.$("#range-dropdown li").removeClass("selected")
         window.$(this).addClass('selected')
-        console.log(this)
         let rangeVal = window.$(this).find('a')
         window.$('#range-value').html(rangeVal.text())
+    })
+
+    window.$('body').on('click', '#target-dropdown li', function() {
+        window.$(this).removeClass("selected")
+        window.$(this).addClass('selected')
+        let targetVal = window.$(this).find('a')
+        window.$('#target-value').html(targetVal.text())
+
+
+    })
+
+    window.$('#target-dropdown li').click(function(e) {
+        window.$("#target-dropdown li").removeClass("selected")
+        window.$(this).addClass('selected')
+        let targetVal = window.$(this).find('a')
+        window.$('#target-value').html(targetVal.text())
     })
 </script>
 

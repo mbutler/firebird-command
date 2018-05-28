@@ -19,6 +19,7 @@ function createButtonSet(uniqueDesignation) {
     $('#facing-dropdown').empty()
     $('#aiming-dropdown').empty()
     $('#moving-dropdown').empty()
+    $('#target-dropdown').empty()
     let face1LeftMoving = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-left-moving', '${uniqueDesignation}', 0)">Turn 1 hexside left <span class="badge">0</span></a></li>`
     let face1RightMoving = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-right-moving', '${uniqueDesignation}', 0)">Turn 1 hexside right <span class="badge">0</span></a></li>`
     let face1LeftImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-left-immobile', '${uniqueDesignation}', 1)">Turn 1 hexside left <span class="badge">1</span></a></li>`
@@ -43,7 +44,8 @@ function createButtonSet(uniqueDesignation) {
         let unit = data.val()
 
         $('#moving-dropdown').empty()
-
+        let takeCover = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('take-cover', '${uniqueDesignation}', 0)">Change cover <span class="badge">0</span></a></li>`
+        $('#moving-dropdown').append(takeCover)
         if (unit.position === 'standing') {
             let runningForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('running-forward', '${uniqueDesignation}', 1)">Run forward one hex <span class="badge">1</span></a></li>`
             let runningBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('running-backward', '${uniqueDesignation}', 2)">Run backward one hex <span class="badge">2</span></a></li>`
@@ -72,6 +74,14 @@ function createButtonSet(uniqueDesignation) {
             $('#moving-dropdown').append(toStanding)
             $('#moving-dropdown').append(toKneeling)
         }        
+    })
+
+    Database.allUnits.once('value').then((snapshot) => {
+        let units = snapshot.val()
+        _.forEach(units, (unit) => {
+            let unitListItem = `<li role="presentation" value="${unit.name}"><a role="menuitem">${unit.name}</a></li>`
+            $('#target-dropdown').append(unitListItem)
+        })
     })
 }
 
@@ -113,6 +123,7 @@ function populateControlPanel(uniqueDesignation) {
         $('#rate-of-fire').html(weapon.rateOfFire)
         $('#ammunition-capacity').html(weapon.ammoCap)
         $('#ammunition-weight').html(weapon.ammoWeight)
+        $('#cover').html(unit.cover)
 
         for (let i = 1; i <= weapon.aimTime.length-1; i++) {
             let tr = `

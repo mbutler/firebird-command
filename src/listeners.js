@@ -50,11 +50,7 @@ Database.allUnits.on('child_changed', (snapshot) => {
     Unit.animateUnitToHex(hex, uniqueDesignation)
 
     Utils.createButtonSet(uniqueDesignation)
-
-    $('#impulse1').html(unit.currentActionsPerImpulse['1'])
-    $('#impulse2').html(unit.currentActionsPerImpulse['2'])
-    $('#impulse3').html(unit.currentActionsPerImpulse['3'])
-    $('#impulse4').html(unit.currentActionsPerImpulse['4'])
+    Utils.populateControlPanel(uniqueDesignation)
 })
 
 Database.time.on('child_changed', (snapshot) => {    

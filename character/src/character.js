@@ -145,6 +145,7 @@ function formSubmit () {
     newUnit.intSkillFactor = isf
     newUnit.combatActions = ca
     newUnit.combatActionsPerImpulse = capi
+    newUnit.currentActionsPerImpulse = capi
     newUnit.knockoutValue = kv
     newUnit.weapons = selectedWeapons
     newUnit.bodyArmor = armor
@@ -155,7 +156,8 @@ function formSubmit () {
     newUnit.position = 'standing'
     newUnit.currentHex = [12, 9]
     newUnit.facing = 4
-    newUnit.stance = 'running'
+    newUnit.stance = 'firing'
+    newUnit.cover = false
 
     firebase.database().ref('/Games/' + config.gameID + '/Units/' + uniqueDesignation).set(newUnit)
 

@@ -17,6 +17,7 @@ let Game = require('./game')
 function action(selection, uniqueDesignation, totalActions) {
     let actionMap = {
         'aiming': Game.aiming,
+        'take-cover': Game.takeCover,
         'face-1-left-moving': Game.face1LeftMoving,
         'face-1-right-moving': Game.face1RightMoving,
         //

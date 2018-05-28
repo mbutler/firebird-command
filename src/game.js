@@ -81,6 +81,34 @@ function getShooterPositionModifier(position) {
 }
 
 /**
+ * Returns the proper accuracy modifier based on shooter's position
+ *
+ * @param {object} target -  The enemy unit to import
+ * @memberof Game
+ * @return {number} - A number to be added to the accuracy
+ */
+function getTargetModifiers(target) {
+  let mod = 0
+  if (target.cover === true) {
+    mod += -2
+  }
+
+  if (target.position === 'standing' && target.cover === false) {
+    mod += 8
+  }
+
+  if (target.position === 'kneeling' && target.cover === false) {
+    mod += 6
+  }
+
+  if (target.position === 'prone' && target.cover === false) {
+    mod += 2
+  }
+
+  return mod
+}
+
+/**
  * Looks ahead and finds a hex based on a given face
  *
  * @param {object} currentCoords -  A point object of the current position
@@ -129,6 +157,28 @@ function face1LeftMoving (uniqueDesignation) {
 }
 
 /**
+ * Changes unit's cover
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @param {number} totalActions - The number of actions used
+ * @requires Database
+ * @requires Unit
+ * @memberof Game
+ * @return {undefined} - Modifies the database directly
+ */
+function takeCover(uniqueDesignation, totalActions) {
+  let cover
+  Database.singleUnit(uniqueDesignation).once('value').then((data) => {
+    let unit = data.val()
+    if (unit.cover === true) {
+      Unit.update({cover: false}, unit.name)
+    } else {
+      Unit.update({cover: true}, unit.name)
+    }
+  })
+}
+
+/**
  * Calculates aiming and aim mods
  *
  * @param {string} uniqueDesignation - The name of the unit
@@ -149,23 +199,39 @@ function aiming (uniqueDesignation, totalActions) {
     let roll = _.random(1, 100)
     let odds
     let range = $('#range-dropdown').find('li.selected').val()
+    let target = $('#target-value').text()
     let response = "miss!"
     let penalty = 0
-
     if (totalActions === 1) {
       penalty = -6
     }
 
-    shotAccuracy = aimTimeMods[aimTime] + sal + getShooterPositionModifier(unit.position) + penalty
-    odds = Tables.oddsOfHitting(shotAccuracy, range)
-
-    if (roll <= odds) {
-      response = "hit!"
+    if (unit.cover === true) {
+      penalty += -2
     }
 
-    console.log(`accuracy: ${shotAccuracy}, roll: ${roll}, response: ${response}`)
+    if (target !== 'none') {
+      Database.singleUnit(target).once('value').then((data) => {  
+        let target = data.val()
+        shotAccuracy = aimTimeMods[aimTime] + sal + getShooterPositionModifier(unit.position) + penalty + getTargetModifiers(target)
+        odds = Tables.oddsOfHitting(shotAccuracy, range)
     
+        if (roll <= odds) {
+          response = "hit!"
+        }
     
+        console.log(`accuracy: ${shotAccuracy}, roll: ${roll}, response: ${response}`)
+      })  
+    } else {
+      shotAccuracy = aimTimeMods[aimTime] + sal + getShooterPositionModifier(unit.position) + penalty
+        odds = Tables.oddsOfHitting(shotAccuracy, range)
+    
+        if (roll <= odds) {
+          response = "hit!"
+        }
+    
+        console.log(`accuracy: ${shotAccuracy}, roll: ${roll}, response: ${response}`)
+    }     
   })
 }
 
@@ -497,5 +563,6 @@ module.exports = {
   aiming: aiming,
   toStanding: toStanding,
   toKneeling: toKneeling,
-  toProne: toProne
+  toProne: toProne,
+  takeCover: takeCover
 }

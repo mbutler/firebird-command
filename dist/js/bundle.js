@@ -63349,6 +63349,7 @@ let Game = require('./game')
 function action(selection, uniqueDesignation, totalActions) {
     let actionMap = {
         'aiming': Game.aiming,
+        'take-cover': Game.takeCover,
         'face-1-left-moving': Game.face1LeftMoving,
         'face-1-right-moving': Game.face1RightMoving,
         //
@@ -63518,6 +63519,13 @@ function faceToDirection (face) {
   return map[faceString]
 }
 
+/**
+ * Returns the proper accuracy modifier based on shooter's position
+ *
+ * @param {string} position -  Either standing, kneeling, or prone
+ * @memberof Game
+ * @return {number} - A number to be added to the accuracy
+ */
 function getShooterPositionModifier(position) {
   let mod = 0
   if (position === 'kneeling') {
@@ -63526,6 +63534,34 @@ function getShooterPositionModifier(position) {
 
   if (position === 'prone') {
     mod = 6
+  }
+
+  return mod
+}
+
+/**
+ * Returns the proper accuracy modifier based on shooter's position
+ *
+ * @param {object} target -  The enemy unit to import
+ * @memberof Game
+ * @return {number} - A number to be added to the accuracy
+ */
+function getTargetModifiers(target) {
+  let mod = 0
+  if (target.cover === true) {
+    mod += -2
+  }
+
+  if (target.position === 'standing' && target.cover === false) {
+    mod += 8
+  }
+
+  if (target.position === 'kneeling' && target.cover === false) {
+    mod += 6
+  }
+
+  if (target.position === 'prone' && target.cover === false) {
+    mod += 2
   }
 
   return mod
@@ -63579,8 +63615,38 @@ function face1LeftMoving (uniqueDesignation) {
   })
 }
 
-//need to pull in number of actions spent aiming
-//
+/**
+ * Changes unit's cover
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @param {number} totalActions - The number of actions used
+ * @requires Database
+ * @requires Unit
+ * @memberof Game
+ * @return {undefined} - Modifies the database directly
+ */
+function takeCover(uniqueDesignation, totalActions) {
+  let cover
+  Database.singleUnit(uniqueDesignation).once('value').then((data) => {
+    let unit = data.val()
+    if (unit.cover === true) {
+      Unit.update({cover: false}, unit.name)
+    } else {
+      Unit.update({cover: true}, unit.name)
+    }
+  })
+}
+
+/**
+ * Calculates aiming and aim mods
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @param {number} totalActions - The number of actions used for the aim
+ * @requires Database
+ * @requires Weapons
+ * @memberof Game
+ * @return {undefined} - Modifies the database directly
+ */
 function aiming (uniqueDesignation, totalActions) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
@@ -63592,31 +63658,79 @@ function aiming (uniqueDesignation, totalActions) {
     let roll = _.random(1, 100)
     let odds
     let range = $('#range-dropdown').find('li.selected').val()
+    let target = $('#target-value').text()
     let response = "miss!"
-    console.log(aimTimeMods[aimTime], sal, getShooterPositionModifier(unit.position))
-    shotAccuracy = aimTimeMods[aimTime] + sal + getShooterPositionModifier(unit.position)
-    odds = Tables.oddsOfHitting(shotAccuracy, range)
-
-    if (roll <= odds) {
-      response = "hit!"
+    let penalty = 0
+    if (totalActions === 1) {
+      penalty = -6
     }
 
-    console.log(`accuracy: ${shotAccuracy}, roll: ${roll}, response: ${response}`)
+    if (unit.cover === true) {
+      penalty += -2
+    }
+
+    if (target !== 'none') {
+      Database.singleUnit(target).once('value').then((data) => {  
+        let target = data.val()
+        shotAccuracy = aimTimeMods[aimTime] + sal + getShooterPositionModifier(unit.position) + penalty + getTargetModifiers(target)
+        odds = Tables.oddsOfHitting(shotAccuracy, range)
     
+        if (roll <= odds) {
+          response = "hit!"
+        }
     
+        console.log(`accuracy: ${shotAccuracy}, roll: ${roll}, response: ${response}`)
+      })  
+    } else {
+      shotAccuracy = aimTimeMods[aimTime] + sal + getShooterPositionModifier(unit.position) + penalty
+        odds = Tables.oddsOfHitting(shotAccuracy, range)
+    
+        if (roll <= odds) {
+          response = "hit!"
+        }
+    
+        console.log(`accuracy: ${shotAccuracy}, roll: ${roll}, response: ${response}`)
+    }     
   })
 }
 
+/**
+ * Changes the position to standing
+ *
+ * @param {string} uniqueDesignation -  The unit's name
+ * @param {number} totalActions -  The amount of actions used
+ * @requires Unit
+ * @memberof Game
+ * @return {undefined} - Updates the unit directly
+ */
 function toStanding(uniqueDesignation, totalActions) {
   Unit.update({position: 'standing'}, uniqueDesignation)
   console.log(`${uniqueDesignation} stands up`)
 }
 
+/**
+ * Changes the position to kneeling
+ *
+ * @param {string} uniqueDesignation -  The unit's name
+ * @param {number} totalActions -  The amount of actions used
+ * @requires Unit
+ * @memberof Game
+ * @return {undefined} - Updates the unit directly
+ */
 function toKneeling(uniqueDesignation, totalActions) {
   Unit.update({position: 'kneeling'}, uniqueDesignation)
   console.log(`${uniqueDesignation} kneels`)
 }
 
+/**
+ * Changes the position to prone
+ *
+ * @param {string} uniqueDesignation -  The unit's name
+ * @param {number} totalActions -  The amount of actions used
+ * @requires Unit
+ * @memberof Game
+ * @return {undefined} - Updates the unit directly
+ */
 function toProne(uniqueDesignation, totalActions) {
   Unit.update({position: 'prone'}, uniqueDesignation)
   console.log(`${uniqueDesignation} goes prone`)
@@ -63908,7 +64022,8 @@ module.exports = {
   aiming: aiming,
   toStanding: toStanding,
   toKneeling: toKneeling,
-  toProne: toProne
+  toProne: toProne,
+  takeCover: takeCover
 }
 
 },{"./config":185,"./database":186,"./map":190,"./tables":191,"./unit":194,"./weapons":196,"lodash":169}],188:[function(require,module,exports){
@@ -63998,11 +64113,7 @@ Database.allUnits.on('child_changed', (snapshot) => {
     Unit.animateUnitToHex(hex, uniqueDesignation)
 
     Utils.createButtonSet(uniqueDesignation)
-
-    $('#impulse1').html(unit.currentActionsPerImpulse['1'])
-    $('#impulse2').html(unit.currentActionsPerImpulse['2'])
-    $('#impulse3').html(unit.currentActionsPerImpulse['3'])
-    $('#impulse4').html(unit.currentActionsPerImpulse['4'])
+    Utils.populateControlPanel(uniqueDesignation)
 })
 
 Database.time.on('child_changed', (snapshot) => {    
@@ -64187,6 +64298,11 @@ module.exports = {
     getHexFromCoords: getHexFromCoords
 }
 },{"./config":185,"honeycomb-grid":167,"lodash":169,"svg.js":181}],191:[function(require,module,exports){
+/**
+ * This module handles table lookups
+ * @module Tables
+ */
+
 let _ = require('lodash')
 
 let oddsOfHittingTable = [
@@ -64255,6 +64371,14 @@ let oddsOfHittingTable = [
     [34, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 96]
 ]
 
+/**
+ * The odds of hitting a target
+ *
+ * @param {number} accuracy -  The unit's accuracy number
+ * @param {number} range -  The distance in inches
+ * @memberof Tables
+ * @return {number} - The percentage chance of hitting
+ */
 function oddsOfHitting(accuracy, range) {
     let odds = 0
     let rangeIndex = getIndexOfRange(range)
@@ -64276,6 +64400,13 @@ function oddsOfHitting(accuracy, range) {
     return odds
 }
 
+/**
+ * Gets the correct index for aim mods array
+ *
+ * @param {number} distance -  The number of inches to target
+ * @memberof Tables
+ * @return {number} - The index of the weapon's aim mods array
+ */
 function getIndexOfRange(distance) {
     let index
 
@@ -64963,6 +65094,7 @@ function createButtonSet(uniqueDesignation) {
     $('#facing-dropdown').empty()
     $('#aiming-dropdown').empty()
     $('#moving-dropdown').empty()
+    $('#target-dropdown').empty()
     let face1LeftMoving = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-left-moving', '${uniqueDesignation}', 0)">Turn 1 hexside left <span class="badge">0</span></a></li>`
     let face1RightMoving = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-right-moving', '${uniqueDesignation}', 0)">Turn 1 hexside right <span class="badge">0</span></a></li>`
     let face1LeftImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-left-immobile', '${uniqueDesignation}', 1)">Turn 1 hexside left <span class="badge">1</span></a></li>`
@@ -64981,14 +65113,14 @@ function createButtonSet(uniqueDesignation) {
     for (let i = 1; i <= 12; i++) {
         let aiming = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('aiming', '${uniqueDesignation}', ${i})">Aim <span class="badge">${i}</span></a></li>`
         $('#aiming-dropdown').append(aiming)
-        console.log('aiming dropdown')
     }
 
     Database.singleUnit(uniqueDesignation).once('value').then((data) => {
         let unit = data.val()
 
         $('#moving-dropdown').empty()
-
+        let takeCover = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('take-cover', '${uniqueDesignation}', 0)">Change cover <span class="badge">0</span></a></li>`
+        $('#moving-dropdown').append(takeCover)
         if (unit.position === 'standing') {
             let runningForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('running-forward', '${uniqueDesignation}', 1)">Run forward one hex <span class="badge">1</span></a></li>`
             let runningBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('running-backward', '${uniqueDesignation}', 2)">Run backward one hex <span class="badge">2</span></a></li>`
@@ -65017,6 +65149,14 @@ function createButtonSet(uniqueDesignation) {
             $('#moving-dropdown').append(toStanding)
             $('#moving-dropdown').append(toKneeling)
         }        
+    })
+
+    Database.allUnits.once('value').then((snapshot) => {
+        let units = snapshot.val()
+        _.forEach(units, (unit) => {
+            let unitListItem = `<li role="presentation" value="${unit.name}"><a role="menuitem">${unit.name}</a></li>`
+            $('#target-dropdown').append(unitListItem)
+        })
     })
 }
 
@@ -65058,6 +65198,7 @@ function populateControlPanel(uniqueDesignation) {
         $('#rate-of-fire').html(weapon.rateOfFire)
         $('#ammunition-capacity').html(weapon.ammoCap)
         $('#ammunition-weight').html(weapon.ammoWeight)
+        $('#cover').html(unit.cover)
 
         for (let i = 1; i <= weapon.aimTime.length-1; i++) {
             let tr = `
@@ -65077,6 +65218,11 @@ module.exports = {
     createButtonSet: createButtonSet
 }
 },{"./database":186,"./weapons":196,"lodash":169}],196:[function(require,module,exports){
+/**
+ * This module handles weapon data
+ * @module Weapons
+ */
+
 let _ = require('lodash')
 
 let weapons = [
@@ -65112,6 +65258,13 @@ let weapons = [
     }
 ]
 
+/**
+ * Gets the weapon of a given unit
+ *
+ * @param {string} weaponName -  The unit's weapon name
+ * @memberof Weapons
+ * @return {object} - The weapon object from the weapons list
+ */
 function getWeapon(weaponName) {
     let weapon 
 
