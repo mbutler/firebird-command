@@ -81,7 +81,7 @@ function getShooterPositionModifier(position) {
 }
 
 /**
- * Returns the proper accuracy modifier based on shooter's position
+ * Returns the proper accuracy modifier based on target's position
  *
  * @param {object} target -  The enemy unit to import
  * @memberof Game
@@ -212,7 +212,7 @@ function aiming (uniqueDesignation, totalActions) {
     }
 
     if (unit.cover === true) {
-      penalty += -2
+      penalty += -4
     }
 
     if (target !== 'none') {
