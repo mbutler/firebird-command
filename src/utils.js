@@ -76,6 +76,9 @@ function createButtonSet(uniqueDesignation) {
         }        
     })
 
+    let noTarget = `<li role="presentation" value="none"><a role="menuitem">none</a></li>`
+    $('#target-dropdown').append(noTarget)
+
     Database.allUnits.once('value').then((snapshot) => {
         let units = snapshot.val()
         _.forEach(units, (unit) => {

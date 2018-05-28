@@ -202,6 +202,11 @@ function aiming (uniqueDesignation, totalActions) {
     let target = $('#target-value').text()
     let response = "miss!"
     let penalty = 0
+
+    if (aimTime > aimTimeMods.length - 1) {
+      aimTime = aimTimeMods.length - 1
+    }
+
     if (totalActions === 1) {
       penalty = -6
     }

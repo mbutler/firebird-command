@@ -63661,6 +63661,11 @@ function aiming (uniqueDesignation, totalActions) {
     let target = $('#target-value').text()
     let response = "miss!"
     let penalty = 0
+
+    if (aimTime > aimTimeMods.length - 1) {
+      aimTime = aimTimeMods.length - 1
+    }
+
     if (totalActions === 1) {
       penalty = -6
     }
@@ -65150,6 +65155,9 @@ function createButtonSet(uniqueDesignation) {
             $('#moving-dropdown').append(toKneeling)
         }        
     })
+
+    let noTarget = `<li role="presentation" value="none"><a role="menuitem">none</a></li>`
+    $('#target-dropdown').append(noTarget)
 
     Database.allUnits.once('value').then((snapshot) => {
         let units = snapshot.val()
