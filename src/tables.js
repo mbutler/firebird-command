@@ -31,58 +31,6 @@ let hitLocationTable = [
     {open: [83, 99], location: 'Leg - Shin - Foot', pd: [14, 'disabling injury'], opd: [14, 200, 200, 200]}
 ]
 
-/**
- * Gets the correct hit location and damage
- *
- * @param {string} damageType -  Either lvd or opn
- * @param {number} weaponDC -  Weapon's damage class found in the weapon object
- * @param {boolean} cover - If the target has cover or not
- * @memberof Tables
- * @return {object} - The damage and hit object
- */
-function getHitLocation(damageType, weaponDC, cover) {
-    let roll = _.random(0, 99)
-    console.log('roll', roll)
-    let rollResult
-    let finalResult
-    let dcIndex
-    let damage
-    let coverList = _.filter(hitLocationTable, (o) => {return o.cover})
-
-    if (_.inRange(weaponDC, 1, 3)) dcIndex = 0
-    if (_.inRange(weaponDC, 3, 6)) dcIndex = 1
-    if (_.inRange(weaponDC, 6, 9)) dcIndex = 2
-    if (_.inRange(weaponDC, 9, 11)) dcIndex = 3
-    if (weaponDC > 10) dcIndex = 3
-
-    if (cover === true) {
-        _.forEach(coverList, (row) => {
-            if (_.inRange(roll, row.cover[0], row.cover[1] + 1)) {
-                rollResult = row
-            }
-        })
-    }
-
-    if (cover !== true) {
-        _.forEach(hitLocationTable, (row) => {
-            if (_.inRange(roll, row.open[0], row.open[1] + 1)) {
-                rollResult = row
-            }
-        })
-    }
-
-    if (damageType === 'lvd') {
-        damage = rollResult.pd[0]    
-    }
-
-    if (damageType === 'opd') {
-        damage = rollResult.opd[dcIndex]
-    }
-
-    finalResult = {location: rollResult.location, type: damageType, damage: damage, wound: rollResult.pd[1]}
-    return finalResult
-}
-
 let oddsOfHittingTable = [
     [-28, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [-27, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -170,91 +118,6 @@ let penetrationSummaryTable = [
 ]
 
 /**
- * Gets the correct penetration line given pf and weapon pen
- *
- * @param {number} armorProtectionFactor -  Armor PF
- * @param {number} weaponPenetration -  Weapon's pen
- * @memberof Tables
- * @return {number} - The correct penetration line
- */
-function getPenetrationLine(armorProtectionFactor, weaponPenetration) {
-    let line = 0
-    let lineList = [] // keep a list because all values under will be included. Only need the first hit
-
-    _.forEachRight(penetrationSummaryTable, (pfLine) => {    
-        if (pfLine[0] <= armorProtectionFactor) {  
-            if (weaponPenetration >= pfLine[4]) {
-                line = 4
-            }
-
-            if (_.inRange(weaponPenetration, pfLine[3], pfLine[4])) {
-                line = 3
-            }
-
-            if (_.inRange(weaponPenetration, pfLine[2], pfLine[3])) {
-                line = 2
-            }
-
-            if (_.inRange(weaponPenetration, pfLine[1], pfLine[2])) {
-                line = 1
-            }
-
-            lineList.push(line)
-        }
-    })
-
-    return lineList[0] // the first match
-
-}
-
-/**
- * Finds the type of damage if the shot is glancing
- *
- * @param {number} penLine -  The weapon penetration line to use
- * @memberof Tables
- * @return {string} - The type of damage. No damage, low velocity damage, or over penetrating damage
- */
-function glancingRoll(penLine) {
-    let roll = _.random(0, 9)
-    let result
-
-    if (penLine === 1) {
-        if (roll < 9) {
-            result = 'no damage'
-        } else {
-            result = 'lvd'
-        }
-    }
-
-    if (penLine === 2) {
-        if (roll < 6) {
-            result = 'no damage'
-        } else {
-            result = 'lvd'
-        }
-    }
-
-    if (penLine === 3) {
-        if (roll < 3) {
-            result = 'no damage'
-        } else {
-            result = 'lvd'
-        }
-    }
-
-    if (penLine === 4) {
-        if (_.inRange(roll, 0, 3)) {
-            result = 'lvd'
-        } else {
-            result = 'opd'
-        }
-    }
-
-    return result
-
-}
-
-/**
  * The odds of hitting a target
  *
  * @param {number} accuracy -  The unit's accuracy number
@@ -312,10 +175,179 @@ function getIndexOfRange(distance) {
     
 }
 
-console.log(getHitLocation('opd', 9, false))
+/**
+ * Gets the correct penetration line given pf and weapon pen
+ *
+ * @param {number} armorProtectionFactor -  Armor PF
+ * @param {number} weaponPenetration -  Weapon's pen
+ * @memberof Tables
+ * @return {number} - The correct penetration line
+ */
+function getPenetrationLine(armorProtectionFactor, weaponPenetration) {    
+    let line = 1
+    let lineList = [] // keep a list because all values under will be included. Only need the first hit
+
+    if (armorProtectionFactor < 2) {
+        armorProtectionFactor = 2
+    }
+
+    _.forEachRight(penetrationSummaryTable, (pfLine) => {    
+        if (pfLine[0] <= armorProtectionFactor) {  
+            if (weaponPenetration >= pfLine[4]) {
+                line = 4
+            }
+
+            if (_.inRange(weaponPenetration, pfLine[3], pfLine[4])) {
+                line = 3
+            }
+
+            if (_.inRange(weaponPenetration, pfLine[2], pfLine[3])) {
+                line = 2
+            }
+
+            if (_.inRange(weaponPenetration, pfLine[1], pfLine[2])) {
+                line = 1
+            }
+
+            lineList.push(line)
+        }
+    })
+
+    console.log('line list', lineList[0])
+
+    return lineList[0] // the first match
+
+}
+
+/**
+ * Finds the type of damage if the shot is glancing
+ *
+ * @param {number} penLine -  The weapon penetration line to use
+ * @memberof Tables
+ * @return {string} - The type of damage. No damage, low velocity damage, or over penetrating damage
+ */
+function glancingRoll(penLine) {
+    let roll = _.random(0, 9)
+    let result
+
+    if (penLine === 1) {
+        if (roll < 9) {
+            result = 'no damage'
+        } else {
+            result = 'lvd'
+        }
+    }
+
+    if (penLine === 2) {
+        if (roll < 6) {
+            result = 'no damage'
+        } else {
+            result = 'lvd'
+        }
+    }
+
+    if (penLine === 3) {
+        if (roll < 3) {
+            result = 'no damage'
+        } else {
+            result = 'lvd'
+        }
+    }
+
+    if (penLine === 4) {
+        if (_.inRange(roll, 0, 3)) {
+            result = 'lvd'
+        } else {
+            result = 'opd'
+        }
+    }
+
+    return result
+
+}
+
+/**
+ * Gets the correct hit location and damage
+ *
+ * @param {string} damageType -  Either lvd or opn
+ * @param {number} weaponDC -  Weapon's damage class found in the weapon object
+ * @param {boolean} cover - If the target has cover or not
+ * @memberof Tables
+ * @return {object} - The damage and hit object
+ */
+function getHitLocation(damageType, weaponDC, cover) {
+    let roll = _.random(0, 99)
+    console.log('roll', roll)
+    let rollResult
+    let finalResult
+    let status
+    let dcIndex
+    let damage
+    let coverList = _.filter(hitLocationTable, (o) => {return o.cover})
+
+    if (_.inRange(weaponDC, 1, 3)) dcIndex = 0
+    if (_.inRange(weaponDC, 3, 6)) dcIndex = 1
+    if (_.inRange(weaponDC, 6, 9)) dcIndex = 2
+    if (_.inRange(weaponDC, 9, 11)) dcIndex = 3
+    if (weaponDC > 10) dcIndex = 3
+
+    if (cover === true) {
+        _.forEach(coverList, (row) => {
+            if (_.inRange(roll, row.cover[0], row.cover[1] + 1)) {
+                rollResult = row
+            }
+        })
+    }
+
+    if (cover !== true) {
+        _.forEach(hitLocationTable, (row) => {
+            if (_.inRange(roll, row.open[0], row.open[1] + 1)) {
+                rollResult = row
+            }
+        })
+    }
+
+    if (damageType === 'lvd') {
+        damage = rollResult.pd[0]
+        status = 'hit'  
+    }
+
+    if (damageType === 'opd') {
+        damage = rollResult.opd[dcIndex]
+        status = 'hit'
+    }
+
+    if (damageType === 'no damage') {
+        damage = 0
+        status = 'miss'
+    }
+
+    finalResult = {status: status, location: rollResult.location, type: damageType, damage: damage, wound: rollResult.pd[1]}
+    return finalResult
+}
+
+/**
+ * The main hit result called from the interface
+ *
+ * @param {object} armor -  The target's armor data
+ * @param {object} weapon-  The shooter's weapon data
+ * @param {boolean} cover - If the target has cover or not
+ * @memberof Tables
+ * @return {object} - The damage and hit object
+ */
+function hitResult(armor, weapon, cover) {
+    let penLine = getPenetrationLine(armor.pf, weapon.ammoType.fmj.pen)
+    let damageType = glancingRoll(penLine)
+    let hitLocation = getHitLocation(damageType, weapon.ammoType.fmj.dc, cover)
+    console.log('penline', penLine, 'damage type', damageType, 'hit location', hitLocation)
+
+    return hitLocation
+}
+
 module.exports = {
     oddsOfHitting: oddsOfHitting,
     getHitLocation: getHitLocation,
     getPenetrationLine: getPenetrationLine,
-    glancingRoll: glancingRoll
+    glancingRoll: glancingRoll,
+    hitResult: hitResult
 }

@@ -62082,6 +62082,7 @@ let config = require('./config')
 let Unit = require('./unit')
 let Map = require('./map')
 let Weapons = require('./weapons')
+let Utils = require('./utils')
 let _ = require('lodash')
 let Tables = require('./tables')
 
@@ -62155,7 +62156,7 @@ function getShooterPositionModifier(position) {
 }
 
 /**
- * Returns the proper accuracy modifier based on shooter's position
+ * Returns the proper accuracy modifier based on target's position
  *
  * @param {object} target -  The enemy unit to import
  * @memberof Game
@@ -62274,8 +62275,9 @@ function aiming (uniqueDesignation, totalActions) {
     let odds
     let range = $('#range-dropdown').find('li.selected').val()
     let target = $('#target-value').text()
-    let response = "miss!"
+    let response = "miss"
     let penalty = 0
+    let damage
 
     if (aimTime > aimTimeMods.length - 1) {
       aimTime = aimTimeMods.length - 1
@@ -62286,32 +62288,43 @@ function aiming (uniqueDesignation, totalActions) {
     }
 
     if (unit.cover === true) {
-      penalty += -2
+      penalty += -4
     }
 
     if (target !== 'none') {
       Database.singleUnit(target).once('value').then((data) => {  
         let target = data.val()
+        let targetArmor = Utils.getArmor(target.bodyArmor)
         shotAccuracy = aimTimeMods[aimTime] + sal + getShooterPositionModifier(unit.position) + penalty + getTargetModifiers(target)
         odds = Tables.oddsOfHitting(shotAccuracy, range)
     
         if (roll <= odds) {
-          response = "hit!"
+          response = "hit"
+          damage = Tables.hitResult(targetArmor, weapon, target.cover)    
+          console.log(`accuracy: ${shotAccuracy}, roll: ${roll}, damage: ${JSON.stringify(damage)}`)
+          alert(`accuracy: ${shotAccuracy}, roll: ${roll}, damage: ${JSON.stringify(damage)}`)
+        } else {
+          console.log('miss')
+          alert('miss')
         }
-    
-        console.log(`accuracy: ${shotAccuracy}, roll: ${roll}, response: ${response}`)
-        alert(`accuracy: ${shotAccuracy}, roll: ${roll}, response: ${response}`)
+
+        
       })  
     } else {
       shotAccuracy = aimTimeMods[aimTime] + sal + getShooterPositionModifier(unit.position) + penalty
         odds = Tables.oddsOfHitting(shotAccuracy, range)
     
         if (roll <= odds) {
-          response = "hit!"
+          response = "hit"
+          damage = Tables.hitResult('clothing', weapon, false)
+          console.log(`accuracy: ${shotAccuracy}, roll: ${roll}, damage: ${JSON.stringify(damage)}`)
+          alert(`accuracy: ${shotAccuracy}, roll: ${roll}, damage: ${JSON.stringify(damage)}`)
+        } else {
+          console.log('miss')
+          alert('miss')
         }
-    
-        console.log(`accuracy: ${shotAccuracy}, roll: ${roll}, response: ${response}`)
-        alert(`accuracy: ${shotAccuracy}, roll: ${roll}, response: ${response}`)
+        
+        
     }     
   })
 }
@@ -62648,7 +62661,7 @@ module.exports = {
   takeCover: takeCover
 }
 
-},{"./config":175,"./database":176,"./map":180,"./tables":181,"./unit":184,"./weapons":186,"lodash":167}],178:[function(require,module,exports){
+},{"./config":175,"./database":176,"./map":180,"./tables":181,"./unit":184,"./utils":185,"./weapons":186,"lodash":167}],178:[function(require,module,exports){
 /**
  * @author Matthew Butler <matthewtbutler@gmail.com>
  * 
@@ -62927,6 +62940,32 @@ module.exports = {
 
 let _ = require('lodash')
 
+let hitLocationTable = [
+    {cover: [0, 2], open: [0, 0], location: 'Head - Glance', pd: [7, 'light wound'], opd: [7, 200, 1000, 80000]},
+    {cover: [3, 17], open: [1, 2], location: 'Head - Forehead', pd: [2000, 'critical wound'], opd: [2000, 60000, 'dead', 'dead']},
+    {cover: [18, 22], open: [3, 3], location: 'Head - Eye-Nose', pd: [3000, 'critical wound'], opd: [3000, 80000, 'dead', 'dead']},
+    {cover: [23, 38], open: [4, 5], location: 'Head - Mouth', pd: [300, 'critical wound'], opd: [300, 6000, 30000, 'dead']},
+    {cover: [39, 56], open: [6, 8], location: 'Arm - Glance', pd: [1, 'superficial wound'], opd: [1, 5, 11, 32]},
+    {cover: [57, 69], open: [9, 10], location: 'Arm - Shoulder', pd: [21, 'disabling injury'], opd: [21, 500, 1000, 1000]},
+    {cover: [70, 76], open: [11, 11], location: 'Arm - Upper Arm - Flesh', pd: [3, 'superficial wound'], opd: [3, 12, 100, 100]},
+    {cover: [77, 80], open: [12, 12], location: 'Arm - Upper Arm - Bone', pd: [7, 'disabling injury'], opd: [7, 60, 100, 100]},
+    {cover: [81, 83], open: [13, 13], location: 'Arm - Forearm - Flesh', pd: [3, 'superficial wound'], opd: [3, 12, 50, 50]},
+    {cover: [84, 92], open: [14, 14], location: 'Arm - Forearm - Bone', pd: [6, 'disabling injury'], opd: [6, 60, 60, 60]},
+    {cover: [93, 95], open: [15, 15], location: 'Arm - Hand', pd: [3, 'superficial wound'], opd: [3, 8, 15, 15]},
+    {cover: [96, 99], open: [16, 16], location: 'Arm - Weapon', pd: [0, 'weapon critical'], opd: [0, 0, 0, 0]},
+    {open: [17, 19], location: 'Body - Glance', pd: [1, 'superficial wound'], opd: [1, 7, 16, 47]},
+    {open: [20, 23], location: 'Body - Chest', pd: [51, 'heavy wound'], opd: [51, 100, 300, 2000]},
+    {open: [24, 24], location: 'Body - Base of Neck', pd: [300, 'critical wound'], opd: [300, 6000, 40000, 'dead']},
+    {open: [25, 25], location: 'Body - Heart', pd: [4000, 'critical wound'], opd: [4000, 100000, 'dead', 'dead']},
+    {open: [26, 30], location: 'Body - Spine', pd: [300, 'critical wound'], opd: [300, 5000, 30000, 'dead']},
+    {open: [31, 42], location: 'Body - Abdomen', pd: [35, 'heavy wound'], opd: [35, 900, 5000, 30000]},
+    {open: [43, 56], location: 'Body - Pelvis', pd: [21, 'medium wound'], opd: [21, 100, 500, 4000]},
+    {open: [57, 60], location: 'Leg - Glance', pd: [1, 'superficial wound'], opd: [1, 7, 16, 47]},
+    {open: [61, 77], location: 'Leg - Thigh - Flesh', pd: [3, 'superficial wound'], opd: [3, 88, 500, 600]},
+    {open: [78, 82], location: 'Leg - Thigh - Bone', pd: [16, 'disabling injury'], opd: [16, 400, 700, 700]},
+    {open: [83, 99], location: 'Leg - Shin - Foot', pd: [14, 'disabling injury'], opd: [14, 200, 200, 200]}
+]
+
 let oddsOfHittingTable = [
     [-28, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
     [-27, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -62993,6 +63032,26 @@ let oddsOfHittingTable = [
     [34, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 96]
 ]
 
+// chart 3B
+// 0 index is armor protection factor
+// other 4 numbers are penetration lines
+let penetrationSummaryTable = [
+    [2, 3, 4, 6, 7],
+    [4, 5, 7, 9, 11],
+    [6, 7, 10, 12, 16],
+    [10, 11, 15, 19, 25],
+    [16, 17, 23, 29, 38],
+    [20, 21, 28, 36, 47],
+    [30, 31, 41, 53, 69],
+    [40, 41, 54, 70, 91],
+    [50, 51, 67, 87, 113],
+    [60, 61, 80, 104, 135],
+    [70, 71, 93, 120, 156],
+    [100, 101, 132, 171, 222],
+    [180, 181, 236, 306, 398],
+    [200, 201, 262, 340, 442]
+]
+
 /**
  * The odds of hitting a target
  *
@@ -63051,8 +63110,181 @@ function getIndexOfRange(distance) {
     
 }
 
+/**
+ * Gets the correct penetration line given pf and weapon pen
+ *
+ * @param {number} armorProtectionFactor -  Armor PF
+ * @param {number} weaponPenetration -  Weapon's pen
+ * @memberof Tables
+ * @return {number} - The correct penetration line
+ */
+function getPenetrationLine(armorProtectionFactor, weaponPenetration) {    
+    let line = 1
+    let lineList = [] // keep a list because all values under will be included. Only need the first hit
+
+    if (armorProtectionFactor < 2) {
+        armorProtectionFactor = 2
+    }
+
+    _.forEachRight(penetrationSummaryTable, (pfLine) => {    
+        if (pfLine[0] <= armorProtectionFactor) {  
+            if (weaponPenetration >= pfLine[4]) {
+                line = 4
+            }
+
+            if (_.inRange(weaponPenetration, pfLine[3], pfLine[4])) {
+                line = 3
+            }
+
+            if (_.inRange(weaponPenetration, pfLine[2], pfLine[3])) {
+                line = 2
+            }
+
+            if (_.inRange(weaponPenetration, pfLine[1], pfLine[2])) {
+                line = 1
+            }
+
+            lineList.push(line)
+        }
+    })
+
+    console.log('line list', lineList[0])
+
+    return lineList[0] // the first match
+
+}
+
+/**
+ * Finds the type of damage if the shot is glancing
+ *
+ * @param {number} penLine -  The weapon penetration line to use
+ * @memberof Tables
+ * @return {string} - The type of damage. No damage, low velocity damage, or over penetrating damage
+ */
+function glancingRoll(penLine) {
+    let roll = _.random(0, 9)
+    let result
+
+    if (penLine === 1) {
+        if (roll < 9) {
+            result = 'no damage'
+        } else {
+            result = 'lvd'
+        }
+    }
+
+    if (penLine === 2) {
+        if (roll < 6) {
+            result = 'no damage'
+        } else {
+            result = 'lvd'
+        }
+    }
+
+    if (penLine === 3) {
+        if (roll < 3) {
+            result = 'no damage'
+        } else {
+            result = 'lvd'
+        }
+    }
+
+    if (penLine === 4) {
+        if (_.inRange(roll, 0, 3)) {
+            result = 'lvd'
+        } else {
+            result = 'opd'
+        }
+    }
+
+    return result
+
+}
+
+/**
+ * Gets the correct hit location and damage
+ *
+ * @param {string} damageType -  Either lvd or opn
+ * @param {number} weaponDC -  Weapon's damage class found in the weapon object
+ * @param {boolean} cover - If the target has cover or not
+ * @memberof Tables
+ * @return {object} - The damage and hit object
+ */
+function getHitLocation(damageType, weaponDC, cover) {
+    let roll = _.random(0, 99)
+    console.log('roll', roll)
+    let rollResult
+    let finalResult
+    let status
+    let dcIndex
+    let damage
+    let coverList = _.filter(hitLocationTable, (o) => {return o.cover})
+
+    if (_.inRange(weaponDC, 1, 3)) dcIndex = 0
+    if (_.inRange(weaponDC, 3, 6)) dcIndex = 1
+    if (_.inRange(weaponDC, 6, 9)) dcIndex = 2
+    if (_.inRange(weaponDC, 9, 11)) dcIndex = 3
+    if (weaponDC > 10) dcIndex = 3
+
+    if (cover === true) {
+        _.forEach(coverList, (row) => {
+            if (_.inRange(roll, row.cover[0], row.cover[1] + 1)) {
+                rollResult = row
+            }
+        })
+    }
+
+    if (cover !== true) {
+        _.forEach(hitLocationTable, (row) => {
+            if (_.inRange(roll, row.open[0], row.open[1] + 1)) {
+                rollResult = row
+            }
+        })
+    }
+
+    if (damageType === 'lvd') {
+        damage = rollResult.pd[0]
+        status = 'hit'  
+    }
+
+    if (damageType === 'opd') {
+        damage = rollResult.opd[dcIndex]
+        status = 'hit'
+    }
+
+    if (damageType === 'no damage') {
+        damage = 0
+        status = 'miss'
+    }
+
+    finalResult = {status: status, location: rollResult.location, type: damageType, damage: damage, wound: rollResult.pd[1]}
+    return finalResult
+}
+
+/**
+ * The main hit result called from the interface
+ *
+ * @param {object} armor -  The target's armor data
+ * @param {object} weapon-  The shooter's weapon data
+ * @param {boolean} cover - If the target has cover or not
+ * @memberof Tables
+ * @return {object} - The damage and hit object
+ */
+function hitResult(armor, weapon, cover) {
+    let penLine = getPenetrationLine(armor.pf, weapon.ammoType.fmj.pen)
+    let damageType = glancingRoll(penLine)
+    let hitLocation = getHitLocation(damageType, weapon.ammoType.fmj.dc, cover)
+    console.log('penline', penLine, 'damage type', damageType, 'hit location', hitLocation)
+
+    return hitLocation
+}
+
 module.exports = {
-    oddsOfHitting: oddsOfHitting
+    oddsOfHitting: oddsOfHitting,
+    getHitLocation: getHitLocation,
+    getPenetrationLine: getPenetrationLine,
+    glancingRoll: glancingRoll,
+    hitResult: hitResult
 }
 },{"lodash":167}],182:[function(require,module,exports){
 /**
@@ -63841,6 +64073,13 @@ function populateControlPanel(uniqueDesignation) {
     })
 }
 
+/**
+ * Gets armor data based on name
+ *
+ * @param {string} armorName - The name of the armor
+ * @memberof Utils
+ * @return {object} - The armor's data
+ */
 function getArmor(armorName) {
     let armorValue
     let armor = [
@@ -63864,7 +64103,8 @@ function getArmor(armorName) {
 
 module.exports = {
     populateControlPanel: populateControlPanel,
-    createButtonSet: createButtonSet
+    createButtonSet: createButtonSet,
+    getArmor: getArmor
 }
 },{"./database":176,"./weapons":186,"lodash":167}],186:[function(require,module,exports){
 /**

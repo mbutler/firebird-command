@@ -8,6 +8,7 @@ let config = require('./config')
 let Unit = require('./unit')
 let Map = require('./map')
 let Weapons = require('./weapons')
+let Utils = require('./utils')
 let _ = require('lodash')
 let Tables = require('./tables')
 
@@ -200,8 +201,9 @@ function aiming (uniqueDesignation, totalActions) {
     let odds
     let range = $('#range-dropdown').find('li.selected').val()
     let target = $('#target-value').text()
-    let response = "miss!"
+    let response = "miss"
     let penalty = 0
+    let damage
 
     if (aimTime > aimTimeMods.length - 1) {
       aimTime = aimTimeMods.length - 1
@@ -218,26 +220,37 @@ function aiming (uniqueDesignation, totalActions) {
     if (target !== 'none') {
       Database.singleUnit(target).once('value').then((data) => {  
         let target = data.val()
+        let targetArmor = Utils.getArmor(target.bodyArmor)
         shotAccuracy = aimTimeMods[aimTime] + sal + getShooterPositionModifier(unit.position) + penalty + getTargetModifiers(target)
         odds = Tables.oddsOfHitting(shotAccuracy, range)
     
         if (roll <= odds) {
-          response = "hit!"
+          response = "hit"
+          damage = Tables.hitResult(targetArmor, weapon, target.cover)    
+          console.log(`accuracy: ${shotAccuracy}, roll: ${roll}, damage: ${JSON.stringify(damage)}`)
+          alert(`accuracy: ${shotAccuracy}, roll: ${roll}, damage: ${JSON.stringify(damage)}`)
+        } else {
+          console.log('miss')
+          alert('miss')
         }
-    
-        console.log(`accuracy: ${shotAccuracy}, roll: ${roll}, response: ${response}`)
-        alert(`accuracy: ${shotAccuracy}, roll: ${roll}, response: ${response}`)
+
+        
       })  
     } else {
       shotAccuracy = aimTimeMods[aimTime] + sal + getShooterPositionModifier(unit.position) + penalty
         odds = Tables.oddsOfHitting(shotAccuracy, range)
     
         if (roll <= odds) {
-          response = "hit!"
+          response = "hit"
+          damage = Tables.hitResult('clothing', weapon, false)
+          console.log(`accuracy: ${shotAccuracy}, roll: ${roll}, damage: ${JSON.stringify(damage)}`)
+          alert(`accuracy: ${shotAccuracy}, roll: ${roll}, damage: ${JSON.stringify(damage)}`)
+        } else {
+          console.log('miss')
+          alert('miss')
         }
-    
-        console.log(`accuracy: ${shotAccuracy}, roll: ${roll}, response: ${response}`)
-        alert(`accuracy: ${shotAccuracy}, roll: ${roll}, response: ${response}`)
+        
+        
     }     
   })
 }

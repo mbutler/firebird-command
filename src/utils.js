@@ -144,6 +144,13 @@ function populateControlPanel(uniqueDesignation) {
     })
 }
 
+/**
+ * Gets armor data based on name
+ *
+ * @param {string} armorName - The name of the armor
+ * @memberof Utils
+ * @return {object} - The armor's data
+ */
 function getArmor(armorName) {
     let armorValue
     let armor = [
@@ -167,5 +174,6 @@ function getArmor(armorName) {
 
 module.exports = {
     populateControlPanel: populateControlPanel,
-    createButtonSet: createButtonSet
+    createButtonSet: createButtonSet,
+    getArmor: getArmor
 }
