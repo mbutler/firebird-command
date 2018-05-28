@@ -226,6 +226,7 @@ function aiming (uniqueDesignation, totalActions) {
         }
     
         console.log(`accuracy: ${shotAccuracy}, roll: ${roll}, response: ${response}`)
+        alert(`accuracy: ${shotAccuracy}, roll: ${roll}, response: ${response}`)
       })  
     } else {
       shotAccuracy = aimTimeMods[aimTime] + sal + getShooterPositionModifier(unit.position) + penalty
@@ -236,6 +237,7 @@ function aiming (uniqueDesignation, totalActions) {
         }
     
         console.log(`accuracy: ${shotAccuracy}, roll: ${roll}, response: ${response}`)
+        alert(`accuracy: ${shotAccuracy}, roll: ${roll}, response: ${response}`)
     }     
   })
 }

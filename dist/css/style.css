@@ -41,7 +41,7 @@ svg:not(:root) {
 
 #menu {
     overflow-y: scroll;
-    overflow-x: hidden;
+    overflow-x: hidden;    
 }
 
 .nav-tabs {

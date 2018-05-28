@@ -20,6 +20,7 @@ function createButtonSet(uniqueDesignation) {
     $('#aiming-dropdown').empty()
     $('#moving-dropdown').empty()
     $('#target-dropdown').empty()
+    $('#weapon-table').empty()
     let face1LeftMoving = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-left-moving', '${uniqueDesignation}', 0)">Turn 1 hexside left <span class="badge">0</span></a></li>`
     let face1RightMoving = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-right-moving', '${uniqueDesignation}', 0)">Turn 1 hexside right <span class="badge">0</span></a></li>`
     let face1LeftImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-left-immobile', '${uniqueDesignation}', 1)">Turn 1 hexside left <span class="badge">1</span></a></li>`
@@ -100,7 +101,9 @@ function populateControlPanel(uniqueDesignation) {
     Database.singleUnit(uniqueDesignation).once('value').then((data) => {
         let unit = data.val()
         let weapon = Weapons.getWeapon(unit.weapons[0])
-
+        let armor = getArmor(unit.bodyArmor)
+        let bodyArmor = `<tr><td class="text-center">${unit.bodyArmor}</td><td id="protection-factor" class="text-center">${armor.pf}</td><td id="armor-weight" class="text-center">${armor.weight}</td></tr>`
+        $('#body-armor').append(bodyArmor)
         $('#panelUniqueDesignation h3').html(uniqueDesignation)
         $('#skill-level').html(unit.skillLevel)
         $('#strength').html(unit.strength)
@@ -139,6 +142,27 @@ function populateControlPanel(uniqueDesignation) {
             $('#weapon-table').append(tr)
         }
     })
+}
+
+function getArmor(armorName) {
+    let armorValue
+    let armor = [
+        {name: 'clothing', pf: 0, weight: 5},
+        {name: 'light-flexible', pf: 4, weight: 2},
+        {name: 'medium-flexible', pf: 6, weight: 2.6},
+        {name: 'heavy-flexible', pf: 9, weight: 3.2},
+        {name: 'light-rigid', pf: 6, weight: 7.9},
+        {name: 'medium-rigid', pf: 16, weight: 15},
+        {name: 'heavy-rigid', pf: 30, weight: 24}
+    ]
+
+    _.forEach(armor, (val) => {
+        if (val.name == armorName) {            
+            armorValue = val
+        }
+    })
+
+    return armorValue
 }
 
 module.exports = {
