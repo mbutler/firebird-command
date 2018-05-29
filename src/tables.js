@@ -319,7 +319,7 @@ function getHitLocation(damageType, weaponDC, cover) {
 
     if (damageType === 'no damage') {
         damage = 0
-        status = 'miss'
+        status = 'absorbed by armor'
     }
 
     finalResult = {status: status, location: rollResult.location, type: damageType, damage: damage, wound: rollResult.pd[1]}

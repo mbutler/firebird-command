@@ -232,9 +232,7 @@ function aiming (uniqueDesignation, totalActions) {
         } else {
           console.log('miss')
           alert('miss')
-        }
-
-        
+        }        
       })  
     } else {
       shotAccuracy = aimTimeMods[aimTime] + sal + getShooterPositionModifier(unit.position) + penalty
@@ -248,9 +246,7 @@ function aiming (uniqueDesignation, totalActions) {
         } else {
           console.log('miss')
           alert('miss')
-        }
-        
-        
+      }       
     }     
   })
 }
