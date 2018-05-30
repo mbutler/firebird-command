@@ -146,7 +146,10 @@ function formSubmit () {
     newUnit.combatActions = ca
     newUnit.combatActionsPerImpulse = capi
     newUnit.currentActionsPerImpulse = capi
+    newUnit.physicalDamageTotal = 0
     newUnit.knockoutValue = kv
+    newUnit.disablingInjuries = ''
+    newUnit.status = ''
     newUnit.weapons = selectedWeapons
     newUnit.bodyArmor = armor
     newUnit.equipment = selectedEquipment

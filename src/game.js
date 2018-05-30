@@ -226,12 +226,14 @@ function aiming (uniqueDesignation, totalActions) {
     
         if (roll <= odds) {
           response = "hit"
-          damage = Tables.hitResult(targetArmor, weapon, target.cover)    
+          damage = Tables.hitResult(targetArmor, weapon, target.cover)
+          applyDamage(target.name, damage)
+          // {"status":"hit","location":"Head - Eye-Nose","type":"lvd","damage":3000,"wound":"critical wound"}
           console.log(`accuracy: ${shotAccuracy}, roll: ${roll}, damage: ${JSON.stringify(damage)}`)
-          alert(`accuracy: ${shotAccuracy}, roll: ${roll}, damage: ${JSON.stringify(damage)}`)
+          alert(`${_.capitalize(unit.name)} hits ${_.capitalize(target.name)}, ${damage.wound}\nlocation: ${damage.location}\ndamage: ${damage.damage}`)
         } else {
-          console.log('miss')
-          alert('miss')
+          console.log(`${_.capitalize(unit.name)}'s shot misses ${_.capitalize(target.name)}!`)
+          alert(`${_.capitalize(unit.name)}'s shot misses ${_.capitalize(target.name)}!`)
         }        
       })  
     } else {
@@ -240,15 +242,78 @@ function aiming (uniqueDesignation, totalActions) {
     
         if (roll <= odds) {
           response = "hit"
-          damage = Tables.hitResult('clothing', weapon, false)
+          damage = Tables.hitResult('clothing', weapon, false)          
           console.log(`accuracy: ${shotAccuracy}, roll: ${roll}, damage: ${JSON.stringify(damage)}`)
-          alert(`accuracy: ${shotAccuracy}, roll: ${roll}, damage: ${JSON.stringify(damage)}`)
+          alert(`${_.capitalize(unit.name)} hits ${_.capitalize(target.name)}, ${damage.wound}\nlocation: ${damage.location}\ndamage: ${damage.damage}`)
         } else {
-          console.log('miss')
-          alert('miss')
+          console.log(`${_.capitalize(unit.name)}'s shot misses ${_.capitalize(target.name)}!`)
+          alert(`${_.capitalize(unit.name)}'s shot misses ${_.capitalize(target.name)}!`)
       }       
     }     
   })
+}
+
+/**
+ * Updates a unit's damage and wounds
+ *
+ * @param {string} uniqueDesignation -  The unit's name
+ * @param {object} damage -  The constructed damage object
+ * @requires Unit
+ * @requires Database
+ * @memberof Game
+ * @return {undefined} - Updates the unit directly
+ */
+function applyDamage(uniqueDesignation, damage) {
+  Database.singleUnit(uniqueDesignation).once('value').then((data) => {
+      let unit = data.val()
+      let pd = Number(unit.physicalDamageTotal)
+      let injuries = unit.disablingInjuries
+      let newInjuries = injuries += `${damage.wound} to ${damage.location}. `
+      let status = unit.status
+
+      if (damage.damage === 'dead') {
+        pd = 'dead'
+        newInjuries = 'dead'
+        alert(`${_.capitalize(unit.name)} is dead!`)
+      } else {
+        pd += damage.damage
+        if (checkIncapacitated(unit, pd) === true) {
+          status = 'incapacitated'
+          alert(`${_.capitalize(unit.name)} is incapacitated!`)
+        }
+      }
+      
+      Unit.update({physicalDamageTotal: pd, disablingInjuries: newInjuries, status: status}, uniqueDesignation)
+  })
+}
+
+/**
+ * Checks for incapacitation
+ *
+ * @param {object} unit -  The full object for the unit
+ * @param {number} newPD -  Just pass the new physical damage here to avoid race conditions with updating database
+ * @memberof Game
+ * @return {boolean} - True if incapacitated
+ */
+function checkIncapacitated(unit, newPD) {
+    let pd = newPD
+    let kv = unit.knockoutValue
+    let roll = _.random(1, 100)
+    let ic
+    let result = false
+
+    if (pd < (kv / 10)) {ic = 0}
+    if (pd > (kv / 10)) {ic = 10}
+    if (pd > kv) {ic = 25}
+    if (pd > (2 * kv)) {ic = 75}
+    if (pd > (3 * kv)) {ic = 98}    
+
+    if (roll < ic) {
+      result = true
+    }
+
+    return result
+
 }
 
 /**
@@ -548,7 +613,7 @@ function drawHandWeapon (uniqueDesignation) {
 function accessBackpack (uniqueDesignation) {
 
 }
-
+console.log(checkIncapacitated('dingo'))
 module.exports = {
   face1LeftMoving: face1LeftMoving,
   face1RightMoving: face1RightMoving,

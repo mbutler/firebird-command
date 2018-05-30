@@ -124,6 +124,8 @@ function populateControlPanel(uniqueDesignation) {
         $('#impulse4').html(unit.currentActionsPerImpulse['4'])
         $('#stance').html(unit.stance)
         $('#position').html(unit.position)
+        $('#physical-damage-total').html(unit.physicalDamageTotal)
+        $('#disabling-injuries').html(unit.disablingInjuries)
         $('#knockout-value').html(unit.knockoutValue)
         $('#weapon-name').html(weapon.name)
         $('#reload-time').html(weapon.reloadTime)
@@ -131,6 +133,7 @@ function populateControlPanel(uniqueDesignation) {
         $('#ammunition-capacity').html(weapon.ammoCap)
         $('#ammunition-weight').html(weapon.ammoWeight)
         $('#cover').html(unit.cover)
+        $('#status').html(unit.status)
 
         for (let i = 1; i <= weapon.aimTime.length-1; i++) {
             let tr = `
