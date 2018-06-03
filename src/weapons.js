@@ -8,6 +8,7 @@ let _ = require('lodash')
 let weapons = [
     {
         name: "m16a1",
+        automatic: true,
         aimTime: [-99, -22, -12, -9, -7, -6, -5, -4, -3, -2, -1, 0],
         reloadTime: 8,
         rateOfFire: 7,
@@ -30,6 +31,7 @@ let weapons = [
     },
     {
         name: "colt-45",
+        automatic: false,
         aimTime: [-99, -18, -11, -10, -9, -8, -7],
         reloadTime: 4,
         rateOfFire: 1,

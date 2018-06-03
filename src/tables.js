@@ -7,9 +7,9 @@ let _ = require('lodash')
 
 let hitLocationTable = [
     {cover: [0, 2], open: [0, 0], location: 'Head - Glance', pd: [7, 'light wound'], opd: [7, 200, 1000, 80000]},
-    {cover: [3, 17], open: [1, 2], location: 'Head - Forehead', pd: [2000, 'critical wound'], opd: [2000, 60000, 'dead', 'dead']},
-    {cover: [18, 22], open: [3, 3], location: 'Head - Eye-Nose', pd: [3000, 'critical wound'], opd: [3000, 80000, 'dead', 'dead']},
-    {cover: [23, 38], open: [4, 5], location: 'Head - Mouth', pd: [300, 'critical wound'], opd: [300, 6000, 30000, 'dead']},
+    {cover: [3, 17], open: [1, 2], location: 'Head - Forehead', pd: [2000, 'critical wound'], opd: [2000, 60000, 1000000, 1000000]},
+    {cover: [18, 22], open: [3, 3], location: 'Head - Eye-Nose', pd: [3000, 'critical wound'], opd: [3000, 80000, 1000000, 1000000]},
+    {cover: [23, 38], open: [4, 5], location: 'Head - Mouth', pd: [300, 'critical wound'], opd: [300, 6000, 30000, 1000000]},
     {cover: [39, 56], open: [6, 8], location: 'Arm - Glance', pd: [1, 'superficial wound'], opd: [1, 5, 11, 32]},
     {cover: [57, 69], open: [9, 10], location: 'Arm - Shoulder', pd: [21, 'disabling injury'], opd: [21, 500, 1000, 1000]},
     {cover: [70, 76], open: [11, 11], location: 'Arm - Upper Arm - Flesh', pd: [3, 'superficial wound'], opd: [3, 12, 100, 100]},
@@ -20,9 +20,9 @@ let hitLocationTable = [
     {cover: [96, 99], open: [16, 16], location: 'Arm - Weapon', pd: [0, 'weapon critical'], opd: [0, 0, 0, 0]},
     {open: [17, 19], location: 'Body - Glance', pd: [1, 'superficial wound'], opd: [1, 7, 16, 47]},
     {open: [20, 23], location: 'Body - Chest', pd: [51, 'heavy wound'], opd: [51, 100, 300, 2000]},
-    {open: [24, 24], location: 'Body - Base of Neck', pd: [300, 'critical wound'], opd: [300, 6000, 40000, 'dead']},
-    {open: [25, 25], location: 'Body - Heart', pd: [4000, 'critical wound'], opd: [4000, 100000, 'dead', 'dead']},
-    {open: [26, 30], location: 'Body - Spine', pd: [300, 'critical wound'], opd: [300, 5000, 30000, 'dead']},
+    {open: [24, 24], location: 'Body - Base of Neck', pd: [300, 'critical wound'], opd: [300, 6000, 40000, 1000000]},
+    {open: [25, 25], location: 'Body - Heart', pd: [4000, 'critical wound'], opd: [4000, 100000, 1000000, 1000000]},
+    {open: [26, 30], location: 'Body - Spine', pd: [300, 'critical wound'], opd: [300, 5000, 30000, 1000000]},
     {open: [31, 42], location: 'Body - Abdomen', pd: [35, 'heavy wound'], opd: [35, 900, 5000, 30000]},
     {open: [43, 56], location: 'Body - Pelvis', pd: [21, 'medium wound'], opd: [21, 100, 500, 4000]},
     {open: [57, 60], location: 'Leg - Glance', pd: [1, 'superficial wound'], opd: [1, 7, 16, 47]},
@@ -116,6 +116,76 @@ let penetrationSummaryTable = [
     [180, 181, 236, 306, 398],
     [200, 201, 262, 340, 442]
 ]
+
+let autoFireTable = [
+    [10, 3, 5, 8],
+    [15, 2, 5, 7],
+    [20, 2, 4, 6],
+    [25, 2, 3, 5],
+    [35, 1, 2, 4],
+    [45, 1, 2, 3],
+    [60, 1, 1, 2],
+    [61, 1, 1, 1]
+]
+
+/**
+ * Calculates the force multiplier of shooting an automatic weaon burst
+ *
+ * @param {rof} rof -  The weapon's rate of fire
+ * @param {number} range -  The distance in as an index value of the range table
+ * @memberof Tables
+ * @return {number} - The force multiplier
+ */
+function autoFire(rof, range) {
+    let rofIndex
+    let autoLineList = []
+    let newRange
+
+
+    if (range <= 5) {
+        newRange = 10
+    }
+
+    if (range > 5) {
+        newRange = 15
+    }
+
+    if (range >= 6) {
+        newRange = 30
+    }
+
+    if (range >= 7) {
+        newRange = 60
+    }
+
+    if (range >= 8) {
+        newRange = 60
+    }
+
+    if (_.inRange(rof, 0, 5)) {
+        rofIndex = 1
+    }
+
+    if (_.inRange(rof, 4, 9)) {
+        rofIndex = 1
+    }
+
+    if (_.inRange(rof, 9, 16)) {
+        rofIndex = 2
+    }
+
+    if (_.inRange(rof, 16, Number.POSITIVE_INFINITY)) {
+        rofIndex = 3
+    }    
+    
+    _.forEachRight(autoFireTable, (line) => {
+        if (newRange >= line[0]) {
+            autoLineList.push(line[rofIndex])
+        }
+    })
+
+    return autoLineList[0]
+}
 
 /**
  * The odds of hitting a target
@@ -344,10 +414,12 @@ function hitResult(armor, weapon, cover) {
     return hitLocation
 }
 
+
 module.exports = {
     oddsOfHitting: oddsOfHitting,
     getHitLocation: getHitLocation,
     getPenetrationLine: getPenetrationLine,
     glancingRoll: glancingRoll,
-    hitResult: hitResult
+    hitResult: hitResult,
+    autoFire: autoFire
 }

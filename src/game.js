@@ -91,7 +91,7 @@ function getShooterPositionModifier(position) {
 function getTargetModifiers(target) {
   let mod = 0
   if (target.cover === true) {
-    mod += -2
+    mod += -4
   }
 
   if (target.position === 'standing' && target.cover === false) {
@@ -204,17 +204,25 @@ function aiming (uniqueDesignation, totalActions) {
     let response = "miss"
     let penalty = 0
     let damage
+    let damageMultiplier = 1
+    let totalDamage
+
+    console.log(weapon)
+    console.log('range: ', range)
 
     if (aimTime > aimTimeMods.length - 1) {
       aimTime = aimTimeMods.length - 1
     }
 
-    if (totalActions === 1) {
-      penalty = -6
+    if (weapon.automatic === true) {
+      aimTime += 1
+      damageMultiplier = Tables.autoFire(weapon.rateOfFire, range)
+      console.log('rof and range', weapon.rateOfFire, range)
+      console.log('damage x', damageMultiplier)
     }
 
-    if (unit.cover === true) {
-      penalty += -4
+    if (totalActions === 1) {
+      penalty = -6
     }
 
     if (target !== 'none') {
@@ -227,10 +235,11 @@ function aiming (uniqueDesignation, totalActions) {
         if (roll <= odds) {
           response = "hit"
           damage = Tables.hitResult(targetArmor, weapon, target.cover)
+          damage.damage = damage.damage * damageMultiplier
           applyDamage(target.name, damage)
           // {"status":"hit","location":"Head - Eye-Nose","type":"lvd","damage":3000,"wound":"critical wound"}
           console.log(`accuracy: ${shotAccuracy}, roll: ${roll}, damage: ${JSON.stringify(damage)}`)
-          alert(`${_.capitalize(unit.name)} hits ${_.capitalize(target.name)}, ${damage.wound}\nlocation: ${damage.location}\ndamage: ${damage.damage}`)
+          alert(`${_.capitalize(unit.name)} hits ${_.capitalize(target.name)}, ${damage.status}, ${damage.wound}\nlocation: ${damage.location}\ndamage: ${damage.damage}`)
         } else {
           console.log(`${_.capitalize(unit.name)}'s shot misses ${_.capitalize(target.name)}!`)
           alert(`${_.capitalize(unit.name)}'s shot misses ${_.capitalize(target.name)}!`)
@@ -242,9 +251,10 @@ function aiming (uniqueDesignation, totalActions) {
     
         if (roll <= odds) {
           response = "hit"
-          damage = Tables.hitResult('clothing', weapon, false)          
+          damage = Tables.hitResult('clothing', weapon, false)
+          damage.damage = damage.damage * damageMultiplier
           console.log(`accuracy: ${shotAccuracy}, roll: ${roll}, damage: ${JSON.stringify(damage)}`)
-          alert(`${_.capitalize(unit.name)} hits ${_.capitalize(target.name)}, ${damage.wound}\nlocation: ${damage.location}\ndamage: ${damage.damage}`)
+          alert(`${_.capitalize(unit.name)} hits ${_.capitalize(target.name)}, ${damage.status}, ${damage.wound}\nlocation: ${damage.location}\ndamage: ${damage.damage}`)
         } else {
           console.log(`${_.capitalize(unit.name)}'s shot misses ${_.capitalize(target.name)}!`)
           alert(`${_.capitalize(unit.name)}'s shot misses ${_.capitalize(target.name)}!`)
@@ -271,7 +281,7 @@ function applyDamage(uniqueDesignation, damage) {
       let newInjuries = injuries += `${damage.wound} to ${damage.location}. `
       let status = unit.status
 
-      if (damage.damage === 'dead') {
+      if (damage.damage >= 1000000) {
         pd = 'dead'
         newInjuries = 'dead'
         alert(`${_.capitalize(unit.name)} is dead!`)
