@@ -41,7 +41,7 @@ svg:not(:root) {
 
 #menu {
     overflow-y: scroll;
-    overflow-x: hidden;    
+    overflow-x: hidden;xf    
 }
 
 .nav-tabs {
@@ -60,6 +60,13 @@ svg:not(:root) {
     color: #fff;
     background-color: #0495c9;
     border-color: #357ebd;
+    margin: 5px;
+}
+
+.btn-warning {
+    color: #000000;
+    background-color: #00b300;
+    border-color: #00b300;
     margin: 5px;
 }
 
@@ -96,4 +103,5 @@ svg:not(:root) {
 
 #aim-button {
     margin-top: 20px;
+    margin-bottom: 20px;
 }

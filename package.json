@@ -14,15 +14,15 @@
     "license": "MIT",
     "dependencies": {
         "bootstrap": "^3.3.7",
-        "firebase": "^4.10.1",
-        "honeycomb-grid": "^1.1.3",
+        "firebase": "^4.13.1",
+        "honeycomb-grid": "^1.3.4",
         "jquery": "^3.3.1",
         "jquery.panzoom": "^3.2.2",
-        "lodash": "^4.17.5",
+        "lodash": "^4.17.10",
         "milsymbol": "^1.3.3",
-        "panzoom": "^4.1.0",
+        "panzoom": "^4.5.0",
         "slideout": "^1.0.1",
-        "svg.js": "^2.6.4"
+        "svg.js": "^2.6.5"
     },
     "bootstrap": {
         "depends": [
@@ -30,7 +30,7 @@
         ]
     },
     "devDependencies": {
-        "browserify": "^16.1.0",
+        "browserify": "^16.2.2",
         "http-server": "^0.11.1"
     }
 }
