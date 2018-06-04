@@ -63336,6 +63336,7 @@ function create(hex, sidc, options) {
     setUnitCoords(hex, options.uniqueDesignation)
 
     $(container).on('touchstart mousedown', (e) => {
+        $('[data-toggle="popover"]').popover('hide')
         Database.time.once('value').then((snapshot) => {
             let time = snapshot.val()
             $('#current-time').html(`Phase: ${time.phase}, Impulse: ${time.impulse}`)
@@ -63665,9 +63666,6 @@ function createButtonSet(uniqueDesignation) {
  * @return {undefined} - Inserts values directly into the DOM
  */
 function populateControlPanel(uniqueDesignation) {
-    $('.popover-dismiss').popover({
-        trigger: 'focus'
-    })
     Database.singleUnit(uniqueDesignation).once('value').then((data) => {
         let unit = data.val()
         let weapon = Weapons.getWeapon(unit.weapons[0])

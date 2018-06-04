@@ -102,9 +102,6 @@ function createButtonSet(uniqueDesignation) {
  * @return {undefined} - Inserts values directly into the DOM
  */
 function populateControlPanel(uniqueDesignation) {
-    $('.popover-dismiss').popover({
-        trigger: 'focus'
-    })
     Database.singleUnit(uniqueDesignation).once('value').then((data) => {
         let unit = data.val()
         let weapon = Weapons.getWeapon(unit.weapons[0])
