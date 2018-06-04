@@ -105,3 +105,8 @@ svg:not(:root) {
     margin-top: 20px;
     margin-bottom: 20px;
 }
+
+#xy-input {
+    margin-top: 10px;
+    margin-left: 5px;
+}

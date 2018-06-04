@@ -327,6 +327,23 @@ function checkIncapacitated(unit, newPD) {
 }
 
 /**
+ * Moves a unit to a hex based on user input
+ *
+* @param {string} uniqueDesignation - The name of the unit
+ * @param {number} totalActions - The number of actions used
+ * @memberof Game
+ * @return {undefined} - Moves the unit
+ */
+function moveToHex(uniqueDesignation, totalActions) {
+  let x = $('#hex-x').val()
+  let y = $('#hex-y').val()
+  let xNum = Number(x), yNum =  Number(y)
+  let point = {x: xNum, y: yNum}
+
+  Unit.animateUnitToHex(point, uniqueDesignation)
+}
+
+/**
  * Changes the position to standing
  *
  * @param {string} uniqueDesignation -  The unit's name
@@ -655,5 +672,6 @@ module.exports = {
   toStanding: toStanding,
   toKneeling: toKneeling,
   toProne: toProne,
-  takeCover: takeCover
+  takeCover: takeCover,
+  moveToHex: moveToHex
 }

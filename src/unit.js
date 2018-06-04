@@ -114,8 +114,10 @@ function getUnitHex(uniqueDesignation) {
  * @return {object} - A Honeycomb hex coordinates object. e.g. { x: 0, y: 0 }
  */
 function setUnitCoords(hex, uniqueDesignation) {
+    let hexArray = [hex.x, hex.y]
     let unit = document.getElementById(uniqueDesignation)
     $(unit).data('coords', hex.coordinates())
+    update({currentHex: hexArray}, uniqueDesignation)
 }
 
 /**

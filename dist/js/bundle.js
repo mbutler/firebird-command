@@ -61430,6 +61430,7 @@ function action(selection, uniqueDesignation, totalActions) {
     let actionMap = {
         'aiming': Game.aiming,
         'take-cover': Game.takeCover,
+        'move-to-hex': Game.moveToHex,
         'face-1-left-moving': Game.face1LeftMoving,
         'face-1-right-moving': Game.face1RightMoving,
         //
@@ -61866,6 +61867,23 @@ function checkIncapacitated(unit, newPD) {
 }
 
 /**
+ * Moves a unit to a hex based on user input
+ *
+* @param {string} uniqueDesignation - The name of the unit
+ * @param {number} totalActions - The number of actions used
+ * @memberof Game
+ * @return {undefined} - Moves the unit
+ */
+function moveToHex(uniqueDesignation, totalActions) {
+  let x = $('#hex-x').val()
+  let y = $('#hex-y').val()
+  let xNum = Number(x), yNum =  Number(y)
+  let point = {x: xNum, y: yNum}
+
+  Unit.animateUnitToHex(point, uniqueDesignation)
+}
+
+/**
  * Changes the position to standing
  *
  * @param {string} uniqueDesignation -  The unit's name
@@ -62194,7 +62212,8 @@ module.exports = {
   toStanding: toStanding,
   toKneeling: toKneeling,
   toProne: toProne,
-  takeCover: takeCover
+  takeCover: takeCover,
+  moveToHex: moveToHex
 }
 
 },{"./config":29,"./database":30,"./map":34,"./tables":35,"./unit":38,"./utils":39,"./weapons":40,"lodash":20}],32:[function(require,module,exports){
@@ -62976,6 +62995,11 @@ function calculateActionTime(combatActions, unit, time) {
             next.phase = phase
         }
     }
+
+    if (combatActions === 0) {
+        actions = unit.currentActionsPerImpulse[time.impulse]
+    }
+    
     //subtract the impulse amount from actions to get remaining
     return {time: next, remaining: actions}
 }
@@ -63383,8 +63407,10 @@ function getUnitHex(uniqueDesignation) {
  * @return {object} - A Honeycomb hex coordinates object. e.g. { x: 0, y: 0 }
  */
 function setUnitCoords(hex, uniqueDesignation) {
+    let hexArray = [hex.x, hex.y]
     let unit = document.getElementById(uniqueDesignation)
     $(unit).data('coords', hex.coordinates())
+    update({currentHex: hexArray}, uniqueDesignation)
 }
 
 /**
@@ -63559,6 +63585,7 @@ function createButtonSet(uniqueDesignation) {
     $('#target-dropdown').empty()
     $('#weapon-table').empty()
     $('#body-armor').empty()
+    $('#equipment-list').empty()
     let face1LeftMoving = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-left-moving', '${uniqueDesignation}', 0)">Turn 1 hexside left <span class="badge">0</span></a></li>`
     let face1RightMoving = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-right-moving', '${uniqueDesignation}', 0)">Turn 1 hexside right <span class="badge">0</span></a></li>`
     let face1LeftImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-left-immobile', '${uniqueDesignation}', 1)">Turn 1 hexside left <span class="badge">1</span></a></li>`
@@ -63584,7 +63611,9 @@ function createButtonSet(uniqueDesignation) {
 
         $('#moving-dropdown').empty()
         let takeCover = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('take-cover', '${uniqueDesignation}', 0)">Change cover <span class="badge">0</span></a></li>`
+        let moveToHex = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('move-to-hex', '${uniqueDesignation}', 0)">Move to Hex (x,y) <span class="badge">0</span></a></li>`
         $('#moving-dropdown').append(takeCover)
+        $('#moving-dropdown').append(moveToHex)
         if (unit.position === 'standing') {
             let runningForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('running-forward', '${uniqueDesignation}', 1)">Run forward one hex <span class="badge">1</span></a></li>`
             let runningBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('running-backward', '${uniqueDesignation}', 2)">Run backward one hex <span class="badge">2</span></a></li>`
@@ -63671,6 +63700,9 @@ function populateControlPanel(uniqueDesignation) {
         $('#ammunition-weight').html(weapon.ammoWeight)
         $('#cover').html(unit.cover)
         $('#status').html(unit.status)
+        $('#encumbrance').html(unit.encumbrance)
+        $('#hex-x').val(unit.currentHex[0])
+        $('#hex-y').val(unit.currentHex[1])
 
         for (let i = 1; i <= weapon.aimTime.length-1; i++) {
             let tr = `
@@ -63681,6 +63713,15 @@ function populateControlPanel(uniqueDesignation) {
                 </tr>
             `
             $('#weapon-table').append(tr)
+        }
+
+        for (let i = 0; i <= unit.equipment.length-1; i++) {
+            let tr = `
+                <tr>
+                    <td class="text-center">${unit.equipment[i]}</td>
+                </tr>
+            `
+            $('#equipment-list').append(tr)
         }
     })
 }

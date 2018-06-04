@@ -202,14 +202,10 @@
                     <thead>
                         <tr>
                             <th class="text-center">Equipment</th>
-                            <th class="text-center">Weight</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <tr>
-                            <td class="text-center"></td>
-                            <td class="text-center"></td>
-                        </tr>
+                    <tbody id="equipment-list">
+
                     </tbody>
                 </table>
                 <div class="row">
@@ -288,7 +284,17 @@
                         </a>
                         <ul id="equiping-dropdown" class="dropdown-menu" role="menu" aria-labelledby="equiping-button"></ul>
                     </div>
-                </div>                
+                </div>
+                <div id="xy-input" class="row panel-row form-inline">
+                    <div class="input-group input-group-sm col-xs-3">
+                        <span class="input-group-addon" id="sizing-addon3">X</span>
+                        <input id="hex-x" type="text" class="form-control" aria-describedby="sizing-addon3">
+                    </div>
+                    <div class="input-group input-group-sm col-xs-3">
+                        <span class="input-group-addon" id="sizing-addon3">Y</span>
+                        <input id="hex-y" type="text" class="form-control" aria-describedby="sizing-addon3">
+                    </div>
+                </div>               
             </div>
         </div>
     </nav>

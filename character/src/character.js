@@ -30,7 +30,7 @@ let config = {
 
 function formSubmit () {
     let newUnit = {}
-    let encumberance = 0, baseSpeed, maxSpeed, str, agi, sal, isf, ca, ms, combatActions, capi = {}, kv, symbol = {}
+    let encumbrance = 0, baseSpeed, maxSpeed, str, agi, sal, isf, ca, ms, combatActions, capi = {}, kv, symbol = {}
     let uniqueDesignation = document.getElementById("unique-designation").value
     let skillLevel = document.getElementById("skill-level").value
     let strength = document.getElementById("strength").value
@@ -56,20 +56,20 @@ function formSubmit () {
       }
     }
 
-    encumberance += weight[armor]
+    encumbrance += weight[armor]
 
     _.forEach(selectedEquipment, (item) => {
-        encumberance += weight[item]
+        encumbrance += weight[item]
     })
 
     _.forEach(selectedWeapons, (weapon) => {
-        encumberance += weight[weapon]
+        encumbrance += weight[weapon]
     })
 
     //round up to nearest 5
-    encumberance = Math.ceil(encumberance/5) * 5
+    encumbrance = Math.ceil(encumbrance/5) * 5
 
-    console.log('encumberance', encumberance)
+    console.log('encumbrance', encumbrance)
 
     //table 1A
     _.forEach(speedChart, (col) => {
@@ -78,7 +78,7 @@ function formSubmit () {
         }
     })
 
-    baseSpeed = str[_.toString(encumberance)]
+    baseSpeed = str[_.toString(encumbrance)]
 
     console.log('base speed', baseSpeed)
 
@@ -153,7 +153,7 @@ function formSubmit () {
     newUnit.weapons = selectedWeapons
     newUnit.bodyArmor = armor
     newUnit.equipment = selectedEquipment
-    newUnit.encumberance = encumberance
+    newUnit.encumbrance = encumbrance
     newUnit.symbol = symbol
     newUnit.symbol.options.uniqueDesignation = uniqueDesignation
     newUnit.position = 'standing'

@@ -79,6 +79,11 @@ function calculateActionTime(combatActions, unit, time) {
             next.phase = phase
         }
     }
+
+    if (combatActions === 0) {
+        actions = unit.currentActionsPerImpulse[time.impulse]
+    }
+    
     //subtract the impulse amount from actions to get remaining
     return {time: next, remaining: actions}
 }
