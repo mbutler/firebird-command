@@ -102,11 +102,15 @@ function createButtonSet(uniqueDesignation) {
  * @return {undefined} - Inserts values directly into the DOM
  */
 function populateControlPanel(uniqueDesignation) {
+    $('.popover-dismiss').popover({
+        trigger: 'focus'
+    })
     Database.singleUnit(uniqueDesignation).once('value').then((data) => {
         let unit = data.val()
         let weapon = Weapons.getWeapon(unit.weapons[0])
         let armor = getArmor(unit.bodyArmor)
         let bodyArmor = `<tr><td class="text-center">${unit.bodyArmor}</td><td id="protection-factor" class="text-center">${armor.pf}</td><td id="armor-weight" class="text-center">${armor.weight}</td></tr>`
+        $('#disabling-injuries').attr('data-content', unit.disablingInjuries)
         $('#body-armor').append(bodyArmor)
         $('#panelUniqueDesignation h3').html(uniqueDesignation)
         $('#skill-level').html(unit.skillLevel)
@@ -128,7 +132,6 @@ function populateControlPanel(uniqueDesignation) {
         $('#stance').html(unit.stance)
         $('#position').html(unit.position)
         $('#physical-damage-total').html(unit.physicalDamageTotal)
-        $('#disabling-injuries').html(unit.disablingInjuries)
         $('#knockout-value').html(unit.knockoutValue)
         $('#weapon-name').html(weapon.name)
         $('#reload-time').html(weapon.reloadTime)
@@ -160,6 +163,10 @@ function populateControlPanel(uniqueDesignation) {
             `
             $('#equipment-list').append(tr)
         }
+
+        $(function () {
+            $('[data-toggle="popover"]').popover()
+        })
     })
 }
 

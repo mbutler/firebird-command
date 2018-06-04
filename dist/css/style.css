@@ -108,5 +108,8 @@ svg:not(:root) {
 
 #xy-input {
     margin-top: 10px;
-    margin-left: 5px;
+}
+
+#disabling-injuries {
+    margin-left: -12px;
 }

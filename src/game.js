@@ -278,7 +278,7 @@ function applyDamage(uniqueDesignation, damage) {
       let unit = data.val()
       let pd = Number(unit.physicalDamageTotal)
       let injuries = unit.disablingInjuries
-      let newInjuries = injuries += `${damage.wound} to ${damage.location}. `
+      let newInjuries = injuries += `${damage.wound} to ${damage.location}.\n `
       let status = unit.status
 
       if (damage.damage >= 1000000) {
