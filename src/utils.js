@@ -45,7 +45,6 @@ function createButtonSet(uniqueDesignation) {
 
     Database.singleUnit(uniqueDesignation).once('value').then((data) => {
         let unit = data.val()
-
         $('#moving-dropdown').empty()
         let takeCover = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('take-cover', '${uniqueDesignation}', 0)">Change cover <span class="badge">0</span></a></li>`
         let moveToHex = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('move-to-hex', '${uniqueDesignation}', 0)">Move to Hex (x,y) <span class="badge">0</span></a></li>`
@@ -137,9 +136,10 @@ function populateControlPanel(uniqueDesignation) {
         $('#ammunition-weight').html(weapon.ammoWeight)
         $('#cover').html(unit.cover)
         $('#status').html(unit.status)
-        $('#encumbrance').html(unit.encumbrance)
-        $('#hex-x').val(unit.currentHex[0])
-        $('#hex-y').val(unit.currentHex[1])
+        $('#encumbrance').html(unit.encumbrance)        
+        $('#hex-x').val('')
+        $('#hex-y').val('')
+        $('#coords-value').html(`x: ${unit.currentHex[0]}, y: ${unit.currentHex[1]}`)
 
         for (let i = 1; i <= weapon.aimTime.length-1; i++) {
             let tr = `

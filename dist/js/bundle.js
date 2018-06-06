@@ -61874,13 +61874,22 @@ function checkIncapacitated(unit, newPD) {
  * @memberof Game
  * @return {undefined} - Moves the unit
  */
-function moveToHex(uniqueDesignation, totalActions) {
-  let x = $('#hex-x').val()
-  let y = $('#hex-y').val()
-  let xNum = Number(x), yNum =  Number(y)
-  let point = {x: xNum, y: yNum}
+function moveToHex(uniqueDesignation) {
+  Database.singleUnit(uniqueDesignation).once('value').then((data) => {
+    let unit = data.val()
+    console.log('current', unit.currentHex)
+    let x = $('#hex-x').val()
+    let y = $('#hex-y').val()
+    $('#hex-x').val('')
+    $('#hex-y').val('')
+    let point
 
-  Unit.animateUnitToHex(point, uniqueDesignation)
+    if (x !== '' || y !== '') {
+      point = {x: Number(x), y: Number(y)}
+    }
+
+    Unit.update({currentHex: point}, uniqueDesignation)
+  })
 }
 
 /**
@@ -62299,11 +62308,14 @@ Database.allUnits.on('child_changed', (snapshot) => {
     let hex = unit.currentHex
     let uniqueDesignation = snapshot.key
 
-    Unit.changeFacing(face, uniqueDesignation)
-    Unit.animateUnitToHex(hex, uniqueDesignation)
+    console.log('listener hex', unit.currentHex)    
 
     Utils.createButtonSet(uniqueDesignation)
     Utils.populateControlPanel(uniqueDesignation)
+
+    Unit.changeFacing(face, uniqueDesignation)
+    
+    Unit.animateUnitToHex(hex, uniqueDesignation)
 })
 
 Database.time.on('child_changed', (snapshot) => {    
@@ -63408,10 +63420,10 @@ function getUnitHex(uniqueDesignation) {
  * @return {object} - A Honeycomb hex coordinates object. e.g. { x: 0, y: 0 }
  */
 function setUnitCoords(hex, uniqueDesignation) {
-    let hexArray = [hex.x, hex.y]
+    //let hexArray = [hex.x, hex.y]
     let unit = document.getElementById(uniqueDesignation)
     $(unit).data('coords', hex.coordinates())
-    update({currentHex: hexArray}, uniqueDesignation)
+    //update({currentHex: hexArray}, uniqueDesignation)
 }
 
 /**
@@ -63609,7 +63621,6 @@ function createButtonSet(uniqueDesignation) {
 
     Database.singleUnit(uniqueDesignation).once('value').then((data) => {
         let unit = data.val()
-
         $('#moving-dropdown').empty()
         let takeCover = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('take-cover', '${uniqueDesignation}', 0)">Change cover <span class="badge">0</span></a></li>`
         let moveToHex = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('move-to-hex', '${uniqueDesignation}', 0)">Move to Hex (x,y) <span class="badge">0</span></a></li>`
@@ -63701,9 +63712,10 @@ function populateControlPanel(uniqueDesignation) {
         $('#ammunition-weight').html(weapon.ammoWeight)
         $('#cover').html(unit.cover)
         $('#status').html(unit.status)
-        $('#encumbrance').html(unit.encumbrance)
-        $('#hex-x').val(unit.currentHex[0])
-        $('#hex-y').val(unit.currentHex[1])
+        $('#encumbrance').html(unit.encumbrance)        
+        $('#hex-x').val('')
+        $('#hex-y').val('')
+        $('#coords-value').html(`x: ${unit.currentHex[0]}, y: ${unit.currentHex[1]}`)
 
         for (let i = 1; i <= weapon.aimTime.length-1; i++) {
             let tr = `

@@ -335,12 +335,18 @@ function checkIncapacitated(unit, newPD) {
  * @return {undefined} - Moves the unit
  */
 function moveToHex(uniqueDesignation, totalActions) {
-  let x = $('#hex-x').val()
-  let y = $('#hex-y').val()
-  let xNum = Number(x), yNum =  Number(y)
-  let point = {x: xNum, y: yNum}
+  Database.singleUnit(uniqueDesignation).once('value').then((data) => {
+    let unit = data.val()
+    let x = $('#hex-x').val()
+    let y = $('#hex-y').val()
+    let point
 
-  Unit.animateUnitToHex(point, uniqueDesignation)
+    if (x !== '' || y !== '') {
+      point = {x: Number(x), y: Number(y)}
+    }
+
+    Unit.update({currentHex: point}, uniqueDesignation)
+  })
 }
 
 /**

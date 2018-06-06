@@ -46,11 +46,14 @@ Database.allUnits.on('child_changed', (snapshot) => {
     let hex = unit.currentHex
     let uniqueDesignation = snapshot.key
 
-    Unit.changeFacing(face, uniqueDesignation)
-    Unit.animateUnitToHex(hex, uniqueDesignation)
+    console.log('listener hex', unit.currentHex)    
 
     Utils.createButtonSet(uniqueDesignation)
     Utils.populateControlPanel(uniqueDesignation)
+
+    Unit.changeFacing(face, uniqueDesignation)
+    
+    Unit.animateUnitToHex(hex, uniqueDesignation)
 })
 
 Database.time.on('child_changed', (snapshot) => {    
