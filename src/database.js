@@ -11,6 +11,7 @@ firebase.initializeApp(config.firebase)
 let allUnits = firebase.database().ref('/Games/' + config.gameID + '/Units')
 let time = firebase.database().ref('/Games/' + config.gameID + '/time')
 let actionList = firebase.database().ref('/Games/' + config.gameID + '/actionList')
+let messages = firebase.database().ref('/Games/' + config.gameID + '/messages')
 
 /**
  * A reference to a single unit in the database
@@ -29,5 +30,6 @@ module.exports = {
   firebaseRoot: firebase,
   singleUnit: singleUnit,
   time: time,
-  actionList: actionList
+  actionList: actionList,
+  messages: messages
 }

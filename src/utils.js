@@ -101,7 +101,6 @@ function createButtonSet(uniqueDesignation) {
  * @return {undefined} - Inserts values directly into the DOM
  */
 function populateControlPanel(uniqueDesignation) {
-    console.log('pop', uniqueDesignation)
     Database.singleUnit(uniqueDesignation).once('value').then((data) => {
         let unit = data.val()
         console.log(unit)
@@ -130,7 +129,8 @@ function populateControlPanel(uniqueDesignation) {
         $('#impulse4').html(unit.currentActionsPerImpulse['4'])
         $('#stance').html(unit.stance)
         $('#position').html(unit.position)
-        $('#physical-damage-total').html(unit.physicalDamageTotal)
+        $('#physical-damage').html(unit.physicalDamage)
+        $('#damage-total').html(unit.damage)
         $('#knockout-value').html(unit.knockoutValue)
         $('#weapon-name').html(weapon.name)
         $('#reload-time').html(weapon.reloadTime)

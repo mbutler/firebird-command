@@ -94,12 +94,20 @@ svg:not(:root) {
     margin-left: 0px;
 }
 
-.character-form .row{ margin-top: 10px; }
+.character-form .row { margin-top: 10px; }
 
 .vert-text {
     margin-top: 20px;
 
 }
+
+#selected-range {
+    margin-left: 5px;
+ }
+
+ #target-import {
+     margin-left: 5px;
+ }
 
 #aim-button {
     margin-top: 20px;
@@ -113,4 +121,9 @@ svg:not(:root) {
 
 #disabling-injuries {
     margin-left: -12px;
+}
+
+#coords {
+    margin-left: 5px;
+    margin-top: 5px;
 }

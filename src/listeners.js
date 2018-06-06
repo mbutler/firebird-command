@@ -15,7 +15,7 @@ let _ = require('lodash')
 // loading a local version, but keeping the npm module in package.json for now
 // https://github.com/timmywil/jquery.panzoom/issues/351#issuecomment-330924963
 require('../vendor/jquery.panzoom')
-//let panzoom = require('panzoom')
+let panzoom = require('panzoom')
 let area = document.querySelector('#stage')
 let Slideout = require('slideout')
 
@@ -38,8 +38,9 @@ $('#next-impulse').on('mousedown', (e) => {
 //listen for panzooming
 //seems insane to use two panzoom libraries, but it works... for now
 $('#' + config.divContainer).panzoom({ cursor: 'default' })
-//panzoom(area)
+panzoom(area)
 
+//LISTEN FOR UNITS CHANGING STATE
 Database.allUnits.on('child_changed', (snapshot) => {
     let unit = snapshot.val()
     let face = unit.facing
@@ -49,13 +50,23 @@ Database.allUnits.on('child_changed', (snapshot) => {
     console.log('listener hex', unit.currentHex)    
 
     
-
-    Unit.changeFacing(face, uniqueDesignation)    
-    Unit.animateUnitToHex(hex, uniqueDesignation)
     Utils.createButtonSet(uniqueDesignation)
     Utils.populateControlPanel(uniqueDesignation)
+    Unit.changeFacing(face, uniqueDesignation)    
+    Unit.animateUnitToHex(hex, uniqueDesignation)
+    
 })
 
+//LISTEN FOR MESSAGES
+Database.messages.on('child_added', (data) => {
+    let message = data.val()
+    let messageKey = data.key
+    console.log(message)
+    alert(message)    
+    Database.messages.child(messageKey).remove()
+})
+
+//LISTEN FOR THE TIME TO INCREMENT
 Database.time.on('child_changed', (snapshot) => {    
     //whether it's an impulse or a phase
     let timeType = snapshot.ref.path.pieces_[3]
@@ -83,6 +94,7 @@ Database.time.on('child_changed', (snapshot) => {
     })
 })
 
+//RUN ACTIONS WHEN THE ACTION LIST GETS A NEW CHILD
 Database.actionList.on('child_added', (snapshot) => {
     Timer.runActions()
 })

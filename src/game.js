@@ -207,10 +207,7 @@ function aiming (uniqueDesignation, totalActions) {
     let damageMultiplier = 1
     let totalDamage
 
-    console.log(weapon)
-    console.log('range: ', range)
-
-    if (aimTime > aimTimeMods.length - 1) {
+     if (aimTime > aimTimeMods.length - 1) {
       aimTime = aimTimeMods.length - 1
     }
 
@@ -238,28 +235,16 @@ function aiming (uniqueDesignation, totalActions) {
           damage.damage = damage.damage * damageMultiplier
           applyDamage(target.name, damage)
           // {"status":"hit","location":"Head - Eye-Nose","type":"lvd","damage":3000,"wound":"critical wound"}
-          console.log(`accuracy: ${shotAccuracy}, roll: ${roll}, damage: ${JSON.stringify(damage)}`)
-          alert(`${_.capitalize(unit.name)} hits ${_.capitalize(target.name)}, ${damage.status}, ${damage.wound}\nlocation: ${damage.location}\ndamage: ${damage.damage}`)
+          //console.log(`accuracy: ${shotAccuracy}, roll: ${roll}, damage: ${JSON.stringify(damage)}`)
+          //alert(`${_.capitalize(unit.name)} hits ${_.capitalize(target.name)}, ${damage.status}, ${damage.wound}\nlocation: ${damage.location}\ndamage: ${damage.damage}`)
+          Database.messages.push(`${_.capitalize(unit.name)} hits ${_.capitalize(target.name)}, ${damage.status}, ${damage.wound}\nlocation: ${damage.location}\ndamage: ${damage.damage}`)
         } else {
-          console.log(`${_.capitalize(unit.name)}'s shot misses ${_.capitalize(target.name)}!`)
-          alert(`${_.capitalize(unit.name)}'s shot misses ${_.capitalize(target.name)}!`)
+          //console.log(`${_.capitalize(unit.name)}'s shot misses ${_.capitalize(target.name)}!`)
+          //alert(`${_.capitalize(unit.name)}'s shot misses ${_.capitalize(target.name)}!`)
+          Database.messages.push(`${_.capitalize(unit.name)}'s shot misses ${_.capitalize(target.name)}!`)
         }        
       })  
-    } else {
-      shotAccuracy = aimTimeMods[aimTime] + sal + getShooterPositionModifier(unit.position) + penalty
-        odds = Tables.oddsOfHitting(shotAccuracy, range)
-    
-        if (roll <= odds) {
-          response = "hit"
-          damage = Tables.hitResult('clothing', weapon, false)
-          damage.damage = damage.damage * damageMultiplier
-          console.log(`accuracy: ${shotAccuracy}, roll: ${roll}, damage: ${JSON.stringify(damage)}`)
-          alert(`${_.capitalize(unit.name)} hits ${_.capitalize(target.name)}, ${damage.status}, ${damage.wound}\nlocation: ${damage.location}\ndamage: ${damage.damage}`)
-        } else {
-          console.log(`${_.capitalize(unit.name)}'s shot misses ${_.capitalize(target.name)}!`)
-          alert(`${_.capitalize(unit.name)}'s shot misses ${_.capitalize(target.name)}!`)
-      }       
-    }     
+    }    
   })
 }
 
@@ -276,24 +261,29 @@ function aiming (uniqueDesignation, totalActions) {
 function applyDamage(uniqueDesignation, damage) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
       let unit = data.val()
-      let pd = Number(unit.physicalDamageTotal)
+      let health = unit.health
+      let pd = Number(unit.physicalDamage)
       let injuries = unit.disablingInjuries
       let newInjuries = injuries += `${damage.wound} to ${damage.location}.\n `
       let status = unit.status
+      let damageTotal
 
       if (damage.damage >= 1000000) {
         pd = 'dead'
         newInjuries = 'dead'
-        alert(`${_.capitalize(unit.name)} is dead!`)
+        //alert(`${_.capitalize(unit.name)} is dead!`)
+        Database.messages.push(`${_.capitalize(unit.name)} is dead!`)
       } else {
         pd += damage.damage
+        damageTotal = (pd * 10) / health
         if (checkIncapacitated(unit, pd) === true) {
           status = 'incapacitated'
-          alert(`${_.capitalize(unit.name)} is incapacitated!`)
+          //alert(`${_.capitalize(unit.name)} is incapacitated!`)
+          Database.messages.push(`${_.capitalize(unit.name)} is incapacitated!`)
         }
       }
       
-      Unit.update({physicalDamageTotal: pd, disablingInjuries: newInjuries, status: status}, uniqueDesignation)
+      Unit.update({physicalDamage: pd, disablingInjuries: newInjuries, status: status, damage: damageTotal}, uniqueDesignation)
   })
 }
 

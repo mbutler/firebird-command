@@ -93,7 +93,9 @@ function formSubmit () {
 
     //curve fitted linear equation just because it's a cool way to do it instead of yet another chart
     //Skill Accuracy Level
-    sal = _.round(2147609 + (0.6880844 - 2147609)/(1 + (Number(skillLevel)/1635843000) ** 0.6249486))
+    //sal = 2147609 + (0.6880844 - 2147609) / (1 + (skillLevel/1635843000) ** 0.6249486)
+
+    sal = _.round(2147609 + (0.6880844 - 2147609) / (1 + Math.pow((skillLevel / 1635843000), 0.6249486)))
 
     //table 1D
     isf = Number(intelligence) + sal
@@ -146,7 +148,8 @@ function formSubmit () {
     newUnit.combatActions = ca
     newUnit.combatActionsPerImpulse = capi
     newUnit.currentActionsPerImpulse = capi
-    newUnit.physicalDamageTotal = 0
+    newUnit.physicalDamage = 0
+    newUnit.damage = 0
     newUnit.knockoutValue = kv
     newUnit.disablingInjuries = ''
     newUnit.status = ''
