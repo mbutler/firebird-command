@@ -342,7 +342,7 @@ function moveToHex(uniqueDesignation, totalActions) {
     let point
 
     if (x !== '' || y !== '') {
-      point = {x: Number(x), y: Number(y)}
+      point = [Number(x), Number(y)]
     }
 
     Unit.update({currentHex: point}, uniqueDesignation)

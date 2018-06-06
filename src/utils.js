@@ -101,11 +101,14 @@ function createButtonSet(uniqueDesignation) {
  * @return {undefined} - Inserts values directly into the DOM
  */
 function populateControlPanel(uniqueDesignation) {
+    console.log('pop', uniqueDesignation)
     Database.singleUnit(uniqueDesignation).once('value').then((data) => {
         let unit = data.val()
+        console.log(unit)
         let weapon = Weapons.getWeapon(unit.weapons[0])
         let armor = getArmor(unit.bodyArmor)
         let bodyArmor = `<tr><td class="text-center">${unit.bodyArmor}</td><td id="protection-factor" class="text-center">${armor.pf}</td><td id="armor-weight" class="text-center">${armor.weight}</td></tr>`
+        $('#coords-value').html(`x: ${unit.currentHex[0]}, y: ${unit.currentHex[1]}`) 
         $('#disabling-injuries').attr('data-content', unit.disablingInjuries)
         $('#body-armor').append(bodyArmor)
         $('#panelUniqueDesignation h3').html(uniqueDesignation)
@@ -136,10 +139,9 @@ function populateControlPanel(uniqueDesignation) {
         $('#ammunition-weight').html(weapon.ammoWeight)
         $('#cover').html(unit.cover)
         $('#status').html(unit.status)
-        $('#encumbrance').html(unit.encumbrance)        
+        $('#encumbrance').html(unit.encumbrance)      
         $('#hex-x').val('')
         $('#hex-y').val('')
-        $('#coords-value').html(`x: ${unit.currentHex[0]}, y: ${unit.currentHex[1]}`)
 
         for (let i = 1; i <= weapon.aimTime.length-1; i++) {
             let tr = `
