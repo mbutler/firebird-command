@@ -15,7 +15,7 @@ let _ = require('lodash')
 // loading a local version, but keeping the npm module in package.json for now
 // https://github.com/timmywil/jquery.panzoom/issues/351#issuecomment-330924963
 require('../vendor/jquery.panzoom')
-let panzoom = require('panzoom')
+//let panzoom = require('panzoom') //breaks bootstrap tabs 
 let area = document.querySelector('#stage')
 let Slideout = require('slideout')
 
@@ -38,7 +38,7 @@ $('#next-impulse').on('mousedown', (e) => {
 //listen for panzooming
 //seems insane to use two panzoom libraries, but it works... for now
 $('#' + config.divContainer).panzoom({ cursor: 'default' })
-panzoom(area)
+//panzoom(area)
 
 //LISTEN FOR UNITS CHANGING STATE
 Database.allUnits.on('child_changed', (snapshot) => {
