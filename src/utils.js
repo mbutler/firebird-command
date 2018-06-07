@@ -142,8 +142,6 @@ function populateControlPanel(uniqueDesignation) {
         $('#encumbrance').html(unit.encumbrance)      
         $('#hex-x').val('')
         $('#hex-y').val('')
-        $('#range-value').html('none')
-        $('#target-value').html('none')
 
         for (let i = 1; i <= weapon.aimTime.length-1; i++) {
             let tr = `
