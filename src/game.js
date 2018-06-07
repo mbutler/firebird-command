@@ -214,8 +214,6 @@ function aiming (uniqueDesignation, totalActions) {
     if (weapon.automatic === true) {
       aimTime += 1
       damageMultiplier = Tables.autoFire(weapon.rateOfFire, range)
-      console.log('rof and range', weapon.rateOfFire, range)
-      console.log('damage x', damageMultiplier)
     }
 
     if (totalActions === 1) {
@@ -234,13 +232,8 @@ function aiming (uniqueDesignation, totalActions) {
           damage = Tables.hitResult(targetArmor, weapon, target.cover)
           damage.damage = damage.damage * damageMultiplier
           applyDamage(target.name, damage)
-          // {"status":"hit","location":"Head - Eye-Nose","type":"lvd","damage":3000,"wound":"critical wound"}
-          //console.log(`accuracy: ${shotAccuracy}, roll: ${roll}, damage: ${JSON.stringify(damage)}`)
-          //alert(`${_.capitalize(unit.name)} hits ${_.capitalize(target.name)}, ${damage.status}, ${damage.wound}\nlocation: ${damage.location}\ndamage: ${damage.damage}`)
           Database.messages.push(`${_.capitalize(unit.name)} hits ${_.capitalize(target.name)}, ${damage.status}, ${damage.wound}\nlocation: ${damage.location}\ndamage: ${damage.damage}`)
         } else {
-          //console.log(`${_.capitalize(unit.name)}'s shot misses ${_.capitalize(target.name)}!`)
-          //alert(`${_.capitalize(unit.name)}'s shot misses ${_.capitalize(target.name)}!`)
           Database.messages.push(`${_.capitalize(unit.name)}'s shot misses ${_.capitalize(target.name)}!`)
         }        
       })  

@@ -46,9 +46,6 @@ Database.allUnits.on('child_changed', (snapshot) => {
     let face = unit.facing
     let hex = unit.currentHex
     let uniqueDesignation = snapshot.key
-
-    console.log('listener hex', unit.currentHex)    
-
     
     Utils.createButtonSet(uniqueDesignation)
     Utils.populateControlPanel(uniqueDesignation)

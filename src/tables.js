@@ -4,6 +4,7 @@
  */
 
 let _ = require('lodash')
+let inf = Number.POSITIVE_INFINITY
 
 let hitLocationTable = [
     {cover: [0, 2], open: [0, 0], location: 'Head - Glance', pd: [7, 'light wound'], opd: [7, 200, 1000, 80000]},
@@ -30,6 +31,63 @@ let hitLocationTable = [
     {open: [78, 82], location: 'Leg - Thigh - Bone', pd: [16, 'disabling injury'], opd: [16, 400, 700, 700]},
     {open: [83, 99], location: 'Leg - Shin - Foot', pd: [14, 'disabling injury'], opd: [14, 200, 200, 200]}
 ]
+
+//todo: FINISH THIS
+let medicalTable = [
+    {dt: 5, ht: 17, 'no aid': {ctp: 568800, rr: 96}, 'first aid': {ctp: '', rr: 96}, 'aid station': {ctp: inf, rr: 99}, 'hospital': { ctp: inf, rr: 99 }, 'trauma center': {ctp: inf, rr: 99}},
+    {dt: 10, ht: 25, 'no aid': {ctp: 540000, rr: 89}, 'first aid': {ctp: '', rr: 92}, 'aid station': {ctp: inf, rr: 99}, 'hospital': { ctp: inf, rr: 99}, 'trauma center': {ctp: inf, rr: 99}},
+    {dt: 15, ht: 30, 'no aid': {ctp: 518400, rr: 85}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 20, ht: 35, 'no aid': {ctp: 489600, rr: 81}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 25, ht: 38, 'no aid': {ctp: 468000, rr: 77}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 30, ht: 41, 'no aid': {ctp: 446400, rr: 73}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 35, ht: 43, 'no aid': {ctp: 424800, rr: 69}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 40, ht: 44, 'no aid': {ctp: 403200, rr: 66}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 45, ht: 46, 'no aid': {ctp: 381600, rr: 63}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 50, ht: 47, 'no aid': {ctp: 367200, rr: 60}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 60, ht: 48, 'no aid': {ctp: 331200, rr: 54}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 70, ht: 50, 'no aid': {ctp: 295200, rr: 49}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 80, ht: 51, 'no aid': {ctp: 266400, rr: 44}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 90, ht: 52, 'no aid': {ctp: 244800, rr: 40}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 100, ht: 53, 'no aid': {ctp: 223200, rr: 360}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 200, ht: 61, 'no aid': {ctp: 79200, rr: 12}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 300, ht: 65, 'no aid': {ctp: 28800, rr: 4}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 400, ht: 68, 'no aid': {ctp: 11160, rr: 1}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 500, ht: 70, 'no aid': {ctp: 4200, rr: 0}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 600, ht: 72, 'no aid': {ctp: 1560, rr: 0}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 700, ht: 73, 'no aid': {ctp: 720, rr: 0}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 800, ht: 75, 'no aid': {ctp: 600, rr: 0}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 900, ht: 76, 'no aid': {ctp: 480, rr: 0}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 1000, ht: 77, 'no aid': {ctp: 360, rr: 0}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 2000, ht: 84, 'no aid': {ctp: 340, rr: 0}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 3000, ht: 88, 'no aid': {ctp: 324, rr: 0}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 4000, ht: 91, 'no aid': {ctp: 304, rr: 0}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 5000, ht: 93, 'no aid': {ctp: 284, rr: 0}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 6000, ht: 95, 'no aid': {ctp: 268, rr: 0}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 7000, ht: 96, 'no aid': {ctp: 248, rr: 0}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 8000, ht: 98, 'no aid': {ctp: 228, rr: 0}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 9000, ht: 99, 'no aid': {ctp: 208, rr: 0}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 12000, ht: 102, 'no aid': {ctp: 152, rr: 0}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 16000, ht: 105, 'no aid': {ctp: 100, rr: 0}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 20000, ht: 107, 'no aid': {ctp: 4, rr: 0}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 40000, ht: 114, 'no aid': {ctp: 4, rr: 0}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 60000, ht: 118, 'no aid': {ctp: 4, rr: 0}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 80000, ht: 121, 'no aid': {ctp: 4, rr: 0}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 100000, ht: 123, 'no aid': {ctp: 4, rr: 0}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}}
+]
+
+function medical(dt, aid) {
+    let entry
+
+    if (dt < 5) {dt = 5}
+
+    _.forEach(medicalTable, (row) => {
+        if (dt >= row.dt) {
+            entry = row[aid]
+        }
+    })
+
+    return entry
+}
 
 let oddsOfHittingTable = [
     [-28, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -414,6 +472,7 @@ function hitResult(armor, weapon, cover) {
     return hitLocation
 }
 
+console.log(medical(3, 'first aid'))
 
 module.exports = {
     oddsOfHitting: oddsOfHitting,
@@ -421,5 +480,6 @@ module.exports = {
     getPenetrationLine: getPenetrationLine,
     glancingRoll: glancingRoll,
     hitResult: hitResult,
-    autoFire: autoFire
+    autoFire: autoFire,
+    medical: medical
 }
