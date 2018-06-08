@@ -14,8 +14,9 @@ let Game = require('./game')
  * @memberof Actions
  * @return {undefined} - Runs a function directly
  */
-function action(selection, uniqueDesignation, totalActions) {
+function action(selection, uniqueDesignation, totalActions, msg) {
     let actionMap = {
+        'medical-aid': Game.medicalAid,
         'aiming': Game.aiming,
         'take-cover': Game.takeCover,
         'move-to-hex': Game.moveToHex,
@@ -58,7 +59,7 @@ function action(selection, uniqueDesignation, totalActions) {
     }
 
     let act = actionMap[selection]
-    act(uniqueDesignation, totalActions)
+    act(uniqueDesignation, totalActions, msg)
 }
 
 module.exports = {

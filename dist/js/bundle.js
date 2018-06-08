@@ -61961,8 +61961,9 @@ let Game = require('./game')
  * @memberof Actions
  * @return {undefined} - Runs a function directly
  */
-function action(selection, uniqueDesignation, totalActions) {
+function action(selection, uniqueDesignation, totalActions, msg) {
     let actionMap = {
+        'medical-aid': Game.medicalAid,
         'aiming': Game.aiming,
         'take-cover': Game.takeCover,
         'move-to-hex': Game.moveToHex,
@@ -62005,7 +62006,7 @@ function action(selection, uniqueDesignation, totalActions) {
     }
 
     let act = actionMap[selection]
-    act(uniqueDesignation, totalActions)
+    act(uniqueDesignation, totalActions, msg)
 }
 
 module.exports = {
@@ -62223,6 +62224,7 @@ function findNeighbor (currentCoords, facing, neighbor) {
  * @requires Database
  * @requires Unit
  * @memberof Game
+ * @see Actions.action - part of the action submission process
  * @return {undefined} - Modifies the database directly
  */
 function face1LeftMoving (uniqueDesignation) {
@@ -62242,6 +62244,7 @@ function face1LeftMoving (uniqueDesignation) {
  * @requires Database
  * @requires Unit
  * @memberof Game
+ * @see Actions.action - part of the action submission process
  * @return {undefined} - Modifies the database directly
  */
 function takeCover(uniqueDesignation, totalActions) {
@@ -62261,12 +62264,14 @@ function takeCover(uniqueDesignation, totalActions) {
  *
  * @param {string} uniqueDesignation - The name of the unit
  * @param {number} totalActions - The number of actions used for the aim
+ * @param {any} msg - A message from the submitAction execution
  * @requires Database
  * @requires Weapons
  * @memberof Game
+ * @see Actions.action - part of the action submission process
  * @return {undefined} - Modifies the database directly
  */
-function aiming (uniqueDesignation, totalActions) {
+function aiming (uniqueDesignation, totalActions, msg) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
     let weapon = Weapons.getWeapon(unit.weapons[0])
@@ -62336,25 +62341,68 @@ function applyDamage(uniqueDesignation, damage) {
       let injuries = unit.disablingInjuries
       let newInjuries = injuries += `${damage.wound} to ${damage.location}.\n `
       let status = unit.status
-      let damageTotal
+      let damageTotal = unit.damage
 
       if (damage.damage >= 1000000) {
         pd = 'dead'
         newInjuries = 'dead'
-        //alert(`${_.capitalize(unit.name)} is dead!`)
         Database.messages.push(`${_.capitalize(unit.name)} is dead!`)
       } else {
         pd += damage.damage
-        damageTotal = (pd * 10) / health
+        damageTotal += (pd * 10) / health
         if (checkIncapacitated(unit, pd) === true) {
           status = 'incapacitated'
-          //alert(`${_.capitalize(unit.name)} is incapacitated!`)
           Database.messages.push(`${_.capitalize(unit.name)} is incapacitated!`)
         }
+        checkMedicalAid(unit, damageTotal, 'no aid')
       }
       
       Unit.update({physicalDamage: pd, disablingInjuries: newInjuries, status: status, damage: damageTotal}, uniqueDesignation)
   })
+}
+
+/**
+ * checks the medical aid and recovery chart and submits to action list if needed
+ *
+ * @param {object} unit -  The unit being checked
+ * @param {number} dt -  Unit's damage total
+ * @param {string} aid -  The aid type. 'no aid', 'first aid', hospital', 'trauma center'
+ * @requires Tables
+ * @return {undefined} - Submit's through a global function
+ */
+function checkMedicalAid(unit, dt, aid) {
+  let combatActions = unit.combatActions
+  let aidResult = Tables.medical(dt, aid)
+  //convert time into combat actions
+  let time = _.round((aidResult.ctp / 4) * unit.combatActions)
+  console.log(aidResult, time)
+  window.submitAction('medical-aid', unit.name, time, aidResult.rr)
+}
+
+/**
+ * Checks the recovery roll
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @param {number} totalActions - The number of actions used for the aim
+ * @param {any} msg - A message from the submitAction execution
+ * @requires Database
+ * @requires Unit
+ * @memberof Game
+ * @see Actions.action - part of the action submission process
+ * @return {undefined} - Modifies the database directly
+ */
+function medicalAid(uniqueDesignation, totalActions, msg) {
+  let rr = msg
+  let roll = _.random(1, 100)
+  let status = 'alive'
+
+  if (roll > rr) {
+    status = 'dead'
+    Unit.update({physicalDamage: 'dead', disablingInjuries: 'dead'})
+  }
+
+  Database.messages.push(`${_.capitalize(uniqueDesignation)} is ${status}!`)  
+
 }
 
 /**
@@ -62371,6 +62419,7 @@ function checkIncapacitated(unit, newPD) {
     let roll = _.random(1, 100)
     let ic
     let result = false
+
 
     if (pd < (kv / 10)) {ic = 0}
     if (pd > (kv / 10)) {ic = 10}
@@ -62476,6 +62525,7 @@ function face1RightMoving (uniqueDesignation) {
  * @requires Database
  * @requires Unit
  * @memberof Game
+ * @see Actions.action - part of the action submission process
  * @return {undefined} - Modifies the database directly
  */
 function runningForward (uniqueDesignation) {
@@ -62493,6 +62543,7 @@ function runningForward (uniqueDesignation) {
  * @requires Database
  * @requires Unit
  * @memberof Game
+ * @see Actions.action - part of the action submission process
  * @return {undefined} - Modifies the database directly
  */
 function runningBackward (uniqueDesignation) {
@@ -62739,7 +62790,8 @@ module.exports = {
   toKneeling: toKneeling,
   toProne: toProne,
   takeCover: takeCover,
-  moveToHex: moveToHex
+  moveToHex: moveToHex,
+  medicalAid: medicalAid
 }
 
 },{"./config":175,"./database":176,"./map":180,"./tables":181,"./unit":184,"./utils":185,"./weapons":186,"lodash":167}],178:[function(require,module,exports){
@@ -62794,7 +62846,7 @@ let _ = require('lodash')
 // loading a local version, but keeping the npm module in package.json for now
 // https://github.com/timmywil/jquery.panzoom/issues/351#issuecomment-330924963
 require('../vendor/jquery.panzoom')
-//let panzoom = require('panzoom')
+//let panzoom = require('panzoom') //breaks bootstrap tabs 
 let area = document.querySelector('#stage')
 let Slideout = require('slideout')
 
@@ -63031,8 +63083,8 @@ module.exports = {
  * @module Tables
  */
 
-let _ = require('lodash')
-let inf = Number.POSITIVE_INFINITY
+const _ = require('lodash')
+const max = Number.MAX_SAFE_INTEGER
 
 let hitLocationTable = [
     {cover: [0, 2], open: [0, 0], location: 'Head - Glance', pd: [7, 'light wound'], opd: [7, 200, 1000, 80000]},
@@ -63062,28 +63114,28 @@ let hitLocationTable = [
 
 //todo: FINISH THIS
 let medicalTable = [
-    {dt: 5, ht: 17, 'no aid': {ctp: 568800, rr: 96}, 'first aid': {ctp: '', rr: 96}, 'aid station': {ctp: inf, rr: 99}, 'hospital': { ctp: inf, rr: 99 }, 'trauma center': {ctp: inf, rr: 99}},
-    {dt: 10, ht: 25, 'no aid': {ctp: 540000, rr: 89}, 'first aid': {ctp: '', rr: 92}, 'aid station': {ctp: inf, rr: 99}, 'hospital': { ctp: inf, rr: 99}, 'trauma center': {ctp: inf, rr: 99}},
-    {dt: 15, ht: 30, 'no aid': {ctp: 518400, rr: 85}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
-    {dt: 20, ht: 35, 'no aid': {ctp: 489600, rr: 81}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
-    {dt: 25, ht: 38, 'no aid': {ctp: 468000, rr: 77}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
-    {dt: 30, ht: 41, 'no aid': {ctp: 446400, rr: 73}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
-    {dt: 35, ht: 43, 'no aid': {ctp: 424800, rr: 69}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
-    {dt: 40, ht: 44, 'no aid': {ctp: 403200, rr: 66}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
-    {dt: 45, ht: 46, 'no aid': {ctp: 381600, rr: 63}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
-    {dt: 50, ht: 47, 'no aid': {ctp: 367200, rr: 60}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
-    {dt: 60, ht: 48, 'no aid': {ctp: 331200, rr: 54}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
-    {dt: 70, ht: 50, 'no aid': {ctp: 295200, rr: 49}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
-    {dt: 80, ht: 51, 'no aid': {ctp: 266400, rr: 44}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
-    {dt: 90, ht: 52, 'no aid': {ctp: 244800, rr: 40}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
-    {dt: 100, ht: 53, 'no aid': {ctp: 223200, rr: 360}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
-    {dt: 200, ht: 61, 'no aid': {ctp: 79200, rr: 12}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
-    {dt: 300, ht: 65, 'no aid': {ctp: 28800, rr: 4}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
-    {dt: 400, ht: 68, 'no aid': {ctp: 11160, rr: 1}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
-    {dt: 500, ht: 70, 'no aid': {ctp: 4200, rr: 0}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
-    {dt: 600, ht: 72, 'no aid': {ctp: 1560, rr: 0}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
-    {dt: 700, ht: 73, 'no aid': {ctp: 720, rr: 0}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
-    {dt: 800, ht: 75, 'no aid': {ctp: 600, rr: 0}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 5, ht: 17, 'no aid': {ctp: 568800, rr: 97}, 'first aid': {ctp: '', rr: 96}, 'aid station': {ctp: max, rr: 99}, 'hospital': { ctp: max, rr: 99 }, 'trauma center': {ctp: max, rr: 99}},
+    {dt: 10, ht: 25, 'no aid': {ctp: 540000, rr: 90}, 'first aid': {ctp: '', rr: 92}, 'aid station': {ctp: max, rr: 99}, 'hospital': { ctp: max, rr: 99}, 'trauma center': {ctp: max, rr: 99}},
+    {dt: 15, ht: 30, 'no aid': {ctp: 518400, rr: 86}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 20, ht: 35, 'no aid': {ctp: 489600, rr: 82}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 25, ht: 38, 'no aid': {ctp: 468000, rr: 78}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 30, ht: 41, 'no aid': {ctp: 446400, rr: 74}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 35, ht: 43, 'no aid': {ctp: 424800, rr: 70}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 40, ht: 44, 'no aid': {ctp: 403200, rr: 67}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 45, ht: 46, 'no aid': {ctp: 381600, rr: 64}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 50, ht: 47, 'no aid': {ctp: 367200, rr: 61}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 60, ht: 48, 'no aid': {ctp: 331200, rr: 55}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 70, ht: 50, 'no aid': {ctp: 295200, rr: 50}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 80, ht: 51, 'no aid': {ctp: 266400, rr: 45}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 90, ht: 52, 'no aid': {ctp: 244800, rr: 41}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 100, ht: 53, 'no aid': {ctp: 223200, rr: 37}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 200, ht: 61, 'no aid': {ctp: 79200, rr: 13}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 300, ht: 65, 'no aid': {ctp: 28800, rr: 5}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 400, ht: 68, 'no aid': {ctp: 11160, rr: 2}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 500, ht: 70, 'no aid': {ctp: 4200, rr: 1}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 600, ht: 72, 'no aid': {ctp: 1560, rr: 1}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 700, ht: 73, 'no aid': {ctp: 720, rr: 1}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
+    {dt: 800, ht: 75, 'no aid': {ctp: 600, rr: 1}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
     {dt: 900, ht: 76, 'no aid': {ctp: 480, rr: 0}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
     {dt: 1000, ht: 77, 'no aid': {ctp: 360, rr: 0}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
     {dt: 2000, ht: 84, 'no aid': {ctp: 340, rr: 0}, 'first aid': {ctp: '', rr: 0}, 'aid station': {ctp: '', rr: 0}, 'hospital': { ctp: '', rr: 0 }, 'trauma center': {ctp: '', rr: 0}},
@@ -63260,7 +63312,7 @@ function autoFire(rof, range) {
         rofIndex = 2
     }
 
-    if (_.inRange(rof, 16, Number.POSITIVE_INFINITY)) {
+    if (_.inRange(rof, 16, Number.MAX_SAFE_INTEGER)) {
         rofIndex = 3
     }    
     
@@ -63312,7 +63364,7 @@ function oddsOfHitting(accuracy, range) {
 function getIndexOfRange(distance) {
     let index
 
-    if (_.inRange(distance, 250, 999)) index = 12
+    if (_.inRange(distance, 250, max)) index = 12
     if (_.inRange(distance, 150, 250)) index = 11
     if (_.inRange(distance, 85, 150)) index = 10
     if (_.inRange(distance, 55, 85)) index = 9
@@ -63651,7 +63703,7 @@ function runActions () {
                             let newActionValue = guy.combatActionsPerImpulse
                             newActionValue[currentImpulse] = unit.remainingActions
                             Unit.update({currentActionsPerImpulse: newActionValue}, unit.uniqueDesignation)           
-                            Action.action(unit.action, unit.uniqueDesignation, unit.totalActions)
+                            Action.action(unit.action, unit.uniqueDesignation, unit.totalActions, unit.msg)
                             Database.actionList.child(unitKey).remove()
                             Utils.populateControlPanel(guy.name)
                         })                        
@@ -63686,7 +63738,7 @@ function addToActionList (action) {
  * @see Utils.createButtonSet - Called from generated buttons
  * @return {undefined} - Runs addToActionList directly
  */
-function submitAction (actionName, uniqueDesignation, ca) {
+function submitAction (actionName, uniqueDesignation, ca, msg) {
     let sample = getTimeAndUnit(uniqueDesignation)
     sample.then((data) => {
         let unit = data[0]
@@ -63694,7 +63746,7 @@ function submitAction (actionName, uniqueDesignation, ca) {
         let result = calculateActionTime(ca, unit, time)
         let next = result.time
         let remain = result.remaining
-        let action = {uniqueDesignation: uniqueDesignation, time: next, action: actionName, remainingActions: remain, totalActions: ca}
+        let action = {uniqueDesignation: uniqueDesignation, time: next, action: actionName, remainingActions: remain, totalActions: ca, msg: msg}
                 
         addToActionList(action)     
                 
@@ -64185,12 +64237,12 @@ function createButtonSet(uniqueDesignation) {
     $('#weapon-table').empty()
     $('#body-armor').empty()
     $('#equipment-list').empty()
-    let face1LeftMoving = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-left-moving', '${uniqueDesignation}', 0)">Turn 1 hexside left <span class="badge">0</span></a></li>`
-    let face1RightMoving = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-right-moving', '${uniqueDesignation}', 0)">Turn 1 hexside right <span class="badge">0</span></a></li>`
-    let face1LeftImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-left-immobile', '${uniqueDesignation}', 1)">Turn 1 hexside left <span class="badge">1</span></a></li>`
-    let face2LeftImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-2-left-immobile', '${uniqueDesignation}', 1)">Turn 2 hexside left <span class="badge">1</span></a></li>`
-    let face1RightImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-right-immobile', '${uniqueDesignation}', 1)">Turn 1 hexside right <span class="badge">1</span></a></li>`
-    let face2RightImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-2-right-immobile', '${uniqueDesignation}', 1)">Turn 2 hexside right <span class="badge">1</span></a></li>`
+    let face1LeftMoving = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-left-moving', '${uniqueDesignation}', 0, '')">Turn 1 hexside left <span class="badge">0</span></a></li>`
+    let face1RightMoving = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-right-moving', '${uniqueDesignation}', 0, '')">Turn 1 hexside right <span class="badge">0</span></a></li>`
+    let face1LeftImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-left-immobile', '${uniqueDesignation}', 1, '')">Turn 1 hexside left <span class="badge">1</span></a></li>`
+    let face2LeftImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-2-left-immobile', '${uniqueDesignation}', 1, '')">Turn 2 hexside left <span class="badge">1</span></a></li>`
+    let face1RightImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-right-immobile', '${uniqueDesignation}', 1, '')">Turn 1 hexside right <span class="badge">1</span></a></li>`
+    let face2RightImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-2-right-immobile', '${uniqueDesignation}', 1, '')">Turn 2 hexside right <span class="badge">1</span></a></li>`
 
     $('#facing-dropdown').append(face1LeftMoving)
     $('#facing-dropdown').append(face1RightMoving)
@@ -64201,40 +64253,40 @@ function createButtonSet(uniqueDesignation) {
 
     // add aiming mods 1-12
     for (let i = 1; i <= 12; i++) {
-        let aiming = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('aiming', '${uniqueDesignation}', ${i})">Aim <span class="badge">${i}</span></a></li>`
+        let aiming = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('aiming', '${uniqueDesignation}', ${i}, '')">Aim <span class="badge">${i}</span></a></li>`
         $('#aiming-dropdown').append(aiming)
     }
 
     Database.singleUnit(uniqueDesignation).once('value').then((data) => {
         let unit = data.val()
         $('#moving-dropdown').empty()
-        let takeCover = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('take-cover', '${uniqueDesignation}', 0)">Change cover <span class="badge">0</span></a></li>`
-        let moveToHex = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('move-to-hex', '${uniqueDesignation}', 0)">Move to Hex (x,y) <span class="badge">0</span></a></li>`
+        let takeCover = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('take-cover', '${uniqueDesignation}', 0, '')">Change cover <span class="badge">0</span></a></li>`
+        let moveToHex = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('move-to-hex', '${uniqueDesignation}', 0, '')">Move to Hex (x,y) <span class="badge">0</span></a></li>`
         $('#moving-dropdown').append(takeCover)
         $('#moving-dropdown').append(moveToHex)
         if (unit.position === 'standing') {
-            let runningForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('running-forward', '${uniqueDesignation}', 1)">Run forward one hex <span class="badge">1</span></a></li>`
-            let runningBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('running-backward', '${uniqueDesignation}', 2)">Run backward one hex <span class="badge">2</span></a></li>`
-            let toKneeling = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('to-kneeling', '${uniqueDesignation}', 1)">Kneel <span class="badge">1</span></a></li>`
-            let toProne = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('to-prone', '${uniqueDesignation}', 2)">Go prone <span class="badge">2</span></a></li>`
+            let runningForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('running-forward', '${uniqueDesignation}', 1, '')">Run forward one hex <span class="badge">1</span></a></li>`
+            let runningBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('running-backward', '${uniqueDesignation}', 2, '')">Run backward one hex <span class="badge">2</span></a></li>`
+            let toKneeling = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('to-kneeling', '${uniqueDesignation}', 1, '')">Kneel <span class="badge">1</span></a></li>`
+            let toProne = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('to-prone', '${uniqueDesignation}', 2, '')">Go prone <span class="badge">2</span></a></li>`
             $('#moving-dropdown').append(runningForward)
             $('#moving-dropdown').append(runningBackward)
             $('#moving-dropdown').append(toKneeling)
             $('#moving-dropdown').append(toProne)
         } else if (unit.position === 'kneeling') {
-            let crouchingForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crouching-forward', '${uniqueDesignation}', 2)">Crouch forward one hex <span class="badge">2</span></a></li>`
-            let crouchingBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crouching-backward', '${uniqueDesignation}', 4)">Crouch backward one hex <span class="badge">4</span></a></li>`
-            let toProne = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('to-prone', '${uniqueDesignation}', 1)">Go prone <span class="badge">1</span></a></li>`
-            let toStanding = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('to-standing', '${uniqueDesignation}', 1)">Stand up <span class="badge">1</span></a></li>`
+            let crouchingForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crouching-forward', '${uniqueDesignation}', 2, '')">Crouch forward one hex <span class="badge">2</span></a></li>`
+            let crouchingBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crouching-backward', '${uniqueDesignation}', 4, '')">Crouch backward one hex <span class="badge">4</span></a></li>`
+            let toProne = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('to-prone', '${uniqueDesignation}', 1, '')">Go prone <span class="badge">1</span></a></li>`
+            let toStanding = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('to-standing', '${uniqueDesignation}', 1, '')">Stand up <span class="badge">1</span></a></li>`
             $('#moving-dropdown').append(crouchingForward)
             $('#moving-dropdown').append(crouchingBackward)
             $('#moving-dropdown').append(toProne)
             $('#moving-dropdown').append(toStanding)
         } else if (unit.position === 'prone') {
-            let crawlingForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crawling-forward', '${uniqueDesignation}', 3)">Crawl forward one hex <span class="badge">3</span></a></li>`
-            let crawlingBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crawling-backward', '${uniqueDesignation}', 5)">Crawl backward one hex <span class="badge">5</span></a></li>`
-            let toStanding = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('to-standing', '${uniqueDesignation}', 3)">Stand up <span class="badge">3</span></a></li>`
-            let toKneeling = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('to-kneeling', '${uniqueDesignation}', 2)">Kneel <span class="badge">2</span></a></li>`
+            let crawlingForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crawling-forward', '${uniqueDesignation}', 3, '')">Crawl forward one hex <span class="badge">3</span></a></li>`
+            let crawlingBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crawling-backward', '${uniqueDesignation}', 5, '')">Crawl backward one hex <span class="badge">5</span></a></li>`
+            let toStanding = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('to-standing', '${uniqueDesignation}', 3, '')">Stand up <span class="badge">3</span></a></li>`
+            let toKneeling = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('to-kneeling', '${uniqueDesignation}', 2, '')">Kneel <span class="badge">2</span></a></li>`
             $('#moving-dropdown').append(crawlingForward)
             $('#moving-dropdown').append(crawlingBackward)
             $('#moving-dropdown').append(toStanding)

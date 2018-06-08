@@ -146,6 +146,7 @@ function findNeighbor (currentCoords, facing, neighbor) {
  * @requires Database
  * @requires Unit
  * @memberof Game
+ * @see Actions.action - part of the action submission process
  * @return {undefined} - Modifies the database directly
  */
 function face1LeftMoving (uniqueDesignation) {
@@ -165,6 +166,7 @@ function face1LeftMoving (uniqueDesignation) {
  * @requires Database
  * @requires Unit
  * @memberof Game
+ * @see Actions.action - part of the action submission process
  * @return {undefined} - Modifies the database directly
  */
 function takeCover(uniqueDesignation, totalActions) {
@@ -184,12 +186,14 @@ function takeCover(uniqueDesignation, totalActions) {
  *
  * @param {string} uniqueDesignation - The name of the unit
  * @param {number} totalActions - The number of actions used for the aim
+ * @param {any} msg - A message from the submitAction execution
  * @requires Database
  * @requires Weapons
  * @memberof Game
+ * @see Actions.action - part of the action submission process
  * @return {undefined} - Modifies the database directly
  */
-function aiming (uniqueDesignation, totalActions) {
+function aiming (uniqueDesignation, totalActions, msg) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
     let weapon = Weapons.getWeapon(unit.weapons[0])
@@ -259,25 +263,68 @@ function applyDamage(uniqueDesignation, damage) {
       let injuries = unit.disablingInjuries
       let newInjuries = injuries += `${damage.wound} to ${damage.location}.\n `
       let status = unit.status
-      let damageTotal
+      let damageTotal = unit.damage
 
       if (damage.damage >= 1000000) {
         pd = 'dead'
         newInjuries = 'dead'
-        //alert(`${_.capitalize(unit.name)} is dead!`)
         Database.messages.push(`${_.capitalize(unit.name)} is dead!`)
       } else {
         pd += damage.damage
-        damageTotal = (pd * 10) / health
+        damageTotal += (pd * 10) / health
         if (checkIncapacitated(unit, pd) === true) {
           status = 'incapacitated'
-          //alert(`${_.capitalize(unit.name)} is incapacitated!`)
           Database.messages.push(`${_.capitalize(unit.name)} is incapacitated!`)
         }
+        checkMedicalAid(unit, damageTotal, 'no aid')
       }
       
       Unit.update({physicalDamage: pd, disablingInjuries: newInjuries, status: status, damage: damageTotal}, uniqueDesignation)
   })
+}
+
+/**
+ * checks the medical aid and recovery chart and submits to action list if needed
+ *
+ * @param {object} unit -  The unit being checked
+ * @param {number} dt -  Unit's damage total
+ * @param {string} aid -  The aid type. 'no aid', 'first aid', hospital', 'trauma center'
+ * @requires Tables
+ * @return {undefined} - Submit's through a global function
+ */
+function checkMedicalAid(unit, dt, aid) {
+  let combatActions = unit.combatActions
+  let aidResult = Tables.medical(dt, aid)
+  //convert time into combat actions
+  let time = _.round((aidResult.ctp / 4) * unit.combatActions)
+  console.log(aidResult, time)
+  window.submitAction('medical-aid', unit.name, time, aidResult.rr)
+}
+
+/**
+ * Checks the recovery roll
+ *
+ * @param {string} uniqueDesignation - The name of the unit
+ * @param {number} totalActions - The number of actions used for the aim
+ * @param {any} msg - A message from the submitAction execution
+ * @requires Database
+ * @requires Unit
+ * @memberof Game
+ * @see Actions.action - part of the action submission process
+ * @return {undefined} - Modifies the database directly
+ */
+function medicalAid(uniqueDesignation, totalActions, msg) {
+  let rr = msg
+  let roll = _.random(1, 100)
+  let status = 'alive'
+
+  if (roll > rr) {
+    status = 'dead'
+    Unit.update({physicalDamage: 'dead', disablingInjuries: 'dead'})
+  }
+
+  Database.messages.push(`${_.capitalize(uniqueDesignation)} is ${status}!`)  
+
 }
 
 /**
@@ -294,6 +341,7 @@ function checkIncapacitated(unit, newPD) {
     let roll = _.random(1, 100)
     let ic
     let result = false
+
 
     if (pd < (kv / 10)) {ic = 0}
     if (pd > (kv / 10)) {ic = 10}
@@ -399,6 +447,7 @@ function face1RightMoving (uniqueDesignation) {
  * @requires Database
  * @requires Unit
  * @memberof Game
+ * @see Actions.action - part of the action submission process
  * @return {undefined} - Modifies the database directly
  */
 function runningForward (uniqueDesignation) {
@@ -416,6 +465,7 @@ function runningForward (uniqueDesignation) {
  * @requires Database
  * @requires Unit
  * @memberof Game
+ * @see Actions.action - part of the action submission process
  * @return {undefined} - Modifies the database directly
  */
 function runningBackward (uniqueDesignation) {
@@ -662,5 +712,6 @@ module.exports = {
   toKneeling: toKneeling,
   toProne: toProne,
   takeCover: takeCover,
-  moveToHex: moveToHex
+  moveToHex: moveToHex,
+  medicalAid: medicalAid
 }

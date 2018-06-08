@@ -137,7 +137,7 @@ function runActions () {
                             let newActionValue = guy.combatActionsPerImpulse
                             newActionValue[currentImpulse] = unit.remainingActions
                             Unit.update({currentActionsPerImpulse: newActionValue}, unit.uniqueDesignation)           
-                            Action.action(unit.action, unit.uniqueDesignation, unit.totalActions)
+                            Action.action(unit.action, unit.uniqueDesignation, unit.totalActions, unit.msg)
                             Database.actionList.child(unitKey).remove()
                             Utils.populateControlPanel(guy.name)
                         })                        
@@ -172,7 +172,7 @@ function addToActionList (action) {
  * @see Utils.createButtonSet - Called from generated buttons
  * @return {undefined} - Runs addToActionList directly
  */
-function submitAction (actionName, uniqueDesignation, ca) {
+function submitAction (actionName, uniqueDesignation, ca, msg) {
     let sample = getTimeAndUnit(uniqueDesignation)
     sample.then((data) => {
         let unit = data[0]
@@ -180,7 +180,7 @@ function submitAction (actionName, uniqueDesignation, ca) {
         let result = calculateActionTime(ca, unit, time)
         let next = result.time
         let remain = result.remaining
-        let action = {uniqueDesignation: uniqueDesignation, time: next, action: actionName, remainingActions: remain, totalActions: ca}
+        let action = {uniqueDesignation: uniqueDesignation, time: next, action: actionName, remainingActions: remain, totalActions: ca, msg: msg}
                 
         addToActionList(action)     
                 

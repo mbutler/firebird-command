@@ -153,6 +153,12 @@
                       </a></li>
                     
                       <li><a
+                        href='#gamemedicalaid'
+                        class='regular pre-open'>
+                        .medicalAid
+                      </a></li>
+                    
+                      <li><a
                         href='#gamecheckincapacitated'
                         class='regular pre-open'>
                         .checkIncapacitated
@@ -553,6 +559,16 @@
               
                 
                 <li><a
+                  href='#listeners'
+                  class="">
+                  Listeners
+                  
+                </a>
+                
+                </li>
+              
+                
+                <li><a
                   href='#map'
                   class=" toggle-sibling">
                   Map
@@ -581,9 +597,9 @@
               
                 
                 <li><a
-                  href='#listeners'
+                  href='#index'
                   class="">
-                  Listeners
+                  Index
                   
                 </a>
                 
@@ -591,9 +607,9 @@
               
                 
                 <li><a
-                  href='#index'
+                  href='#checkmedicalaid'
                   class="">
-                  Index
+                  checkMedicalAid
                   
                 </a>
                 
@@ -654,7 +670,7 @@
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>action(selection, uniqueDesignation, totalActions)</span>
+            <span class='code strong strong truncate'>action(selection, uniqueDesignation, totalActions, msg)</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -665,7 +681,7 @@
   <p>Map to the action functions in the Game module</p>
 
 
-  <div class='pre p1 fill-light mt0'>action(selection: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, totalActions: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
+  <div class='pre p1 fill-light mt0'>action(selection: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, totalActions: any, msg: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
   
   
 
@@ -701,6 +717,14 @@
         <div class='space-bottom0'>
           <div>
             <span class='code bold'>totalActions</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>msg</span> <code class='quiet'>(any)</code>
 	    
           </div>
           
@@ -1511,7 +1535,7 @@
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>aiming(uniqueDesignation, totalActions)</span>
+            <span class='code strong strong truncate'>aiming(uniqueDesignation, totalActions, msg)</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -1522,7 +1546,7 @@
   <p>Calculates aiming and aim mods</p>
 
 
-  <div class='pre p1 fill-light mt0'>aiming(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, totalActions: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
+  <div class='pre p1 fill-light mt0'>aiming(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, totalActions: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, msg: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
   
   
 
@@ -1550,6 +1574,15 @@
           <div>
             <span class='code bold'>totalActions</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
 	    The number of actions used for the aim
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>msg</span> <code class='quiet'>(any)</code>
+	    A message from the submitAction execution
 
           </div>
           
@@ -1642,6 +1675,92 @@
       <div class='py1 quiet mt1 prose-big'>Returns</div>
       <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></code>:
         Updates the unit directly
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='gamemedicalaid'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>medicalAid(uniqueDesignation, totalActions, msg)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+
+  <p>Checks the recovery roll</p>
+
+
+  <div class='pre p1 fill-light mt0'>medicalAid(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, totalActions: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, msg: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>uniqueDesignation</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    The name of the unit
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>totalActions</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    The number of actions used for the aim
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>msg</span> <code class='quiet'>(any)</code>
+	    A message from the submitAction execution
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></code>:
+        Modifies the database directly
 
       
     
@@ -5141,7 +5260,7 @@
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>submitAction(actionName, uniqueDesignation, ca)</span>
+            <span class='code strong strong truncate'>submitAction(actionName, uniqueDesignation, ca, msg)</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -5152,7 +5271,7 @@
   <p>Constructs the proper object to submit to addToActionList</p>
 
 
-  <div class='pre p1 fill-light mt0'>submitAction(actionName: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, ca: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
+  <div class='pre p1 fill-light mt0'>submitAction(actionName: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, ca: any, msg: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
   
   
 
@@ -5193,6 +5312,14 @@
           
         </div>
       
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>msg</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
     </div>
   
 
@@ -5223,6 +5350,53 @@
     </div>
   
 </div>
+
+  
+
+  
+
+  
+</section>
+
+          
+        
+          
+            <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+  <div class='clearfix'>
+    
+    <h3 class='fl m0' id='listeners'>
+      Listeners
+    </h3>
+    
+    
+  </div>
+  
+
+  <p>This module handles all event listeners</p>
+
+
+  <div class='pre p1 fill-light mt0'>Listeners</div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+
+  
+
+  
+
+  
+
+  
 
   
 
@@ -5369,25 +5543,26 @@
   
   <div class='clearfix'>
     
-    <h3 class='fl m0' id='listeners'>
-      Listeners
+    <h3 class='fl m0' id='index'>
+      Index
     </h3>
     
     
   </div>
   
 
-  <p>This module handles all event listeners</p>
-
-
-  <div class='pre p1 fill-light mt0'>Listeners</div>
-  
   
 
+  <div class='pre p1 fill-light mt0'>Index</div>
+  
+  
+
   
   
   
-  
+  <div>Author: Matthew Butler &lt;matthewtbutler@gmail.com&gt;
+
+The main entry point of the application</div>
   
   
 
@@ -5416,33 +5591,72 @@
   
   <div class='clearfix'>
     
-    <h3 class='fl m0' id='index'>
-      Index
+    <h3 class='fl m0' id='checkmedicalaid'>
+      checkMedicalAid
     </h3>
     
     
   </div>
   
 
-  
+  <p>checks the medical aid and recovery chart and submits to action list if needed</p>
 
-  <div class='pre p1 fill-light mt0'>Index</div>
-  
-  
 
-  
-  
-  
-  <div>Author: Matthew Butler &lt;matthewtbutler@gmail.com&gt;
-
-The main entry point of the application</div>
+  <div class='pre p1 fill-light mt0'>checkMedicalAid(unit: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>, dt: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, aid: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
   
   
 
   
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>unit</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a>)</code>
+	     The unit being checked
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>dt</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	     Unit's damage total
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>aid</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	     The aid type. 'no aid', 'first aid', hospital', 'trauma center'
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
 
   
 
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></code>:
+        Submit's through a global function
+
+      
+    
   
 
   
