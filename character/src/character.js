@@ -42,6 +42,14 @@ function formSubmit () {
     let armor = document.getElementById("armor").value
     let equipmentCheckboxes = document.getElementsByName('equipment')
     let selectedEquipment = []
+    let sidcField = document.getElementById("sidc")
+    let sidc = 'SHGPU-------'
+
+    if (sidcField.value === '') {
+        sidc = _.sample(sidcList)
+    } else {
+        sidc = sidcField.value
+    }
 
     for (let i = 0; i < equipmentCheckboxes.length; i++) {
         if (equipmentCheckboxes[i].checked) {
@@ -125,7 +133,7 @@ function formSubmit () {
     kv = _.round(0.5 * Number(will) * Number(skillLevel))
 
     symbol = {
-        'sidc': _.sample(sidcList),
+        'sidc': sidc,
         'options': {
           'size': 0,
           'additionalInformation': '',

@@ -56508,6 +56508,14 @@ function formSubmit () {
     let armor = document.getElementById("armor").value
     let equipmentCheckboxes = document.getElementsByName('equipment')
     let selectedEquipment = []
+    let sidcField = document.getElementById("sidc")
+    let sidc = 'SHGPU-------'
+
+    if (sidcField.value === '') {
+        sidc = _.sample(sidcList)
+    } else {
+        sidc = sidcField.value
+    }
 
     for (let i = 0; i < equipmentCheckboxes.length; i++) {
         if (equipmentCheckboxes[i].checked) {
@@ -56560,8 +56568,6 @@ function formSubmit () {
 
     //curve fitted linear equation just because it's a cool way to do it instead of yet another chart
     //Skill Accuracy Level
-    //sal = 2147609 + (0.6880844 - 2147609) / (1 + (skillLevel/1635843000) ** 0.6249486)
-
     sal = _.round(2147609 + (0.6880844 - 2147609) / (1 + Math.pow((skillLevel / 1635843000), 0.6249486)))
 
     //table 1D
@@ -56593,7 +56599,7 @@ function formSubmit () {
     kv = _.round(0.5 * Number(will) * Number(skillLevel))
 
     symbol = {
-        'sidc': _.sample(sidcList),
+        'sidc': sidc,
         'options': {
           'size': 0,
           'additionalInformation': '',
