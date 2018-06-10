@@ -4,11 +4,14 @@
  * @namespace
  */
 
-function uniqueKey() {
-  return '_' + Math.random().toString(36).substr(2, 9)
-}
+let user
 
-let user = uniqueKey()
+if (localStorage.getItem('firebirdUserID') === null) {
+  localStorage.setItem('firebirdUserID', uniqueKey())
+  user = localStorage.getItem('firebirdUserID')
+} else {
+  user = localStorage.getItem('firebirdUserID')
+}
 
 let config = {
   mapWidth: 100,
@@ -26,6 +29,10 @@ let config = {
     storageBucket: 'firebird-f30dc.appspot.com',
     messagingSenderId: '274623842874'
   }
+}
+
+function uniqueKey() {
+  return '_' + Math.random().toString(36).substr(2, 9)
 }
 
 module.exports = config
