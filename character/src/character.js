@@ -161,7 +161,7 @@ function formSubmit () {
     newUnit.symbol = symbol
     newUnit.symbol.options.uniqueDesignation = uniqueDesignation
     newUnit.position = 'standing'
-    newUnit.currentHex = [12, 9]
+    newUnit.currentHex = [_.random(0,20), _.random(0,20)]
     newUnit.facing = 4
     newUnit.stance = 'firing'
     newUnit.cover = false
