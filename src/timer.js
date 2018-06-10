@@ -9,6 +9,7 @@ let _ = require('lodash')
 let Action = require('./actions')
 let Unit = require('./unit')
 let Utils = require('./utils')
+let config = require('./config')
 
 /**
  * Advances the game timer one impulse
@@ -132,14 +133,16 @@ function runActions () {
                     //if the unit's action time is the same as current time then run and delete the action from the list
                     if (_.isEqual(actionTime, currentTime)) {
                         Database.singleUnit(unit.uniqueDesignation).once('value').then((data) => {
-                            let guy = data.val()
-                            let currentImpulse = currentTime.impulse
-                            let newActionValue = guy.combatActionsPerImpulse
-                            newActionValue[currentImpulse] = unit.remainingActions
-                            Unit.update({currentActionsPerImpulse: newActionValue}, unit.uniqueDesignation)           
-                            Action.action(unit.action, unit.uniqueDesignation, unit.totalActions, unit.msg)
-                            Database.actionList.child(unitKey).remove()
-                            Utils.populateControlPanel(guy.name)
+                            if (config.userID == unit.userID) {
+                                let guy = data.val()
+                                let currentImpulse = currentTime.impulse
+                                let newActionValue = guy.combatActionsPerImpulse
+                                newActionValue[currentImpulse] = unit.remainingActions
+                                Unit.update({currentActionsPerImpulse: newActionValue}, unit.uniqueDesignation)           
+                                Action.action(unit.action, unit.uniqueDesignation, unit.totalActions, unit.msg)
+                                Database.actionList.child(unitKey).remove()
+                                Utils.populateControlPanel(guy.name)
+                            }                            
                         })                        
                     }
                     //increment actionKeys index
@@ -172,7 +175,7 @@ function addToActionList (action) {
  * @see Utils.createButtonSet - Called from generated buttons
  * @return {undefined} - Runs addToActionList directly
  */
-function submitAction (actionName, uniqueDesignation, ca, msg) {
+function submitAction (actionName, uniqueDesignation, ca, msg, userID) {
     let sample = getTimeAndUnit(uniqueDesignation)
     sample.then((data) => {
         let unit = data[0]
@@ -180,7 +183,7 @@ function submitAction (actionName, uniqueDesignation, ca, msg) {
         let result = calculateActionTime(ca, unit, time)
         let next = result.time
         let remain = result.remaining
-        let action = {uniqueDesignation: uniqueDesignation, time: next, action: actionName, remainingActions: remain, totalActions: ca, msg: msg}
+        let action = {uniqueDesignation: uniqueDesignation, time: next, action: actionName, remainingActions: remain, totalActions: ca, msg: msg, userID: userID}
                 
         addToActionList(action)     
                 

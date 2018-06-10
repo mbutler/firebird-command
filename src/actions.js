@@ -14,7 +14,7 @@ let Game = require('./game')
  * @memberof Actions
  * @return {undefined} - Runs a function directly
  */
-function action(selection, uniqueDesignation, totalActions, msg) {
+function action(selection, uniqueDesignation, totalActions, msg, userID) {
     let actionMap = {
         'medical-aid': Game.medicalAid,
         'aiming': Game.aiming,

@@ -47,8 +47,8 @@ Database.allUnits.on('child_changed', (snapshot) => {
     let hex = unit.currentHex
     let uniqueDesignation = snapshot.key
     
-    Utils.createButtonSet(uniqueDesignation)
-    Utils.populateControlPanel(uniqueDesignation)
+    //Utils.createButtonSet(uniqueDesignation)
+    //Utils.populateControlPanel(uniqueDesignation)
     Unit.changeFacing(face, uniqueDesignation)    
     Unit.animateUnitToHex(hex, uniqueDesignation)
     
@@ -75,7 +75,6 @@ Database.time.on('child_changed', (snapshot) => {
     
     Database.allUnits.once('value').then((snapshot) => {
         let units = snapshot.val()
-        console.log(units)
 
         //reset all unit's capi to default
         _.forEach(units, (unit) => {
@@ -98,7 +97,7 @@ Database.actionList.on('child_added', (snapshot) => {
 
 $(document).keypress((e) => {
     if (e.which === 84) {
-        Timer.incrementTimer()
+        
     }
 })
 

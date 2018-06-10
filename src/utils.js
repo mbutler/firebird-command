@@ -6,6 +6,7 @@
 let Database = require('./database')
 let Weapons = require('./weapons')
 let _ = require('lodash')
+let config = require('./config')
 
 /**
  * Adds a set of buttons for the specified unit to control actions.
@@ -23,12 +24,12 @@ function createButtonSet(uniqueDesignation) {
     $('#weapon-table').empty()
     $('#body-armor').empty()
     $('#equipment-list').empty()
-    let face1LeftMoving = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-left-moving', '${uniqueDesignation}', 0, '')">Turn 1 hexside left <span class="badge">0</span></a></li>`
-    let face1RightMoving = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-right-moving', '${uniqueDesignation}', 0, '')">Turn 1 hexside right <span class="badge">0</span></a></li>`
-    let face1LeftImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-left-immobile', '${uniqueDesignation}', 1, '')">Turn 1 hexside left <span class="badge">1</span></a></li>`
-    let face2LeftImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-2-left-immobile', '${uniqueDesignation}', 1, '')">Turn 2 hexside left <span class="badge">1</span></a></li>`
-    let face1RightImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-right-immobile', '${uniqueDesignation}', 1, '')">Turn 1 hexside right <span class="badge">1</span></a></li>`
-    let face2RightImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-2-right-immobile', '${uniqueDesignation}', 1, '')">Turn 2 hexside right <span class="badge">1</span></a></li>`
+    let face1LeftMoving = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-left-moving', '${uniqueDesignation}', 0, '', '${config.userID}')">Turn 1 hexside left <span class="badge">0</span></a></li>`
+    let face1RightMoving = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-right-moving', '${uniqueDesignation}', 0, '', '${config.userID}')">Turn 1 hexside right <span class="badge">0</span></a></li>`
+    let face1LeftImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-left-immobile', '${uniqueDesignation}', 1, '', '${config.userID}')">Turn 1 hexside left <span class="badge">1</span></a></li>`
+    let face2LeftImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-2-left-immobile', '${uniqueDesignation}', 1, '', '${config.userID}')">Turn 2 hexside left <span class="badge">1</span></a></li>`
+    let face1RightImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-right-immobile', '${uniqueDesignation}', 1, '', '${config.userID}')">Turn 1 hexside right <span class="badge">1</span></a></li>`
+    let face2RightImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-2-right-immobile', '${uniqueDesignation}', 1, '', '${config.userID}')">Turn 2 hexside right <span class="badge">1</span></a></li>`
 
     $('#facing-dropdown').append(face1LeftMoving)
     $('#facing-dropdown').append(face1RightMoving)
@@ -39,40 +40,40 @@ function createButtonSet(uniqueDesignation) {
 
     // add aiming mods 1-12
     for (let i = 1; i <= 12; i++) {
-        let aiming = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('aiming', '${uniqueDesignation}', ${i}, '')">Aim <span class="badge">${i}</span></a></li>`
+        let aiming = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('aiming', '${uniqueDesignation}', ${i}, '', '${config.userID}')">Aim <span class="badge">${i}</span></a></li>`
         $('#aiming-dropdown').append(aiming)
     }
 
     Database.singleUnit(uniqueDesignation).once('value').then((data) => {
         let unit = data.val()
         $('#moving-dropdown').empty()
-        let takeCover = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('take-cover', '${uniqueDesignation}', 0, '')">Change cover <span class="badge">0</span></a></li>`
-        let moveToHex = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('move-to-hex', '${uniqueDesignation}', 0, '')">Move to Hex (x,y) <span class="badge">0</span></a></li>`
+        let takeCover = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('take-cover', '${uniqueDesignation}', 0, '', '${config.userID}')">Change cover <span class="badge">0</span></a></li>`
+        let moveToHex = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('move-to-hex', '${uniqueDesignation}', 0, '', '${config.userID}')">Move to Hex (x,y) <span class="badge">0</span></a></li>`
         $('#moving-dropdown').append(takeCover)
         $('#moving-dropdown').append(moveToHex)
         if (unit.position === 'standing') {
-            let runningForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('running-forward', '${uniqueDesignation}', 1, '')">Run forward one hex <span class="badge">1</span></a></li>`
-            let runningBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('running-backward', '${uniqueDesignation}', 2, '')">Run backward one hex <span class="badge">2</span></a></li>`
-            let toKneeling = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('to-kneeling', '${uniqueDesignation}', 1, '')">Kneel <span class="badge">1</span></a></li>`
-            let toProne = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('to-prone', '${uniqueDesignation}', 2, '')">Go prone <span class="badge">2</span></a></li>`
+            let runningForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('running-forward', '${uniqueDesignation}', 1, '', '${config.userID}')">Run forward one hex <span class="badge">1</span></a></li>`
+            let runningBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('running-backward', '${uniqueDesignation}', 2, '', '${config.userID}')">Run backward one hex <span class="badge">2</span></a></li>`
+            let toKneeling = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('to-kneeling', '${uniqueDesignation}', 1, '', '${config.userID}')">Kneel <span class="badge">1</span></a></li>`
+            let toProne = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('to-prone', '${uniqueDesignation}', 2, '', '${config.userID}')">Go prone <span class="badge">2</span></a></li>`
             $('#moving-dropdown').append(runningForward)
             $('#moving-dropdown').append(runningBackward)
             $('#moving-dropdown').append(toKneeling)
             $('#moving-dropdown').append(toProne)
         } else if (unit.position === 'kneeling') {
-            let crouchingForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crouching-forward', '${uniqueDesignation}', 2, '')">Crouch forward one hex <span class="badge">2</span></a></li>`
-            let crouchingBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crouching-backward', '${uniqueDesignation}', 4, '')">Crouch backward one hex <span class="badge">4</span></a></li>`
-            let toProne = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('to-prone', '${uniqueDesignation}', 1, '')">Go prone <span class="badge">1</span></a></li>`
-            let toStanding = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('to-standing', '${uniqueDesignation}', 1, '')">Stand up <span class="badge">1</span></a></li>`
+            let crouchingForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crouching-forward', '${uniqueDesignation}', 2, '', '${config.userID}')">Crouch forward one hex <span class="badge">2</span></a></li>`
+            let crouchingBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crouching-backward', '${uniqueDesignation}', 4, '', '${config.userID}')">Crouch backward one hex <span class="badge">4</span></a></li>`
+            let toProne = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('to-prone', '${uniqueDesignation}', 1, '', '${config.userID}')">Go prone <span class="badge">1</span></a></li>`
+            let toStanding = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('to-standing', '${uniqueDesignation}', 1, '', '${config.userID}')">Stand up <span class="badge">1</span></a></li>`
             $('#moving-dropdown').append(crouchingForward)
             $('#moving-dropdown').append(crouchingBackward)
             $('#moving-dropdown').append(toProne)
             $('#moving-dropdown').append(toStanding)
         } else if (unit.position === 'prone') {
-            let crawlingForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crawling-forward', '${uniqueDesignation}', 3, '')">Crawl forward one hex <span class="badge">3</span></a></li>`
-            let crawlingBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crawling-backward', '${uniqueDesignation}', 5, '')">Crawl backward one hex <span class="badge">5</span></a></li>`
-            let toStanding = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('to-standing', '${uniqueDesignation}', 3, '')">Stand up <span class="badge">3</span></a></li>`
-            let toKneeling = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('to-kneeling', '${uniqueDesignation}', 2, '')">Kneel <span class="badge">2</span></a></li>`
+            let crawlingForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crawling-forward', '${uniqueDesignation}', 3, '', '${config.userID}')">Crawl forward one hex <span class="badge">3</span></a></li>`
+            let crawlingBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crawling-backward', '${uniqueDesignation}', 5, '', '${config.userID}')">Crawl backward one hex <span class="badge">5</span></a></li>`
+            let toStanding = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('to-standing', '${uniqueDesignation}', 3, '', '${config.userID}')">Stand up <span class="badge">3</span></a></li>`
+            let toKneeling = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('to-kneeling', '${uniqueDesignation}', 2, '', '${config.userID}')">Kneel <span class="badge">2</span></a></li>`
             $('#moving-dropdown').append(crawlingForward)
             $('#moving-dropdown').append(crawlingBackward)
             $('#moving-dropdown').append(toStanding)

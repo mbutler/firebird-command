@@ -467,12 +467,9 @@ function hitResult(armor, weapon, cover) {
     let penLine = getPenetrationLine(armor.pf, weapon.ammoType.fmj.pen)
     let damageType = glancingRoll(penLine)
     let hitLocation = getHitLocation(damageType, weapon.ammoType.fmj.dc, cover)
-    console.log('penline', penLine, 'damage type', damageType, 'hit location', hitLocation)
 
     return hitLocation
 }
-
-console.log(medical(3, 'first aid'))
 
 module.exports = {
     oddsOfHitting: oddsOfHitting,

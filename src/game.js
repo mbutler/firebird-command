@@ -193,7 +193,7 @@ function takeCover(uniqueDesignation, totalActions) {
  * @see Actions.action - part of the action submission process
  * @return {undefined} - Modifies the database directly
  */
-function aiming (uniqueDesignation, totalActions, msg) {
+function aiming (uniqueDesignation, totalActions, msg, userID) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
     let weapon = Weapons.getWeapon(unit.weapons[0])
@@ -211,7 +211,7 @@ function aiming (uniqueDesignation, totalActions, msg) {
     let damageMultiplier = 1
     let totalDamage
 
-     if (aimTime > aimTimeMods.length - 1) {
+    if (aimTime > aimTimeMods.length - 1) {
       aimTime = aimTimeMods.length - 1
     }
 
@@ -266,19 +266,20 @@ function applyDamage(uniqueDesignation, damage) {
       let damageTotal = unit.damage
 
       if (damage.damage >= 1000000) {
-        pd = 'dead'
+        pd = 1000000
         newInjuries = 'dead'
-        Database.messages.push(`${_.capitalize(unit.name)} is dead!`)
+        status = 'dead'
+        Database.messages.push(`${_.capitalize(unit.name)} is ${status}!`)
       } else {
-        pd += damage.damage
-        damageTotal += (pd * 10) / health
+        pd += Number(damage.damage)
+        damageTotal += _.round((pd * 10) / health)
         if (checkIncapacitated(unit, pd) === true) {
           status = 'incapacitated'
-          Database.messages.push(`${_.capitalize(unit.name)} is incapacitated!`)
+          Database.messages.push(`${_.capitalize(unit.name)} is ${status}!`)
         }
         checkMedicalAid(unit, damageTotal, 'no aid')
       }
-      
+            
       Unit.update({physicalDamage: pd, disablingInjuries: newInjuries, status: status, damage: damageTotal}, uniqueDesignation)
   })
 }
@@ -297,8 +298,7 @@ function checkMedicalAid(unit, dt, aid) {
   let aidResult = Tables.medical(dt, aid)
   //convert time into combat actions
   let time = _.round((aidResult.ctp / 4) * unit.combatActions)
-  console.log(aidResult, time)
-  window.submitAction('medical-aid', unit.name, time, aidResult.rr)
+  window.submitAction('medical-aid', unit.name, time, aidResult.rr, config.userID)
 }
 
 /**
@@ -313,14 +313,14 @@ function checkMedicalAid(unit, dt, aid) {
  * @see Actions.action - part of the action submission process
  * @return {undefined} - Modifies the database directly
  */
-function medicalAid(uniqueDesignation, totalActions, msg) {
+function medicalAid(uniqueDesignation, totalActions, msg, userID) {
   let rr = msg
   let roll = _.random(1, 100)
   let status = 'alive'
 
   if (roll > rr) {
     status = 'dead'
-    Unit.update({physicalDamage: 'dead', disablingInjuries: 'dead'})
+    Unit.update({physicalDamage: 'dead', disablingInjuries: 'dead'}, uniqueDesignation)
   }
 
   Database.messages.push(`${_.capitalize(uniqueDesignation)} is ${status}!`)  
@@ -365,18 +365,16 @@ function checkIncapacitated(unit, newPD) {
  * @memberof Game
  * @return {undefined} - Moves the unit
  */
-function moveToHex(uniqueDesignation, totalActions) {
+function moveToHex(uniqueDesignation, totalActions, msg, userID) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
     let x = $('#hex-x').val()
     let y = $('#hex-y').val()
     let point
-    let hex = Unit.getUnitHex(unit.name)
    
-    if (hex.selected) {
-      point = [Number(x), Number(y)]
-      Unit.update({currentHex: point}, uniqueDesignation)
-    }
+    point = [Number(x), Number(y)]
+    Unit.update({currentHex: point}, uniqueDesignation)
+
         
   })
 }
@@ -390,7 +388,7 @@ function moveToHex(uniqueDesignation, totalActions) {
  * @memberof Game
  * @return {undefined} - Updates the unit directly
  */
-function toStanding(uniqueDesignation, totalActions) {
+function toStanding(uniqueDesignation, totalActions, msg, userID) {
   Unit.update({position: 'standing'}, uniqueDesignation)
   console.log(`${uniqueDesignation} stands up`)
 }
@@ -404,7 +402,7 @@ function toStanding(uniqueDesignation, totalActions) {
  * @memberof Game
  * @return {undefined} - Updates the unit directly
  */
-function toKneeling(uniqueDesignation, totalActions) {
+function toKneeling(uniqueDesignation, totalActions, msg, userID) {
   Unit.update({position: 'kneeling'}, uniqueDesignation)
   console.log(`${uniqueDesignation} kneels`)
 }
@@ -418,7 +416,7 @@ function toKneeling(uniqueDesignation, totalActions) {
  * @memberof Game
  * @return {undefined} - Updates the unit directly
  */
-function toProne(uniqueDesignation, totalActions) {
+function toProne(uniqueDesignation, totalActions, msg, userID) {
   Unit.update({position: 'prone'}, uniqueDesignation)
   console.log(`${uniqueDesignation} goes prone`)
 }
@@ -451,7 +449,7 @@ function face1RightMoving (uniqueDesignation) {
  * @see Actions.action - part of the action submission process
  * @return {undefined} - Modifies the database directly
  */
-function runningForward (uniqueDesignation) {
+function runningForward (uniqueDesignation, totalActions, msg, userID) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
     let forwardHex = findNeighbor(unit.currentHex, unit.facing, 'forward')
@@ -469,7 +467,7 @@ function runningForward (uniqueDesignation) {
  * @see Actions.action - part of the action submission process
  * @return {undefined} - Modifies the database directly
  */
-function runningBackward (uniqueDesignation) {
+function runningBackward (uniqueDesignation, totalActions, msg, userID) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
     let backwardHex = findNeighbor(unit.currentHex, unit.facing, 'backward')
@@ -486,7 +484,7 @@ function runningBackward (uniqueDesignation) {
  * @memberof Game
  * @return {undefined} - Modifies the database directly
  */
-function crawlingForward (uniqueDesignation) {
+function crawlingForward (uniqueDesignation, totalActions, msg, userID) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
     let forwardHex = findNeighbor(unit.currentHex, unit.facing, 'forward')
@@ -503,7 +501,7 @@ function crawlingForward (uniqueDesignation) {
  * @memberof Game
  * @return {undefined} - Modifies the database directly
  */
-function crawlingBackward (uniqueDesignation) {
+function crawlingBackward (uniqueDesignation, totalActions, msg, userID) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
     let backwardHex = findNeighbor(unit.currentHex, unit.facing, 'backward')
@@ -520,7 +518,7 @@ function crawlingBackward (uniqueDesignation) {
  * @memberof Game
  * @return {undefined} - Modifies the database directly
  */
-function crouchingForward (uniqueDesignation) {
+function crouchingForward (uniqueDesignation, totalActions, msg, userID) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
     let forwardHex = findNeighbor(unit.currentHex, unit.facing, 'forward')
@@ -537,7 +535,7 @@ function crouchingForward (uniqueDesignation) {
  * @memberof Game
  * @return {undefined} - Modifies the database directly
  */
-function crouchingBackward (uniqueDesignation) {
+function crouchingBackward (uniqueDesignation, totalActions, msg, userID) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
     let backwardHex = findNeighbor(unit.currentHex, unit.facing, 'backward')
@@ -554,7 +552,7 @@ function crouchingBackward (uniqueDesignation) {
  * @memberof Game
  * @return {undefined} - Modifies the database directly
  */
-function face1LeftImmobile (uniqueDesignation) {
+function face1LeftImmobile (uniqueDesignation, totalActions, msg, userID) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
     let newFace = findFace(unit.facing, 'left', 1)
@@ -572,7 +570,7 @@ function face1LeftImmobile (uniqueDesignation) {
  * @memberof Game
  * @return {undefined} - Modifies the database directly
  */
-function face1RightImmobile (uniqueDesignation) {
+function face1RightImmobile (uniqueDesignation, totalActions, msg, userID) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
     let newFace = findFace(unit.facing, 'right', 1)
@@ -590,7 +588,7 @@ function face1RightImmobile (uniqueDesignation) {
  * @memberof Game
  * @return {undefined} - Modifies the database directly
  */
-function face2LeftImmobile (uniqueDesignation) {
+function face2LeftImmobile (uniqueDesignation, totalActions, msg, userID) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
     let newFace = findFace(unit.facing, 'left', 2)
@@ -608,7 +606,7 @@ function face2LeftImmobile (uniqueDesignation) {
  * @memberof Game
  * @return {undefined} - Modifies the database directly
  */
-function face2RightImmobile (uniqueDesignation) {
+function face2RightImmobile (uniqueDesignation, totalActions, msg, userID) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
     let newFace = findFace(unit.facing, 'right', 2)
@@ -625,7 +623,7 @@ function face2RightImmobile (uniqueDesignation) {
  * @memberof Game
  * @return {undefined} - Modifies the database directly
  */
-function assumeFiringStance (uniqueDesignation) {
+function assumeFiringStance (uniqueDesignation, totalActions, msg, userID) {
   Unit.update({position: 'firing'}, uniqueDesignation)
 }
 

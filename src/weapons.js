@@ -24,8 +24,8 @@ let weapons = [
                 dc: 8
             },
             ap: {
-                pen: 28,
-                dc: 8
+                pen: 23,
+                dc: 6
             }
         }
     },
@@ -36,7 +36,21 @@ let weapons = [
         reloadTime: 4,
         rateOfFire: 1,
         ammoCap: 7,
-        ammoWeight: 0.7
+        ammoWeight: 0.7,
+        ammoType: {
+            fmj: {
+                pen: 1.6,
+                dc: 3
+            },
+            jhp: {
+                pen: 1.5,
+                dc: 4
+            },
+            ap: {
+                pen: 2.2,
+                dc: 3
+            }
+        }
     }
 ]
 

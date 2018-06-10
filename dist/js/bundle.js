@@ -61426,7 +61426,7 @@ let Game = require('./game')
  * @memberof Actions
  * @return {undefined} - Runs a function directly
  */
-function action(selection, uniqueDesignation, totalActions, msg) {
+function action(selection, uniqueDesignation, totalActions, msg, userID) {
     let actionMap = {
         'medical-aid': Game.medicalAid,
         'aiming': Game.aiming,
@@ -61484,6 +61484,12 @@ module.exports = {
  * @namespace
  */
 
+function uniqueKey() {
+  return '_' + Math.random().toString(36).substr(2, 9)
+}
+
+let user = uniqueKey()
+
 let config = {
   mapWidth: 100,
   mapHeight: 100,
@@ -61491,6 +61497,7 @@ let config = {
   divContainer: 'stage',
   gameID: '-L6D8cz625nLzyargSEO',
   newGame: false,
+  userID: user,
   firebase: {
     apiKey: 'AIzaSyBKxAP8VRE18XIqhkZlI6z3xbCgaPCwVc0',
     authDomain: 'firebird-f30dc.firebaseapp.com',
@@ -61736,7 +61743,7 @@ function takeCover(uniqueDesignation, totalActions) {
  * @see Actions.action - part of the action submission process
  * @return {undefined} - Modifies the database directly
  */
-function aiming (uniqueDesignation, totalActions, msg) {
+function aiming (uniqueDesignation, totalActions, msg, userID) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
     let weapon = Weapons.getWeapon(unit.weapons[0])
@@ -61808,17 +61815,21 @@ function applyDamage(uniqueDesignation, damage) {
       let status = unit.status
       let damageTotal = unit.damage
 
+      console.log('applyDamage', damage)
+
       if (damage.damage >= 1000000) {
-        pd = 'dead'
+        pd = 1000000
         newInjuries = 'dead'
+        status = 'dead'
         Database.messages.push(`${_.capitalize(unit.name)} is dead!`)
       } else {
-        pd += damage.damage
-        damageTotal += (pd * 10) / health
+        pd += Number(damage.damage)
+        damageTotal += _.round((pd * 10) / health)
         if (checkIncapacitated(unit, pd) === true) {
           status = 'incapacitated'
           Database.messages.push(`${_.capitalize(unit.name)} is incapacitated!`)
         }
+        console.log('applying damage', unit.name, damageTotal)
         checkMedicalAid(unit, damageTotal, 'no aid')
       }
       
@@ -61838,10 +61849,12 @@ function applyDamage(uniqueDesignation, damage) {
 function checkMedicalAid(unit, dt, aid) {
   let combatActions = unit.combatActions
   let aidResult = Tables.medical(dt, aid)
+  console.log('in the check', dt, aid)
+  console.log('in the check', aidResult)
   //convert time into combat actions
-  let time = _.round((aidResult.ctp / 4) * unit.combatActions)
+  let time = (aidResult.ctp / 4) * unit.combatActions
   console.log(aidResult, time)
-  window.submitAction('medical-aid', unit.name, time, aidResult.rr)
+  window.submitAction('medical-aid', unit.name, time, aidResult.rr, config.userID)
 }
 
 /**
@@ -61856,14 +61869,14 @@ function checkMedicalAid(unit, dt, aid) {
  * @see Actions.action - part of the action submission process
  * @return {undefined} - Modifies the database directly
  */
-function medicalAid(uniqueDesignation, totalActions, msg) {
+function medicalAid(uniqueDesignation, totalActions, msg, userID) {
   let rr = msg
   let roll = _.random(1, 100)
   let status = 'alive'
 
   if (roll > rr) {
     status = 'dead'
-    Unit.update({physicalDamage: 'dead', disablingInjuries: 'dead'})
+    Unit.update({physicalDamage: 'dead', disablingInjuries: 'dead'}, uniqueDesignation)
   }
 
   Database.messages.push(`${_.capitalize(uniqueDesignation)} is ${status}!`)  
@@ -61908,18 +61921,16 @@ function checkIncapacitated(unit, newPD) {
  * @memberof Game
  * @return {undefined} - Moves the unit
  */
-function moveToHex(uniqueDesignation, totalActions) {
+function moveToHex(uniqueDesignation, totalActions, msg, userID) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
     let x = $('#hex-x').val()
     let y = $('#hex-y').val()
     let point
-    let hex = Unit.getUnitHex(unit.name)
    
-    if (hex.selected) {
-      point = [Number(x), Number(y)]
-      Unit.update({currentHex: point}, uniqueDesignation)
-    }
+    point = [Number(x), Number(y)]
+    Unit.update({currentHex: point}, uniqueDesignation)
+
         
   })
 }
@@ -61933,7 +61944,7 @@ function moveToHex(uniqueDesignation, totalActions) {
  * @memberof Game
  * @return {undefined} - Updates the unit directly
  */
-function toStanding(uniqueDesignation, totalActions) {
+function toStanding(uniqueDesignation, totalActions, msg, userID) {
   Unit.update({position: 'standing'}, uniqueDesignation)
   console.log(`${uniqueDesignation} stands up`)
 }
@@ -61947,7 +61958,7 @@ function toStanding(uniqueDesignation, totalActions) {
  * @memberof Game
  * @return {undefined} - Updates the unit directly
  */
-function toKneeling(uniqueDesignation, totalActions) {
+function toKneeling(uniqueDesignation, totalActions, msg, userID) {
   Unit.update({position: 'kneeling'}, uniqueDesignation)
   console.log(`${uniqueDesignation} kneels`)
 }
@@ -61961,7 +61972,7 @@ function toKneeling(uniqueDesignation, totalActions) {
  * @memberof Game
  * @return {undefined} - Updates the unit directly
  */
-function toProne(uniqueDesignation, totalActions) {
+function toProne(uniqueDesignation, totalActions, msg, userID) {
   Unit.update({position: 'prone'}, uniqueDesignation)
   console.log(`${uniqueDesignation} goes prone`)
 }
@@ -61994,7 +62005,7 @@ function face1RightMoving (uniqueDesignation) {
  * @see Actions.action - part of the action submission process
  * @return {undefined} - Modifies the database directly
  */
-function runningForward (uniqueDesignation) {
+function runningForward (uniqueDesignation, totalActions, msg, userID) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
     let forwardHex = findNeighbor(unit.currentHex, unit.facing, 'forward')
@@ -62012,7 +62023,7 @@ function runningForward (uniqueDesignation) {
  * @see Actions.action - part of the action submission process
  * @return {undefined} - Modifies the database directly
  */
-function runningBackward (uniqueDesignation) {
+function runningBackward (uniqueDesignation, totalActions, msg, userID) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
     let backwardHex = findNeighbor(unit.currentHex, unit.facing, 'backward')
@@ -62029,7 +62040,7 @@ function runningBackward (uniqueDesignation) {
  * @memberof Game
  * @return {undefined} - Modifies the database directly
  */
-function crawlingForward (uniqueDesignation) {
+function crawlingForward (uniqueDesignation, totalActions, msg, userID) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
     let forwardHex = findNeighbor(unit.currentHex, unit.facing, 'forward')
@@ -62046,7 +62057,7 @@ function crawlingForward (uniqueDesignation) {
  * @memberof Game
  * @return {undefined} - Modifies the database directly
  */
-function crawlingBackward (uniqueDesignation) {
+function crawlingBackward (uniqueDesignation, totalActions, msg, userID) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
     let backwardHex = findNeighbor(unit.currentHex, unit.facing, 'backward')
@@ -62063,7 +62074,7 @@ function crawlingBackward (uniqueDesignation) {
  * @memberof Game
  * @return {undefined} - Modifies the database directly
  */
-function crouchingForward (uniqueDesignation) {
+function crouchingForward (uniqueDesignation, totalActions, msg, userID) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
     let forwardHex = findNeighbor(unit.currentHex, unit.facing, 'forward')
@@ -62080,7 +62091,7 @@ function crouchingForward (uniqueDesignation) {
  * @memberof Game
  * @return {undefined} - Modifies the database directly
  */
-function crouchingBackward (uniqueDesignation) {
+function crouchingBackward (uniqueDesignation, totalActions, msg, userID) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
     let backwardHex = findNeighbor(unit.currentHex, unit.facing, 'backward')
@@ -62097,7 +62108,7 @@ function crouchingBackward (uniqueDesignation) {
  * @memberof Game
  * @return {undefined} - Modifies the database directly
  */
-function face1LeftImmobile (uniqueDesignation) {
+function face1LeftImmobile (uniqueDesignation, totalActions, msg, userID) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
     let newFace = findFace(unit.facing, 'left', 1)
@@ -62115,7 +62126,7 @@ function face1LeftImmobile (uniqueDesignation) {
  * @memberof Game
  * @return {undefined} - Modifies the database directly
  */
-function face1RightImmobile (uniqueDesignation) {
+function face1RightImmobile (uniqueDesignation, totalActions, msg, userID) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
     let newFace = findFace(unit.facing, 'right', 1)
@@ -62133,7 +62144,7 @@ function face1RightImmobile (uniqueDesignation) {
  * @memberof Game
  * @return {undefined} - Modifies the database directly
  */
-function face2LeftImmobile (uniqueDesignation) {
+function face2LeftImmobile (uniqueDesignation, totalActions, msg, userID) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
     let newFace = findFace(unit.facing, 'left', 2)
@@ -62151,7 +62162,7 @@ function face2LeftImmobile (uniqueDesignation) {
  * @memberof Game
  * @return {undefined} - Modifies the database directly
  */
-function face2RightImmobile (uniqueDesignation) {
+function face2RightImmobile (uniqueDesignation, totalActions, msg, userID) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
     let newFace = findFace(unit.facing, 'right', 2)
@@ -62168,7 +62179,7 @@ function face2RightImmobile (uniqueDesignation) {
  * @memberof Game
  * @return {undefined} - Modifies the database directly
  */
-function assumeFiringStance (uniqueDesignation) {
+function assumeFiringStance (uniqueDesignation, totalActions, msg, userID) {
   Unit.update({position: 'firing'}, uniqueDesignation)
 }
 
@@ -62345,8 +62356,8 @@ Database.allUnits.on('child_changed', (snapshot) => {
     let hex = unit.currentHex
     let uniqueDesignation = snapshot.key
     
-    Utils.createButtonSet(uniqueDesignation)
-    Utils.populateControlPanel(uniqueDesignation)
+    //Utils.createButtonSet(uniqueDesignation)
+    //Utils.populateControlPanel(uniqueDesignation)
     Unit.changeFacing(face, uniqueDesignation)    
     Unit.animateUnitToHex(hex, uniqueDesignation)
     
@@ -62396,7 +62407,7 @@ Database.actionList.on('child_added', (snapshot) => {
 
 $(document).keypress((e) => {
     if (e.which === 84) {
-        Timer.incrementTimer()
+        
     }
 })
 
@@ -62625,6 +62636,7 @@ let medicalTable = [
 
 function medical(dt, aid) {
     let entry
+    console.log('in the table', dt, aid)
 
     if (dt < 5) {dt = 5}
 
@@ -62633,6 +62645,7 @@ function medical(dt, aid) {
             entry = row[aid]
         }
     })
+    console.log('in the table', entry)
 
     return entry
 }
@@ -63020,8 +63033,6 @@ function hitResult(armor, weapon, cover) {
     return hitLocation
 }
 
-console.log(medical(3, 'first aid'))
-
 module.exports = {
     oddsOfHitting: oddsOfHitting,
     getHitLocation: getHitLocation,
@@ -63043,6 +63054,7 @@ let _ = require('lodash')
 let Action = require('./actions')
 let Unit = require('./unit')
 let Utils = require('./utils')
+let config = require('./config')
 
 /**
  * Advances the game timer one impulse
@@ -63166,14 +63178,16 @@ function runActions () {
                     //if the unit's action time is the same as current time then run and delete the action from the list
                     if (_.isEqual(actionTime, currentTime)) {
                         Database.singleUnit(unit.uniqueDesignation).once('value').then((data) => {
-                            let guy = data.val()
-                            let currentImpulse = currentTime.impulse
-                            let newActionValue = guy.combatActionsPerImpulse
-                            newActionValue[currentImpulse] = unit.remainingActions
-                            Unit.update({currentActionsPerImpulse: newActionValue}, unit.uniqueDesignation)           
-                            Action.action(unit.action, unit.uniqueDesignation, unit.totalActions, unit.msg)
-                            Database.actionList.child(unitKey).remove()
-                            Utils.populateControlPanel(guy.name)
+                            if (config.userID == unit.userID) {
+                                let guy = data.val()
+                                let currentImpulse = currentTime.impulse
+                                let newActionValue = guy.combatActionsPerImpulse
+                                newActionValue[currentImpulse] = unit.remainingActions
+                                Unit.update({currentActionsPerImpulse: newActionValue}, unit.uniqueDesignation)           
+                                Action.action(unit.action, unit.uniqueDesignation, unit.totalActions, unit.msg)
+                                Database.actionList.child(unitKey).remove()
+                                Utils.populateControlPanel(guy.name)
+                            }                            
                         })                        
                     }
                     //increment actionKeys index
@@ -63206,7 +63220,7 @@ function addToActionList (action) {
  * @see Utils.createButtonSet - Called from generated buttons
  * @return {undefined} - Runs addToActionList directly
  */
-function submitAction (actionName, uniqueDesignation, ca, msg) {
+function submitAction (actionName, uniqueDesignation, ca, msg, userID) {
     let sample = getTimeAndUnit(uniqueDesignation)
     sample.then((data) => {
         let unit = data[0]
@@ -63214,7 +63228,7 @@ function submitAction (actionName, uniqueDesignation, ca, msg) {
         let result = calculateActionTime(ca, unit, time)
         let next = result.time
         let remain = result.remaining
-        let action = {uniqueDesignation: uniqueDesignation, time: next, action: actionName, remainingActions: remain, totalActions: ca, msg: msg}
+        let action = {uniqueDesignation: uniqueDesignation, time: next, action: actionName, remainingActions: remain, totalActions: ca, msg: msg, userID: userID}
                 
         addToActionList(action)     
                 
@@ -63232,7 +63246,7 @@ module.exports = {
     addToActionList: addToActionList,
     submitAction: submitAction
 }
-},{"./actions":28,"./database":30,"./unit":38,"./utils":39,"lodash":20}],37:[function(require,module,exports){
+},{"./actions":28,"./config":29,"./database":30,"./unit":38,"./utils":39,"lodash":20}],37:[function(require,module,exports){
 let unitsToggleList = []
 
 let unitList = [
@@ -63688,6 +63702,7 @@ module.exports = {
 let Database = require('./database')
 let Weapons = require('./weapons')
 let _ = require('lodash')
+let config = require('./config')
 
 /**
  * Adds a set of buttons for the specified unit to control actions.
@@ -63705,12 +63720,12 @@ function createButtonSet(uniqueDesignation) {
     $('#weapon-table').empty()
     $('#body-armor').empty()
     $('#equipment-list').empty()
-    let face1LeftMoving = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-left-moving', '${uniqueDesignation}', 0, '')">Turn 1 hexside left <span class="badge">0</span></a></li>`
-    let face1RightMoving = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-right-moving', '${uniqueDesignation}', 0, '')">Turn 1 hexside right <span class="badge">0</span></a></li>`
-    let face1LeftImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-left-immobile', '${uniqueDesignation}', 1, '')">Turn 1 hexside left <span class="badge">1</span></a></li>`
-    let face2LeftImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-2-left-immobile', '${uniqueDesignation}', 1, '')">Turn 2 hexside left <span class="badge">1</span></a></li>`
-    let face1RightImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-right-immobile', '${uniqueDesignation}', 1, '')">Turn 1 hexside right <span class="badge">1</span></a></li>`
-    let face2RightImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-2-right-immobile', '${uniqueDesignation}', 1, '')">Turn 2 hexside right <span class="badge">1</span></a></li>`
+    let face1LeftMoving = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-left-moving', '${uniqueDesignation}', 0, '', '${config.userID}')">Turn 1 hexside left <span class="badge">0</span></a></li>`
+    let face1RightMoving = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-right-moving', '${uniqueDesignation}', 0, '', '${config.userID}')">Turn 1 hexside right <span class="badge">0</span></a></li>`
+    let face1LeftImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-left-immobile', '${uniqueDesignation}', 1, '', '${config.userID}')">Turn 1 hexside left <span class="badge">1</span></a></li>`
+    let face2LeftImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-2-left-immobile', '${uniqueDesignation}', 1, '', '${config.userID}')">Turn 2 hexside left <span class="badge">1</span></a></li>`
+    let face1RightImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-1-right-immobile', '${uniqueDesignation}', 1, '', '${config.userID}')">Turn 1 hexside right <span class="badge">1</span></a></li>`
+    let face2RightImmobile = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('face-2-right-immobile', '${uniqueDesignation}', 1, '', '${config.userID}')">Turn 2 hexside right <span class="badge">1</span></a></li>`
 
     $('#facing-dropdown').append(face1LeftMoving)
     $('#facing-dropdown').append(face1RightMoving)
@@ -63721,40 +63736,40 @@ function createButtonSet(uniqueDesignation) {
 
     // add aiming mods 1-12
     for (let i = 1; i <= 12; i++) {
-        let aiming = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('aiming', '${uniqueDesignation}', ${i}, '')">Aim <span class="badge">${i}</span></a></li>`
+        let aiming = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('aiming', '${uniqueDesignation}', ${i}, '', '${config.userID}')">Aim <span class="badge">${i}</span></a></li>`
         $('#aiming-dropdown').append(aiming)
     }
 
     Database.singleUnit(uniqueDesignation).once('value').then((data) => {
         let unit = data.val()
         $('#moving-dropdown').empty()
-        let takeCover = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('take-cover', '${uniqueDesignation}', 0, '')">Change cover <span class="badge">0</span></a></li>`
-        let moveToHex = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('move-to-hex', '${uniqueDesignation}', 0, '')">Move to Hex (x,y) <span class="badge">0</span></a></li>`
+        let takeCover = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('take-cover', '${uniqueDesignation}', 0, '', '${config.userID}')">Change cover <span class="badge">0</span></a></li>`
+        let moveToHex = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('move-to-hex', '${uniqueDesignation}', 0, '', '${config.userID}')">Move to Hex (x,y) <span class="badge">0</span></a></li>`
         $('#moving-dropdown').append(takeCover)
         $('#moving-dropdown').append(moveToHex)
         if (unit.position === 'standing') {
-            let runningForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('running-forward', '${uniqueDesignation}', 1, '')">Run forward one hex <span class="badge">1</span></a></li>`
-            let runningBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('running-backward', '${uniqueDesignation}', 2, '')">Run backward one hex <span class="badge">2</span></a></li>`
-            let toKneeling = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('to-kneeling', '${uniqueDesignation}', 1, '')">Kneel <span class="badge">1</span></a></li>`
-            let toProne = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('to-prone', '${uniqueDesignation}', 2, '')">Go prone <span class="badge">2</span></a></li>`
+            let runningForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('running-forward', '${uniqueDesignation}', 1, '', '${config.userID}')">Run forward one hex <span class="badge">1</span></a></li>`
+            let runningBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('running-backward', '${uniqueDesignation}', 2, '', '${config.userID}')">Run backward one hex <span class="badge">2</span></a></li>`
+            let toKneeling = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('to-kneeling', '${uniqueDesignation}', 1, '', '${config.userID}')">Kneel <span class="badge">1</span></a></li>`
+            let toProne = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('to-prone', '${uniqueDesignation}', 2, '', '${config.userID}')">Go prone <span class="badge">2</span></a></li>`
             $('#moving-dropdown').append(runningForward)
             $('#moving-dropdown').append(runningBackward)
             $('#moving-dropdown').append(toKneeling)
             $('#moving-dropdown').append(toProne)
         } else if (unit.position === 'kneeling') {
-            let crouchingForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crouching-forward', '${uniqueDesignation}', 2, '')">Crouch forward one hex <span class="badge">2</span></a></li>`
-            let crouchingBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crouching-backward', '${uniqueDesignation}', 4, '')">Crouch backward one hex <span class="badge">4</span></a></li>`
-            let toProne = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('to-prone', '${uniqueDesignation}', 1, '')">Go prone <span class="badge">1</span></a></li>`
-            let toStanding = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('to-standing', '${uniqueDesignation}', 1, '')">Stand up <span class="badge">1</span></a></li>`
+            let crouchingForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crouching-forward', '${uniqueDesignation}', 2, '', '${config.userID}')">Crouch forward one hex <span class="badge">2</span></a></li>`
+            let crouchingBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crouching-backward', '${uniqueDesignation}', 4, '', '${config.userID}')">Crouch backward one hex <span class="badge">4</span></a></li>`
+            let toProne = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('to-prone', '${uniqueDesignation}', 1, '', '${config.userID}')">Go prone <span class="badge">1</span></a></li>`
+            let toStanding = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('to-standing', '${uniqueDesignation}', 1, '', '${config.userID}')">Stand up <span class="badge">1</span></a></li>`
             $('#moving-dropdown').append(crouchingForward)
             $('#moving-dropdown').append(crouchingBackward)
             $('#moving-dropdown').append(toProne)
             $('#moving-dropdown').append(toStanding)
         } else if (unit.position === 'prone') {
-            let crawlingForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crawling-forward', '${uniqueDesignation}', 3, '')">Crawl forward one hex <span class="badge">3</span></a></li>`
-            let crawlingBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crawling-backward', '${uniqueDesignation}', 5, '')">Crawl backward one hex <span class="badge">5</span></a></li>`
-            let toStanding = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('to-standing', '${uniqueDesignation}', 3, '')">Stand up <span class="badge">3</span></a></li>`
-            let toKneeling = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('to-kneeling', '${uniqueDesignation}', 2, '')">Kneel <span class="badge">2</span></a></li>`
+            let crawlingForward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crawling-forward', '${uniqueDesignation}', 3, '', '${config.userID}')">Crawl forward one hex <span class="badge">3</span></a></li>`
+            let crawlingBackward = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('crawling-backward', '${uniqueDesignation}', 5, '', '${config.userID}')">Crawl backward one hex <span class="badge">5</span></a></li>`
+            let toStanding = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('to-standing', '${uniqueDesignation}', 3, '', '${config.userID}')">Stand up <span class="badge">3</span></a></li>`
+            let toKneeling = `<li role="presentation"><a role="menuitem" tabindex="-1" onclick="submitAction('to-kneeling', '${uniqueDesignation}', 2, '', '${config.userID}')">Kneel <span class="badge">2</span></a></li>`
             $('#moving-dropdown').append(crawlingForward)
             $('#moving-dropdown').append(crawlingBackward)
             $('#moving-dropdown').append(toStanding)
@@ -63884,7 +63899,7 @@ module.exports = {
     createButtonSet: createButtonSet,
     getArmor: getArmor
 }
-},{"./database":30,"./weapons":40,"lodash":20}],40:[function(require,module,exports){
+},{"./config":29,"./database":30,"./weapons":40,"lodash":20}],40:[function(require,module,exports){
 /**
  * This module handles weapon data
  * @module Weapons
@@ -63911,8 +63926,8 @@ let weapons = [
                 dc: 8
             },
             ap: {
-                pen: 28,
-                dc: 8
+                pen: 23,
+                dc: 6
             }
         }
     },
@@ -63923,7 +63938,21 @@ let weapons = [
         reloadTime: 4,
         rateOfFire: 1,
         ammoCap: 7,
-        ammoWeight: 0.7
+        ammoWeight: 0.7,
+        ammoType: {
+            fmj: {
+                pen: 1.6,
+                dc: 3
+            },
+            jhp: {
+                pen: 1.5,
+                dc: 4
+            },
+            ap: {
+                pen: 2.2,
+                dc: 3
+            }
+        }
     }
 ]
 

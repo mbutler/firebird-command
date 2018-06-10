@@ -4,6 +4,12 @@
  * @namespace
  */
 
+function uniqueKey() {
+  return '_' + Math.random().toString(36).substr(2, 9)
+}
+
+let user = uniqueKey()
+
 let config = {
   mapWidth: 100,
   mapHeight: 100,
@@ -11,6 +17,7 @@ let config = {
   divContainer: 'stage',
   gameID: '-L6D8cz625nLzyargSEO',
   newGame: false,
+  userID: user,
   firebase: {
     apiKey: 'AIzaSyBKxAP8VRE18XIqhkZlI6z3xbCgaPCwVc0',
     authDomain: 'firebird-f30dc.firebaseapp.com',
