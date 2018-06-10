@@ -7,6 +7,7 @@ const speedChart = require('./baseSpeed')
 const maxSpeedChart = require('./maxSpeed')
 const combatActionChart = require('./combatActions')
 const capiChart = require('./combatActionsPerImpulse')
+const sidcList = require('./sidcList')
 
 let config = {
     mapWidth: 100,
@@ -126,7 +127,7 @@ function formSubmit () {
     kv = _.round(0.5 * Number(will) * Number(skillLevel))
 
     symbol = {
-        'sidc': 'SHG-UCFM-------',
+        'sidc': _.sample(sidcList),
         'options': {
           'size': 0,
           'additionalInformation': '',
