@@ -14,8 +14,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="apple-touch-icon" href="apple-touch-icon.png">
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.10/lodash.min.js"></script>
+    <script src="js/codenames.js" type="text/javascript"></script>
+
     <link rel="stylesheet" href="css/bootstrap.min.css">
     <link rel="stylesheet" href="css/style.css">
+    
 </head>
 
 <body>
@@ -26,35 +30,35 @@
 
                 <div class="row">
                     <div class="col-md-4">
-                        <input id="unique-designation" type="text" class="form-control" placeholder="Unique Designation" />
+                        <label>Unique Designation<input id="unique-designation" type="text" class="form-control" /></label>
                     </div>
                     <div class="col-md-2">
-                        <input id="skill-level" type="number" class="form-control" placeholder="Skill Level" />
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-2">
-                        <input id="strength" type="number" class="form-control" placeholder="Strength" />
+                        <label>Skill level<input id="skill-level" type="number" class="form-control" placeholder="Skill Level" /></label>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-2">
-                        <input id="intelligence" type="number" class="form-control" placeholder="Intelligence" />
+                        <label>Strength<input id="strength" type="number" class="form-control" placeholder="Strength" /></label>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-2">
-                        <input id="will" type="number" class="form-control" placeholder="Will" />
+                        <label>Intelligence<input id="intelligence" type="number" class="form-control" placeholder="Intelligence" /></label>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-2">
-                        <input id="health" type="number" class="form-control" placeholder="Health" />
+                        <label>Will<input id="will" type="number" class="form-control" placeholder="Will" /></label>
                     </div>
                 </div>
                 <div class="row">
                     <div class="col-md-2">
-                        <input id="agility" type="number" class="form-control" placeholder="Agility" />
+                        <label>Health<input id="health" type="number" class="form-control" placeholder="Health" /></label>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-2">
+                        <label>Agility<input id="agility" type="number" class="form-control" placeholder="Agility" /></label>
                     </div>
                 </div>
                 <div class="row">
@@ -151,7 +155,25 @@
             </div>
     </form>
 </body>
-
+<script>
+    let name = _.sample(codenames)
+    let nameField = document.getElementById("unique-designation")
+    let strengthField = document.getElementById("strength")
+    let intelligenceField = document.getElementById("intelligence")
+    let willField = document.getElementById("will")
+    let healthField = document.getElementById("health")
+    let agilityField = document.getElementById("agility")
+    nameField.value = name
+    strengthField.value = threeD6()
+    intelligenceField.value = threeD6()
+    willField.value = threeD6()
+    healthField.value = threeD6()
+    agilityField.value = threeD6()
+    
+    function threeD6() {
+        return _.random(1, 6) + _.random(1, 6) + _.random(1, 6)
+    }
+</script>
 <script src="js/bundle.js" type="text/javascript"></script>
 
 <script>

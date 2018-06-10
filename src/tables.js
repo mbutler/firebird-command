@@ -189,7 +189,7 @@ let autoFireTable = [
 /**
  * Calculates the force multiplier of shooting an automatic weaon burst
  *
- * @param {rof} rof -  The weapon's rate of fire
+ * @param {number} rof -  The weapon's rate of fire
  * @param {number} range -  The distance in as an index value of the range table
  * @memberof Tables
  * @return {number} - The force multiplier

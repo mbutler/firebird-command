@@ -28,6 +28,7 @@ Database.allUnits.once('value').then((snapshot) => {
         Unit.create(hex, unit.symbol.sidc, unit.symbol.options)
         Unit.changeFacing(face, name)
         unitList.unitsToggleList.push(name)
-        console.log(unitList.unitsToggleList)
     })
+
+    console.log(unitList.unitsToggleList)
 })

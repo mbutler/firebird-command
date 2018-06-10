@@ -103,7 +103,6 @@ function createButtonSet(uniqueDesignation) {
 function populateControlPanel(uniqueDesignation) {
     Database.singleUnit(uniqueDesignation).once('value').then((data) => {
         let unit = data.val()
-        console.log(unit)
         let weapon = Weapons.getWeapon(unit.weapons[0])
         let armor = getArmor(unit.bodyArmor)
         let bodyArmor = `<tr><td class="text-center">${unit.bodyArmor}</td><td id="protection-factor" class="text-center">${armor.pf}</td><td id="armor-weight" class="text-center">${armor.weight}</td></tr>`
@@ -154,6 +153,7 @@ function populateControlPanel(uniqueDesignation) {
             $('#weapon-table').append(tr)
         }
 
+        if (unit.equipment === undefined) {unit.equipment = []}
         for (let i = 0; i <= unit.equipment.length-1; i++) {
             let tr = `
                 <tr>

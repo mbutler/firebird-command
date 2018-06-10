@@ -371,12 +371,13 @@ function moveToHex(uniqueDesignation, totalActions) {
     let x = $('#hex-x').val()
     let y = $('#hex-y').val()
     let point
-
-    if (x !== '' || y !== '') {
+    let hex = Unit.getUnitHex(unit.name)
+   
+    if (hex.selected) {
       point = [Number(x), Number(y)]
+      Unit.update({currentHex: point}, uniqueDesignation)
     }
-
-    Unit.update({currentHex: point}, uniqueDesignation)
+        
   })
 }
 

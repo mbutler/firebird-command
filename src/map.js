@@ -35,6 +35,7 @@ const Hex = Honeycomb.extendHex({
             this.selected = true
             this.draw
                 .fill({ opacity: 1, color: 'aquamarine' })
+                
         } else {
             this.selected = false
             this.draw
