@@ -188,20 +188,19 @@ function animateUnitToHex(point, uniqueDesignation) {
         // clear the previous hex
         let previousHex = getUnitHex(uniqueDesignation)
         previousHex.currentUnit = undefined
-        $('#' + uniqueDesignation + '-facing').remove()
         previousHex.selected = false
         previousHex.highlight()
-
+        
         $('#' + uniqueDesignation).animate({
             'top': (hex.screenCoords.y + offsetY) + 'px',
             'left': (hex.screenCoords.x + offsetX) + 'px'
         }, {
             duration: 500,
             complete: function() {
-                $('#' + uniqueDesignation + '-facing').remove()
                 setUnitCoords(hex, uniqueDesignation)
                 hex.currentUnit = unit
-                hex.facing(facing, uniqueDesignation)
+                $('#' + uniqueDesignation + '-facing').remove()
+                changeFacing(facing, uniqueDesignation)
             }
         })
     })
@@ -217,8 +216,7 @@ function animateUnitToHex(point, uniqueDesignation) {
  */
 function changeFacing(face, uniqueDesignation) {
     let hex = getUnitHex(uniqueDesignation)
-    $('#' + uniqueDesignation + '-facing').remove()
-    hex.facing(face, uniqueDesignation)
+    hex.facing(face, uniqueDesignation)  
 }
 
 /**

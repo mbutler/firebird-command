@@ -48,7 +48,7 @@ Database.allUnits.on('child_changed', (snapshot) => {
     let uniqueDesignation = snapshot.key
     
     //Utils.createButtonSet(uniqueDesignation)
-    //Utils.populateControlPanel(uniqueDesignation)
+    Utils.populateControlPanel(uniqueDesignation)
     //Unit.changeFacing(face, uniqueDesignation)    
     Unit.animateUnitToHex(hex, uniqueDesignation)
     

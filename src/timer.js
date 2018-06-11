@@ -137,11 +137,11 @@ function runActions () {
                                 let guy = data.val()
                                 let currentImpulse = currentTime.impulse
                                 let newActionValue = guy.combatActionsPerImpulse
-                                newActionValue[currentImpulse] = unit.remainingActions
-                                Unit.update({currentActionsPerImpulse: newActionValue}, unit.uniqueDesignation)           
+                                newActionValue[currentImpulse] = unit.remainingActions                                           
                                 Action.action(unit.action, unit.uniqueDesignation, unit.totalActions, unit.msg)
                                 Database.actionList.child(unitKey).remove()
-                                Utils.populateControlPanel(guy.name)
+                                Unit.update({currentActionsPerImpulse: newActionValue}, unit.uniqueDesignation)
+                                //Utils.populateControlPanel(guy.name)                                
                             }                            
                         })                        
                     }
