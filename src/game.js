@@ -320,7 +320,7 @@ function medicalAid(uniqueDesignation, totalActions, msg, userID) {
 
   if (roll > rr) {
     status = 'dead'
-    Unit.update({physicalDamage: 'dead', disablingInjuries: 'dead'}, uniqueDesignation)
+    Unit.update({physicalDamage: 1000000, disablingInjuries: 'dead', status: status}, uniqueDesignation)
   }
 
   Database.messages.push(`${_.capitalize(uniqueDesignation)} is ${status}!`)  
@@ -556,7 +556,6 @@ function face1LeftImmobile (uniqueDesignation, totalActions, msg, userID) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
     let newFace = findFace(unit.facing, 'left', 1)
-
     Unit.update({facing: newFace}, uniqueDesignation)
   })
 }
@@ -678,7 +677,7 @@ function drawHandWeapon (uniqueDesignation) {
 function accessBackpack (uniqueDesignation) {
 
 }
-console.log(checkIncapacitated('dingo'))
+
 module.exports = {
   face1LeftMoving: face1LeftMoving,
   face1RightMoving: face1RightMoving,

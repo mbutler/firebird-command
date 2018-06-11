@@ -49,7 +49,7 @@ Database.allUnits.on('child_changed', (snapshot) => {
     
     //Utils.createButtonSet(uniqueDesignation)
     //Utils.populateControlPanel(uniqueDesignation)
-    Unit.changeFacing(face, uniqueDesignation)    
+    //Unit.changeFacing(face, uniqueDesignation)    
     Unit.animateUnitToHex(hex, uniqueDesignation)
     
 })
