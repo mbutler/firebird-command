@@ -12,10 +12,7 @@ let Utils = require('./utils')
 let Timer = require('./timer')
 let _ = require('lodash')
 
-// loading a local version, but keeping the npm module in package.json for now
-// https://github.com/timmywil/jquery.panzoom/issues/351#issuecomment-330924963
-require('../vendor/jquery.panzoom')
-//let panzoom = require('panzoom') //breaks bootstrap tabs 
+let panzoom = require('panzoom')
 let area = document.querySelector('#stage')
 let Slideout = require('slideout')
 
@@ -35,10 +32,14 @@ $('#next-impulse').on('mousedown', (e) => {
     Timer.incrementTimer()
 })
 
-//listen for panzooming
-//seems insane to use two panzoom libraries, but it works... for now
-$('#' + config.divContainer).panzoom({ cursor: 'default' })
-//panzoom(area)
+//need to pass in optional function because we DON'T want to preventDefault.
+//otherwise, bootstrap nav and buttons won't work
+panzoom(area, {
+    onTouch: function(e) {
+        return false
+    },
+    smoothScroll: false
+})
 
 //LISTEN FOR UNITS CHANGING STATE
 Database.allUnits.on('child_changed', (snapshot) => {
