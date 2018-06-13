@@ -140,6 +140,33 @@ function findNeighbor (currentCoords, facing, neighbor) {
 }
 
 /**
+ * Find all the neighbors for a given hex
+ *
+ * @param {array} coords - Array of x,y points. Can also be an object {x:, y:}
+ * @requires Map
+ * @memberof Game
+ * @return {array} - A list of hex objects
+ */
+function findAllNeighbors(coords) {
+  let hex = Map.grid.get(Map.Hex(coords))
+  let neighbors = Map.grid.neighborsOf(hex)
+  return neighbors
+}
+
+function getUnitsInRadius(coords) {
+  let neighbors = findAllNeighbors(coords)
+  let unitList = []
+  _.forEach(neighbors, (hex) => {
+    console.log(_.keys(hex))
+    if (hex.currentUnit !== undefined) {
+      unitList.push(hex.currentUnit)
+    }
+  })
+  return unitList
+}
+
+
+/**
  * Changes facing 1 to the left if in moving
  *
  * @param {string} uniqueDesignation - The name of the unit
@@ -678,6 +705,8 @@ function accessBackpack (uniqueDesignation) {
 
 }
 
+console.log(getUnitsInRadius([4,4]))
+console.log(getUnitsInRadius([1,1]))
 module.exports = {
   face1LeftMoving: face1LeftMoving,
   face1RightMoving: face1RightMoving,

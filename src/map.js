@@ -130,6 +130,11 @@ function getHexFromCoords(pageX, pageY) {
     return hex
 }
 
+function getHexFromPoint(point) {
+    let hex = Map.grid.get(Map.Hex(point))
+    return hex
+}
+
 module.exports = {
     Hex: Hex,
     Grid: Grid,
