@@ -157,14 +157,12 @@ function getUnitsInRadius(coords) {
   let neighbors = findAllNeighbors(coords)
   let unitList = []
   _.forEach(neighbors, (hex) => {
-    console.log(_.keys(hex))
     if (hex.currentUnit !== undefined) {
       unitList.push(hex.currentUnit)
     }
   })
   return unitList
 }
-
 
 /**
  * Changes facing 1 to the left if in moving
@@ -398,7 +396,7 @@ function moveToHex(uniqueDesignation, totalActions, msg, userID) {
     let x = $('#hex-x').val()
     let y = $('#hex-y').val()
     let point
-   
+       
     point = [Number(x), Number(y)]
     Unit.update({currentHex: point}, uniqueDesignation)
 
@@ -705,8 +703,6 @@ function accessBackpack (uniqueDesignation) {
 
 }
 
-console.log(getUnitsInRadius([4,4]))
-console.log(getUnitsInRadius([1,1]))
 module.exports = {
   face1LeftMoving: face1LeftMoving,
   face1RightMoving: face1RightMoving,
@@ -740,5 +736,6 @@ module.exports = {
   toProne: toProne,
   takeCover: takeCover,
   moveToHex: moveToHex,
-  medicalAid: medicalAid
+  medicalAid: medicalAid,
+  getUnitsInRadius: getUnitsInRadius
 }

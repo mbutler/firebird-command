@@ -6,11 +6,11 @@
 
 let Database = require('./database')
 let Unit = require('./unit')
-let config = require('./config')
-let Actions = require('./actions')
 let Utils = require('./utils')
 let Timer = require('./timer')
 let _ = require('lodash')
+let Game = require('./game')
+let Map = require('./map')
 
 let panzoom = require('panzoom')
 let area = document.querySelector('#stage')
@@ -47,11 +47,16 @@ Database.allUnits.on('child_changed', (snapshot) => {
     let face = unit.facing
     let hex = unit.currentHex
     let uniqueDesignation = snapshot.key
+    let mapHex = Map.grid.get(unit.currentHex)
     
+    //keep these in sync
+    mapHex.currentUnit = unit.name
+        
     //Utils.createButtonSet(uniqueDesignation)
     Utils.populateControlPanel(uniqueDesignation)
     //Unit.changeFacing(face, uniqueDesignation)    
     Unit.animateUnitToHex(hex, uniqueDesignation)
+    
     
 })
 
@@ -98,7 +103,8 @@ Database.actionList.on('child_added', (snapshot) => {
 
 $(document).keypress((e) => {
     if (e.which === 84) {
-        
+        console.table(Game.getUnitsInRadius([4,4]))
+        console.table(Game.getUnitsInRadius([7,7]))
     }
 })
 

@@ -34,7 +34,7 @@ function create(hex, sidc, options) {
     container = positionUnit(hex, container)
 
     // store the symbol in the hex
-    hex.currentUnit = container
+    hex.currentUnit = options.uniqueDesignation
 
     // add the unit to the DOM and units list
     $('#' + config.divContainer).append(container)
@@ -198,7 +198,6 @@ function animateUnitToHex(point, uniqueDesignation) {
             duration: 500,
             complete: function() {
                 setUnitCoords(hex, uniqueDesignation)
-                hex.currentUnit = unit
                 $('#' + uniqueDesignation + '-facing').remove()
                 changeFacing(facing, uniqueDesignation)
             }

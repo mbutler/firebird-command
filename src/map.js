@@ -99,9 +99,7 @@ const Hex = Honeycomb.extendHex({
             .stroke({ color: '#f06', width: 1 })
             .fill('none')
             .attr('id', uniqueDesignation + '-facing')
-    },
-
-    currentUnit: undefined
+    }
 })
 
 const Grid = Honeycomb.defineGrid(Hex)
