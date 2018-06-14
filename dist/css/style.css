@@ -128,3 +128,7 @@ svg:not(:root) {
     margin-left: 5px;
     margin-top: 5px;
 }
+
+.form-check-inline {
+    padding-top: 25px;
+}

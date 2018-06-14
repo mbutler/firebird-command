@@ -155,12 +155,19 @@ function findAllNeighbors(coords) {
 
 function getUnitsInRadius(coords) {
   let neighbors = findAllNeighbors(coords)
+  let thisHex = Map.grid.get(Map.Hex(coords))
+  let self = thisHex.currentUnit
   let unitList = []
   _.forEach(neighbors, (hex) => {
     if (hex.currentUnit !== undefined) {
       unitList.push(hex.currentUnit)
     }
   })
+
+  if (self !== undefined) {
+    unitList.unshift(self)
+  }
+  
   return unitList
 }
 
@@ -234,10 +241,15 @@ function aiming (uniqueDesignation, totalActions, msg, userID) {
     let penalty = 0
     let damage
     let damageMultiplier = 1
-    let totalDamage
-
+    let sweep = $('#sweep').is(":checked")
+    let unitsHit = []
+  
     if (aimTime > aimTimeMods.length - 1) {
       aimTime = aimTimeMods.length - 1
+    }
+
+    if (totalActions === 1) {
+      penalty = -6
     }
 
     if (weapon.automatic === true) {
@@ -245,11 +257,41 @@ function aiming (uniqueDesignation, totalActions, msg, userID) {
       damageMultiplier = Tables.autoFire(weapon.rateOfFire, range)
     }
 
-    if (totalActions === 1) {
-      penalty = -6
-    }
+    if (weapon.automatic === true && sweep === true) {
+      let rounds = damageMultiplier
+      Database.singleUnit(target).once('value').then((data) => {
+        let victim = data.val()
+        unitsHit = getUnitsInRadius(victim.currentHex)
+        Database.allUnits.once('value').then((snapshot) => {
+          let allUnits = snapshot.val()
+          console.log()
+          _.forEach(allUnits, (guy) => {
+            if (_.includes(unitsHit, guy.name)) {
+              if (rounds > 0) {
+                let newTarget = guy
+                let targetArmor = Utils.getArmor(newTarget.bodyArmor)
+                shotAccuracy = aimTimeMods[aimTime] + sal + getShooterPositionModifier(unit.position) + penalty + getTargetModifiers(newTarget)
+                odds = Tables.oddsOfHitting(shotAccuracy, range)
 
-    if (target !== 'none') {
+                if (roll <= odds) {
+                  response = "hit"
+                  damage = Tables.hitResult(targetArmor, weapon, newTarget.cover)
+                  damage.damage = damage.damage * damageMultiplier
+                  applyDamage(newTarget.name, damage)
+                  Database.messages.push(`${_.capitalize(unit.name)} hits ${_.capitalize(newTarget.name)}, ${damage.status}, ${damage.wound}\nlocation: ${damage.location}\ndamage: ${damage.damage}`)
+                } else {
+                  Database.messages.push(`${_.capitalize(unit.name)}'s shot misses ${_.capitalize(newTarget.name)}!`)
+                }
+                rounds -= 1
+              }              
+            }
+          })
+        })
+      })
+    }    
+
+    if (target !== 'none') {      
+      console.log('single target')
       Database.singleUnit(target).once('value').then((data) => {  
         let target = data.val()
         let targetArmor = Utils.getArmor(target.bodyArmor)
@@ -265,7 +307,7 @@ function aiming (uniqueDesignation, totalActions, msg, userID) {
         } else {
           Database.messages.push(`${_.capitalize(unit.name)}'s shot misses ${_.capitalize(target.name)}!`)
         }        
-      })  
+      })            
     }    
   })
 }
