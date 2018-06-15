@@ -8,6 +8,20 @@ const maxSpeedChart = require('./maxSpeed')
 const combatActionChart = require('./combatActions')
 const capiChart = require('./combatActionsPerImpulse')
 const sidcList = require('./sidcList')
+const weapons = require('./weapons')
+
+let user
+
+function uniqueKey() {
+    return '_' + Math.random().toString(36).substr(2, 9)
+  }
+
+if (localStorage.getItem('firebirdUserID') === null) {
+  localStorage.setItem('firebirdUserID', uniqueKey())
+  user = localStorage.getItem('firebirdUserID')
+} else {
+  user = localStorage.getItem('firebirdUserID')
+}
 
 let config = {
     mapWidth: 100,
@@ -16,6 +30,7 @@ let config = {
     divContainer: 'stage',
     gameID: '-L6D8cz625nLzyargSEO',
     newGame: false,
+    userID: user,
     firebase: {
       apiKey: 'AIzaSyBKxAP8VRE18XIqhkZlI6z3xbCgaPCwVc0',
       authDomain: 'firebird-f30dc.firebaseapp.com',
@@ -44,6 +59,7 @@ function formSubmit () {
     let selectedEquipment = []
     let sidcField = document.getElementById("sidc")
     let sidc = 'SHGPU-------'
+    let weaponList = []
 
     if (sidcField.value === '') {
         sidc = _.sample(sidcList)
@@ -68,11 +84,12 @@ function formSubmit () {
     encumbrance += weight[armor]
 
     _.forEach(selectedEquipment, (item) => {
-        encumbrance += weight[item]
+        encumbrance += weight[item]       
     })
 
     _.forEach(selectedWeapons, (weapon) => {
         encumbrance += weight[weapon]
+        weaponList.push(weapons.getWeapon(weapon))
     })
 
     //round up to nearest 5
@@ -160,7 +177,7 @@ function formSubmit () {
     newUnit.knockoutValue = kv
     newUnit.disablingInjuries = ''
     newUnit.status = ''
-    newUnit.weapons = selectedWeapons
+    newUnit.weapons = weaponList
     newUnit.bodyArmor = armor
     newUnit.equipment = selectedEquipment
     newUnit.encumbrance = encumbrance
