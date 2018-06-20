@@ -4,7 +4,6 @@
  * @namespace
  */
 let Database = require('./database')
-let Weapons = require('./weapons')
 let _ = require('lodash')
 let config = require('./config')
 
@@ -104,7 +103,7 @@ function createButtonSet(uniqueDesignation) {
 function populateControlPanel(uniqueDesignation) {
     Database.singleUnit(uniqueDesignation).once('value').then((data) => {
         let unit = data.val()
-        let weapon = Weapons.getWeapon(unit.weapons[0])
+        let weapon = unit.weapons[0]
         let armor = getArmor(unit.bodyArmor)
         let bodyArmor = `<tr><td class="text-center">${unit.bodyArmor}</td><td id="protection-factor" class="text-center">${armor.pf}</td><td id="armor-weight" class="text-center">${armor.weight}</td></tr>`
         $('#coords-value').html(`x: ${unit.currentHex[0]}, y: ${unit.currentHex[1]}`) 

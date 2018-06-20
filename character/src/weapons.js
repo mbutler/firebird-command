@@ -14,7 +14,6 @@ let weapons = [
         reloadTime: 8,
         rateOfFire: 7,
         ammoCap: 30,
-        currentAmmo: 30,
         ammoWeight: 1,
         ammoType: {
             fmj: {
@@ -39,7 +38,6 @@ let weapons = [
         reloadTime: 4,
         rateOfFire: 1,
         ammoCap: 7,
-        currentAmmo: 7,
         ammoWeight: 0.7,
         ammoType: {
             fmj: {

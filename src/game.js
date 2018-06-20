@@ -7,7 +7,6 @@ let Database = require('./database')
 let config = require('./config')
 let Unit = require('./unit')
 let Map = require('./map')
-let Weapons = require('./weapons')
 let Utils = require('./utils')
 let _ = require('lodash')
 let Tables = require('./tables')
@@ -228,7 +227,9 @@ function takeCover(uniqueDesignation, totalActions) {
 function aiming (uniqueDesignation, totalActions, msg, userID) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
-    let weapon = Weapons.getWeapon(unit.weapons[0])
+    let weapon = unit.weapons[0]
+    let rof = weapon.rateOfFire
+    let rounds = unit.currentAmmo
     let aimTimeMods = weapon.aimTime
     let aimTime = totalActions
     let sal = unit.skillAccuracyLevel
@@ -243,6 +244,15 @@ function aiming (uniqueDesignation, totalActions, msg, userID) {
     let damageMultiplier = 1
     let sweep = $('#sweep').is(":checked")
     let unitsHit = []
+
+    if (rounds <= 0) {
+      Database.messages.push(`${_.capitalize(unit.name)} is out of ammo!`)
+      return
+    }
+
+    if (unit.currentAmmo < rof) {
+      rof = unit.currentAmmo
+    }
   
     if (aimTime > aimTimeMods.length - 1) {
       aimTime = aimTimeMods.length - 1
@@ -254,50 +264,46 @@ function aiming (uniqueDesignation, totalActions, msg, userID) {
 
     if (weapon.automatic === true) {
       aimTime += 1
-      damageMultiplier = Tables.autoFire(weapon.rateOfFire, range)
+      damageMultiplier = Tables.autoFire(rof, range)
     }
 
+    rounds -= rof
+
     if (weapon.automatic === true && sweep === true) {
-      let rounds = damageMultiplier
       Database.singleUnit(target).once('value').then((data) => {
+        Unit.update({currentAmmo: rounds}, unit.name)
         let victim = data.val()
         unitsHit = getUnitsInRadius(victim.currentHex)
         Database.allUnits.once('value').then((snapshot) => {
           let allUnits = snapshot.val()
-          console.log()
           _.forEach(allUnits, (guy) => {
-            if (_.includes(unitsHit, guy.name)) {
-              if (rounds > 0) {
-                let newTarget = guy
-                let targetArmor = Utils.getArmor(newTarget.bodyArmor)
-                shotAccuracy = aimTimeMods[aimTime] + sal + getShooterPositionModifier(unit.position) + penalty + getTargetModifiers(newTarget)
-                odds = Tables.oddsOfHitting(shotAccuracy, range)
-
-                if (roll <= odds) {
-                  response = "hit"
-                  damage = Tables.hitResult(targetArmor, weapon, newTarget.cover)
-                  damage.damage = damage.damage * damageMultiplier
-                  applyDamage(newTarget.name, damage)
-                  Database.messages.push(`${_.capitalize(unit.name)} hits ${_.capitalize(newTarget.name)}, ${damage.status}, ${damage.wound}\nlocation: ${damage.location}\ndamage: ${damage.damage}`)
-                } else {
-                  Database.messages.push(`${_.capitalize(unit.name)}'s shot misses ${_.capitalize(newTarget.name)}!`)
-                }
-                rounds -= 1
-              }              
+            if (_.includes(unitsHit, guy.name)) {              
+              let newTarget = guy
+              let targetArmor = Utils.getArmor(newTarget.bodyArmor)
+              shotAccuracy = aimTimeMods[aimTime] + sal + getShooterPositionModifier(unit.position) + penalty + getTargetModifiers(newTarget)
+              odds = Tables.oddsOfHitting(shotAccuracy, range)
+              if (roll <= odds) {
+                response = "hit"
+                damage = Tables.hitResult(targetArmor, weapon, newTarget.cover)
+                damage.damage = damage.damage * damageMultiplier
+                applyDamage(newTarget.name, damage)
+                Database.messages.push(`${_.capitalize(unit.name)} hits ${_.capitalize(newTarget.name)}, ${damage.status}, ${damage.wound}\nlocation: ${damage.location}\ndamage: ${damage.damage}`)
+              } else {
+                Database.messages.push(`${_.capitalize(unit.name)}'s shot misses ${_.capitalize(newTarget.name)}!`)
+              }          
             }
           })
         })
       })
-    }    
-
-    if (target !== 'none') {      
-      console.log('single target')
-      Database.singleUnit(target).once('value').then((data) => {  
+    }
+    
+    if (sweep === false) {
+      Database.singleUnit(target).once('value').then((data) => {
+        Unit.update({currentAmmo: rounds}, unit.name)
         let target = data.val()
         let targetArmor = Utils.getArmor(target.bodyArmor)
         shotAccuracy = aimTimeMods[aimTime] + sal + getShooterPositionModifier(unit.position) + penalty + getTargetModifiers(target)
-        odds = Tables.oddsOfHitting(shotAccuracy, range)
-    
+        odds = Tables.oddsOfHitting(shotAccuracy, range)    
         if (roll <= odds) {
           response = "hit"
           damage = Tables.hitResult(targetArmor, weapon, target.cover)
@@ -307,8 +313,8 @@ function aiming (uniqueDesignation, totalActions, msg, userID) {
         } else {
           Database.messages.push(`${_.capitalize(unit.name)}'s shot misses ${_.capitalize(target.name)}!`)
         }        
-      })            
-    }    
+      })
+    }      
   })
 }
 

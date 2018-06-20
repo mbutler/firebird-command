@@ -8,7 +8,6 @@ let Database = require('./database')
 let _ = require('lodash')
 let Action = require('./actions')
 let Unit = require('./unit')
-let Utils = require('./utils')
 let config = require('./config')
 
 /**
@@ -140,8 +139,7 @@ function runActions () {
                                 newActionValue[currentImpulse] = unit.remainingActions                                           
                                 Action.action(unit.action, unit.uniqueDesignation, unit.totalActions, unit.msg)
                                 Database.actionList.child(unitKey).remove()
-                                Unit.update({currentActionsPerImpulse: newActionValue}, unit.uniqueDesignation)
-                                //Utils.populateControlPanel(guy.name)                                
+                                Unit.update({currentActionsPerImpulse: newActionValue}, unit.uniqueDesignation)                             
                             }                            
                         })                        
                     }

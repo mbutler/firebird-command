@@ -62985,7 +62985,6 @@ let Database = require('./database')
 let config = require('./config')
 let Unit = require('./unit')
 let Map = require('./map')
-let Weapons = require('./weapons')
 let Utils = require('./utils')
 let _ = require('lodash')
 let Tables = require('./tables')
@@ -63206,7 +63205,8 @@ function takeCover(uniqueDesignation, totalActions) {
 function aiming (uniqueDesignation, totalActions, msg, userID) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
-    let weapon = Weapons.getWeapon(unit.weapons[0])
+    let weapon = unit.weapons[0]
+    let rounds = unit.currentAmmo
     let aimTimeMods = weapon.aimTime
     let aimTime = totalActions
     let sal = unit.skillAccuracyLevel
@@ -63221,6 +63221,11 @@ function aiming (uniqueDesignation, totalActions, msg, userID) {
     let damageMultiplier = 1
     let sweep = $('#sweep').is(":checked")
     let unitsHit = []
+
+    if (rounds <= 0) {
+      Database.messages.push(`${_.capitalize(unit.name)} is out of ammo!`)
+      return
+    }
   
     if (aimTime > aimTimeMods.length - 1) {
       aimTime = aimTimeMods.length - 1
@@ -63235,47 +63240,43 @@ function aiming (uniqueDesignation, totalActions, msg, userID) {
       damageMultiplier = Tables.autoFire(weapon.rateOfFire, range)
     }
 
+    rounds -= weapon.rateOfFire
+
     if (weapon.automatic === true && sweep === true) {
-      let rounds = damageMultiplier
       Database.singleUnit(target).once('value').then((data) => {
+        Unit.update({currentAmmo: rounds}, unit.name)
         let victim = data.val()
         unitsHit = getUnitsInRadius(victim.currentHex)
         Database.allUnits.once('value').then((snapshot) => {
           let allUnits = snapshot.val()
-          console.log()
           _.forEach(allUnits, (guy) => {
-            if (_.includes(unitsHit, guy.name)) {
-              if (rounds > 0) {
-                let newTarget = guy
-                let targetArmor = Utils.getArmor(newTarget.bodyArmor)
-                shotAccuracy = aimTimeMods[aimTime] + sal + getShooterPositionModifier(unit.position) + penalty + getTargetModifiers(newTarget)
-                odds = Tables.oddsOfHitting(shotAccuracy, range)
-
-                if (roll <= odds) {
-                  response = "hit"
-                  damage = Tables.hitResult(targetArmor, weapon, newTarget.cover)
-                  damage.damage = damage.damage * damageMultiplier
-                  applyDamage(newTarget.name, damage)
-                  Database.messages.push(`${_.capitalize(unit.name)} hits ${_.capitalize(newTarget.name)}, ${damage.status}, ${damage.wound}\nlocation: ${damage.location}\ndamage: ${damage.damage}`)
-                } else {
-                  Database.messages.push(`${_.capitalize(unit.name)}'s shot misses ${_.capitalize(newTarget.name)}!`)
-                }
-                rounds -= 1
-              }              
+            if (_.includes(unitsHit, guy.name)) {              
+              let newTarget = guy
+              let targetArmor = Utils.getArmor(newTarget.bodyArmor)
+              shotAccuracy = aimTimeMods[aimTime] + sal + getShooterPositionModifier(unit.position) + penalty + getTargetModifiers(newTarget)
+              odds = Tables.oddsOfHitting(shotAccuracy, range)
+              if (roll <= odds) {
+                response = "hit"
+                damage = Tables.hitResult(targetArmor, weapon, newTarget.cover)
+                damage.damage = damage.damage * damageMultiplier
+                applyDamage(newTarget.name, damage)
+                Database.messages.push(`${_.capitalize(unit.name)} hits ${_.capitalize(newTarget.name)}, ${damage.status}, ${damage.wound}\nlocation: ${damage.location}\ndamage: ${damage.damage}`)
+              } else {
+                Database.messages.push(`${_.capitalize(unit.name)}'s shot misses ${_.capitalize(newTarget.name)}!`)
+              }          
             }
           })
         })
       })
-    }    
-
-    if (target !== 'none') {      
-      console.log('single target')
-      Database.singleUnit(target).once('value').then((data) => {  
+    }
+    
+    if (sweep === false) {
+      Database.singleUnit(target).once('value').then((data) => {
+        Unit.update({currentAmmo: rounds}, unit.name)
         let target = data.val()
         let targetArmor = Utils.getArmor(target.bodyArmor)
         shotAccuracy = aimTimeMods[aimTime] + sal + getShooterPositionModifier(unit.position) + penalty + getTargetModifiers(target)
-        odds = Tables.oddsOfHitting(shotAccuracy, range)
-    
+        odds = Tables.oddsOfHitting(shotAccuracy, range)    
         if (roll <= odds) {
           response = "hit"
           damage = Tables.hitResult(targetArmor, weapon, target.cover)
@@ -63285,8 +63286,8 @@ function aiming (uniqueDesignation, totalActions, msg, userID) {
         } else {
           Database.messages.push(`${_.capitalize(unit.name)}'s shot misses ${_.capitalize(target.name)}!`)
         }        
-      })            
-    }    
+      })
+    }      
   })
 }
 
@@ -63760,7 +63761,7 @@ module.exports = {
   getUnitsInRadius: getUnitsInRadius
 }
 
-},{"./config":39,"./database":40,"./map":44,"./tables":45,"./unit":48,"./utils":49,"./weapons":50,"lodash":22}],42:[function(require,module,exports){
+},{"./config":39,"./database":40,"./map":44,"./tables":45,"./unit":48,"./utils":49,"lodash":22}],42:[function(require,module,exports){
 /**
  * @author Matthew Butler <matthewtbutler@gmail.com>
  * 
@@ -64548,7 +64549,6 @@ let Database = require('./database')
 let _ = require('lodash')
 let Action = require('./actions')
 let Unit = require('./unit')
-let Utils = require('./utils')
 let config = require('./config')
 
 /**
@@ -64680,8 +64680,7 @@ function runActions () {
                                 newActionValue[currentImpulse] = unit.remainingActions                                           
                                 Action.action(unit.action, unit.uniqueDesignation, unit.totalActions, unit.msg)
                                 Database.actionList.child(unitKey).remove()
-                                Unit.update({currentActionsPerImpulse: newActionValue}, unit.uniqueDesignation)
-                                //Utils.populateControlPanel(guy.name)                                
+                                Unit.update({currentActionsPerImpulse: newActionValue}, unit.uniqueDesignation)                             
                             }                            
                         })                        
                     }
@@ -64741,7 +64740,7 @@ module.exports = {
     addToActionList: addToActionList,
     submitAction: submitAction
 }
-},{"./actions":38,"./config":39,"./database":40,"./unit":48,"./utils":49,"lodash":22}],47:[function(require,module,exports){
+},{"./actions":38,"./config":39,"./database":40,"./unit":48,"lodash":22}],47:[function(require,module,exports){
 let unitsToggleList = []
 
 let unitList = [
@@ -65192,7 +65191,6 @@ module.exports = {
  * @namespace
  */
 let Database = require('./database')
-let Weapons = require('./weapons')
 let _ = require('lodash')
 let config = require('./config')
 
@@ -65292,7 +65290,7 @@ function createButtonSet(uniqueDesignation) {
 function populateControlPanel(uniqueDesignation) {
     Database.singleUnit(uniqueDesignation).once('value').then((data) => {
         let unit = data.val()
-        let weapon = Weapons.getWeapon(unit.weapons[0])
+        let weapon = unit.weapons[0]
         let armor = getArmor(unit.bodyArmor)
         let bodyArmor = `<tr><td class="text-center">${unit.bodyArmor}</td><td id="protection-factor" class="text-center">${armor.pf}</td><td id="armor-weight" class="text-center">${armor.weight}</td></tr>`
         $('#coords-value').html(`x: ${unit.currentHex[0]}, y: ${unit.currentHex[1]}`) 
@@ -65391,83 +65389,4 @@ module.exports = {
     createButtonSet: createButtonSet,
     getArmor: getArmor
 }
-},{"./config":39,"./database":40,"./weapons":50,"lodash":22}],50:[function(require,module,exports){
-/**
- * This module handles weapon data
- * @module Weapons
- */
-
-let _ = require('lodash')
-
-let weapons = [
-    {
-        name: "m16a1",
-        automatic: true,
-        aimTime: [-99, -22, -12, -9, -7, -6, -5, -4, -3, -2, -1, 0],
-        reloadTime: 8,
-        rateOfFire: 7,
-        ammoCap: 30,
-        ammoWeight: 1,
-        ammoType: {
-            fmj: {
-                pen: 17,
-                dc: 6
-            },
-            jhp: {
-                pen: 16,
-                dc: 8
-            },
-            ap: {
-                pen: 23,
-                dc: 6
-            }
-        }
-    },
-    {
-        name: "colt-45",
-        automatic: false,
-        aimTime: [-99, -18, -11, -10, -9, -8, -7],
-        reloadTime: 4,
-        rateOfFire: 1,
-        ammoCap: 7,
-        ammoWeight: 0.7,
-        ammoType: {
-            fmj: {
-                pen: 1.6,
-                dc: 3
-            },
-            jhp: {
-                pen: 1.5,
-                dc: 4
-            },
-            ap: {
-                pen: 2.2,
-                dc: 3
-            }
-        }
-    }
-]
-
-/**
- * Gets the weapon of a given unit
- *
- * @param {string} weaponName -  The unit's weapon name
- * @memberof Weapons
- * @return {object} - The weapon object from the weapons list
- */
-function getWeapon(weaponName) {
-    let weapon 
-
-    _.forEach(weapons, (gun) => {
-        if (gun.name === weaponName) {
-            weapon = gun
-        }
-    })
-
-    return weapon
-}
-
-module.exports = {
-    getWeapon: getWeapon
-}
-},{"lodash":22}]},{},[42]);
+},{"./config":39,"./database":40,"lodash":22}]},{},[42]);

@@ -172,6 +172,7 @@ function formSubmit () {
     newUnit.combatActions = ca
     newUnit.combatActionsPerImpulse = capi
     newUnit.currentActionsPerImpulse = capi
+    newUnit.currentAmmo = weaponList[0].ammoCap
     newUnit.physicalDamage = 0
     newUnit.damage = 0
     newUnit.knockoutValue = kv
