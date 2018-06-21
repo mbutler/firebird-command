@@ -111,6 +111,6 @@ $(document).keypress((e) => {
 //testing with the space bar
 $(document).keypress((e) => {
     if (e.which === 32) {
-
+        console.log(Unit.distanceBetweenUnits('Gunner', 'Axe'))
     }
 })

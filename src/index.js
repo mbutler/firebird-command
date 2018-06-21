@@ -23,7 +23,7 @@ Database.allUnits.once('value').then((snapshot) => {
         let face = unit.facing
 
         // create starting units
-        const hex = Map.grid.get(Map.Hex(unit.currentHex))
+        const hex = Map.getHexFromPoint(unit.currentHex)
         unit.symbol.options.size = config.hexSize * 0.8
         Unit.create(hex, unit.symbol.sidc, unit.symbol.options)
         Unit.changeFacing(face, name)

@@ -119,7 +119,7 @@ function getTargetModifiers(target) {
  * @return {object} - A Honeycomb hex
  */
 function findNeighbor (currentCoords, facing, neighbor) {
-  let currentHex = Map.grid.get(Map.Hex(currentCoords))
+  let currentHex = Map.getHexFromPoint(currentCoords)
   let nextHex
   let nextFace = findFace(facing, 'right', 3)
 
@@ -138,23 +138,11 @@ function findNeighbor (currentCoords, facing, neighbor) {
   return nextHex
 }
 
-/**
- * Find all the neighbors for a given hex
- *
- * @param {array} coords - Array of x,y points. Can also be an object {x:, y:}
- * @requires Map
- * @memberof Game
- * @return {array} - A list of hex objects
- */
-function findAllNeighbors(coords) {
-  let hex = Map.grid.get(Map.Hex(coords))
-  let neighbors = Map.grid.neighborsOf(hex)
-  return neighbors
-}
+
 
 function getUnitsInRadius(coords) {
-  let neighbors = findAllNeighbors(coords)
-  let thisHex = Map.grid.get(Map.Hex(coords))
+  let neighbors = Map.findAllNeighbors(coords)
+  let thisHex = Map.getHexFromPoint(coords)
   let self = thisHex.currentUnit
   let unitList = []
   _.forEach(neighbors, (hex) => {

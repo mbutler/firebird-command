@@ -52,10 +52,17 @@ function create(hex, sidc, options) {
         Utils.createButtonSet(options.uniqueDesignation)
         controlPanel.open()
         let hex = getUnitHex(e.currentTarget.id)
+        console.log(hex)
         if (hex.currentUnit !== undefined) {
             toggleHexSelection(hex)
         }
     })
+}
+//x = q, y = s, z = r
+function distanceBetweenUnits(sourceName, targetName) {
+    let sourceHex = getUnitHex(sourceName)
+    let targetHex = getUnitHex(targetName)
+    return (Math.abs(sourceHex.q - targetHex.q) + Math.abs(sourceHex.s - targetHex.s) + Math.abs(sourceHex.r - targetHex.r)) / 2
 }
 
 /**
@@ -100,7 +107,7 @@ function getUnitCoords(uniqueDesignation) {
  */
 function getUnitHex(uniqueDesignation) {
     let coords = getUnitCoords(uniqueDesignation)
-    let hex = Map.grid.get(Map.Hex(coords))
+    let hex = Map.getHexFromPoint(coords)
 
     return hex
 }
@@ -263,5 +270,6 @@ module.exports = {
     setUnitCoords: setUnitCoords,
     animateUnitToHex: animateUnitToHex,
     changeFacing: changeFacing,
-    update: update
+    update: update,
+    distanceBetweenUnits: distanceBetweenUnits
 }
