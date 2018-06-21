@@ -63097,7 +63097,7 @@ function getTargetModifiers(target) {
  * @return {object} - A Honeycomb hex
  */
 function findNeighbor (currentCoords, facing, neighbor) {
-  let currentHex = Map.grid.get(Map.Hex(currentCoords))
+  let currentHex = Map.getHexFromPoint(currentCoords)
   let nextHex
   let nextFace = findFace(facing, 'right', 3)
 
@@ -63117,34 +63117,23 @@ function findNeighbor (currentCoords, facing, neighbor) {
 }
 
 /**
- * Find all the neighbors for a given hex
+ * Gets a list of all all unit names in a radius from a coordinate
  *
- * @param {array} coords - Array of x,y points. Can also be an object {x:, y:}
+ * @param {array} coords - A point occupied by the target
  * @requires Map
  * @memberof Game
- * @return {array} - A list of hex objects
+ * @return {array} - An array of unit names
  */
-function findAllNeighbors(coords) {
-  let hex = Map.grid.get(Map.Hex(coords))
-  let neighbors = Map.grid.neighborsOf(hex)
-  return neighbors
-}
-
-function getUnitsInRadius(coords) {
-  let neighbors = findAllNeighbors(coords)
-  let thisHex = Map.grid.get(Map.Hex(coords))
-  let self = thisHex.currentUnit
+function getUnitsInRadius(coords, range) {
+  let neighbors = Map.coordsRange(coords, range)
   let unitList = []
+
   _.forEach(neighbors, (hex) => {
     if (hex.currentUnit !== undefined) {
       unitList.push(hex.currentUnit)
     }
   })
 
-  if (self !== undefined) {
-    unitList.unshift(self)
-  }
-  
   return unitList
 }
 
@@ -63206,6 +63195,7 @@ function aiming (uniqueDesignation, totalActions, msg, userID) {
   Database.singleUnit(uniqueDesignation).once('value').then((data) => {
     let unit = data.val()
     let weapon = unit.weapons[0]
+    let rof = weapon.rateOfFire
     let rounds = unit.currentAmmo
     let aimTimeMods = weapon.aimTime
     let aimTime = totalActions
@@ -63226,6 +63216,10 @@ function aiming (uniqueDesignation, totalActions, msg, userID) {
       Database.messages.push(`${_.capitalize(unit.name)} is out of ammo!`)
       return
     }
+
+    if (unit.currentAmmo < rof) {
+      rof = unit.currentAmmo
+    }
   
     if (aimTime > aimTimeMods.length - 1) {
       aimTime = aimTimeMods.length - 1
@@ -63237,16 +63231,16 @@ function aiming (uniqueDesignation, totalActions, msg, userID) {
 
     if (weapon.automatic === true) {
       aimTime += 1
-      damageMultiplier = Tables.autoFire(weapon.rateOfFire, range)
+      damageMultiplier = Tables.autoFire(rof, range)
     }
 
-    rounds -= weapon.rateOfFire
+    rounds -= rof
 
     if (weapon.automatic === true && sweep === true) {
       Database.singleUnit(target).once('value').then((data) => {
         Unit.update({currentAmmo: rounds}, unit.name)
         let victim = data.val()
-        unitsHit = getUnitsInRadius(victim.currentHex)
+        unitsHit = getUnitsInRadius(victim.currentHex, 1)
         Database.allUnits.once('value').then((snapshot) => {
           let allUnits = snapshot.val()
           _.forEach(allUnits, (guy) => {
@@ -63787,7 +63781,7 @@ Database.allUnits.once('value').then((snapshot) => {
         let face = unit.facing
 
         // create starting units
-        const hex = Map.grid.get(Map.Hex(unit.currentHex))
+        const hex = Map.getHexFromPoint(unit.currentHex)
         unit.symbol.options.size = config.hexSize * 0.8
         Unit.create(hex, unit.symbol.sidc, unit.symbol.options)
         Unit.changeFacing(face, name)
@@ -63910,7 +63904,7 @@ $(document).keypress((e) => {
 //testing with the space bar
 $(document).keypress((e) => {
     if (e.which === 32) {
-
+        console.log(Unit.distanceBetweenUnits('Gunner', 'Axe'))
     }
 })
 },{"./database":40,"./game":41,"./map":44,"./timer":46,"./unit":48,"./utils":49,"lodash":22,"panzoom":24,"slideout":32}],44:[function(require,module,exports){
@@ -64044,16 +64038,52 @@ function getHexFromCoords(pageX, pageY) {
     return hex
 }
 
+/**
+ * Gets a hex object if given an point
+ *
+ * @param {array} point- An array (or object) of coordinates
+ * @memberof Map
+ * @return {object} - A hex
+ */
 function getHexFromPoint(point) {
-    let hex = Map.grid.get(Map.Hex(point))
+    let hex = grid.get(Hex(point))
     return hex
+}
+
+/**
+ * Gets a list of all all hexes in a radius from a coordinate
+ *
+ * @param {array} coords - A point occupied by the target
+ * @param {number} range - A number of hexes as radius from coordinates
+ * @memberof Map
+ * @return {array} - An array of hex objects
+ */
+function coordsRange(coords, range) {
+    let hex = getHexFromPoint(coords)
+    let results = []
+    for (let i = (hex.q - range); i <= (hex.q + range); i++) {
+        for (let j = (hex.s - range); j <= (hex.s + range); j++) {
+            for (let k = (hex.r - range); k <= (hex.r + range); k++) {
+                if (i + j + k === 0) {
+                    let newHex = getHexFromPoint({q: i, r: k, s: j})
+                    if (newHex !== undefined) {
+                        results.push(newHex)
+                    }                    
+                }
+            }
+        }
+    }
+
+    return results
 }
 
 module.exports = {
     Hex: Hex,
     Grid: Grid,
     grid: grid,
-    getHexFromCoords: getHexFromCoords
+    getHexFromCoords: getHexFromCoords,
+    getHexFromPoint: getHexFromPoint,
+    coordsRange: coordsRange
 }
 },{"./config":39,"honeycomb-grid":20,"lodash":22,"svg.js":33}],45:[function(require,module,exports){
 /**
@@ -64976,6 +65006,20 @@ function create(hex, sidc, options) {
         }
     })
 }
+/**
+ * Gets the distance in number of hexes between units
+ *
+ * @param {string} sourceName - The first unit's name
+ * @param {string} targetName- The second unit's name
+ * @memberof Unit
+ * @return {number} - A number of hexes between sourceName and targetName
+ */
+function distanceBetweenUnits(sourceName, targetName) {
+    //x = q, y = s, z = r
+    let sourceHex = getUnitHex(sourceName)
+    let targetHex = getUnitHex(targetName)
+    return (Math.abs(sourceHex.q - targetHex.q) + Math.abs(sourceHex.s - targetHex.s) + Math.abs(sourceHex.r - targetHex.r)) / 2
+}
 
 /**
  * Destroys a unit. Out of date as it uses the old unitList and does not interact with the database
@@ -65019,7 +65063,7 @@ function getUnitCoords(uniqueDesignation) {
  */
 function getUnitHex(uniqueDesignation) {
     let coords = getUnitCoords(uniqueDesignation)
-    let hex = Map.grid.get(Map.Hex(coords))
+    let hex = Map.getHexFromPoint(coords)
 
     return hex
 }
@@ -65182,7 +65226,8 @@ module.exports = {
     setUnitCoords: setUnitCoords,
     animateUnitToHex: animateUnitToHex,
     changeFacing: changeFacing,
-    update: update
+    update: update,
+    distanceBetweenUnits: distanceBetweenUnits
 }
 },{"./config":39,"./database":40,"./map":44,"./unit-list":47,"./utils":49,"lodash":22,"milsymbol":23}],49:[function(require,module,exports){
 /**

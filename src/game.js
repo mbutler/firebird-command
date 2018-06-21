@@ -138,23 +138,24 @@ function findNeighbor (currentCoords, facing, neighbor) {
   return nextHex
 }
 
-
-
-function getUnitsInRadius(coords) {
-  let neighbors = Map.findAllNeighbors(coords)
-  let thisHex = Map.getHexFromPoint(coords)
-  let self = thisHex.currentUnit
+/**
+ * Gets a list of all all unit names in a radius from a coordinate
+ *
+ * @param {array} coords - A point occupied by the target
+ * @requires Map
+ * @memberof Game
+ * @return {array} - An array of unit names
+ */
+function getUnitsInRadius(coords, range) {
+  let neighbors = Map.coordsRange(coords, range)
   let unitList = []
+
   _.forEach(neighbors, (hex) => {
     if (hex.currentUnit !== undefined) {
       unitList.push(hex.currentUnit)
     }
   })
 
-  if (self !== undefined) {
-    unitList.unshift(self)
-  }
-  
   return unitList
 }
 
@@ -261,7 +262,7 @@ function aiming (uniqueDesignation, totalActions, msg, userID) {
       Database.singleUnit(target).once('value').then((data) => {
         Unit.update({currentAmmo: rounds}, unit.name)
         let victim = data.val()
-        unitsHit = getUnitsInRadius(victim.currentHex)
+        unitsHit = getUnitsInRadius(victim.currentHex, 1)
         Database.allUnits.once('value').then((snapshot) => {
           let allUnits = snapshot.val()
           _.forEach(allUnits, (guy) => {

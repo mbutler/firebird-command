@@ -114,19 +114,6 @@ const grid = Grid.rectangle({
 })
 
 /**
- * Find all the neighbors for a given hex
- *
- * @param {array} coords - Array of x,y points. Can also be an object {x:, y:}
- * @memberof Map
- * @return {array} - A list of hex objects
- */
-function findAllNeighbors(coords) {
-    let hex = getHexFromPoint(coords)
-    let neighbors = grid.neighborsOf(hex)
-    return neighbors
-  }
-
-/**
  * Finds a hex given a coordinate
  *
  * @param {object} pageX - A pointer screen coordinates for X
@@ -141,11 +128,26 @@ function getHexFromCoords(pageX, pageY) {
     return hex
 }
 
+/**
+ * Gets a hex object if given an point
+ *
+ * @param {array} point- An array (or object) of coordinates
+ * @memberof Map
+ * @return {object} - A hex
+ */
 function getHexFromPoint(point) {
     let hex = grid.get(Hex(point))
     return hex
 }
 
+/**
+ * Gets a list of all all hexes in a radius from a coordinate
+ *
+ * @param {array} coords - A point occupied by the target
+ * @param {number} range - A number of hexes as radius from coordinates
+ * @memberof Map
+ * @return {array} - An array of hex objects
+ */
 function coordsRange(coords, range) {
     let hex = getHexFromPoint(coords)
     let results = []
@@ -165,14 +167,11 @@ function coordsRange(coords, range) {
     return results
 }
 
-console.log(coordsRange([5,5], 2))
-
 module.exports = {
     Hex: Hex,
     Grid: Grid,
     grid: grid,
     getHexFromCoords: getHexFromCoords,
     getHexFromPoint: getHexFromPoint,
-    coordsRange: coordsRange,
-    findAllNeighbors: findAllNeighbors
+    coordsRange: coordsRange
 }

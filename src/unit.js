@@ -52,14 +52,21 @@ function create(hex, sidc, options) {
         Utils.createButtonSet(options.uniqueDesignation)
         controlPanel.open()
         let hex = getUnitHex(e.currentTarget.id)
-        console.log(hex)
         if (hex.currentUnit !== undefined) {
             toggleHexSelection(hex)
         }
     })
 }
-//x = q, y = s, z = r
+/**
+ * Gets the distance in number of hexes between units
+ *
+ * @param {string} sourceName - The first unit's name
+ * @param {string} targetName- The second unit's name
+ * @memberof Unit
+ * @return {number} - A number of hexes between sourceName and targetName
+ */
 function distanceBetweenUnits(sourceName, targetName) {
+    //x = q, y = s, z = r
     let sourceHex = getUnitHex(sourceName)
     let targetHex = getUnitHex(targetName)
     return (Math.abs(sourceHex.q - targetHex.q) + Math.abs(sourceHex.s - targetHex.s) + Math.abs(sourceHex.r - targetHex.r)) / 2

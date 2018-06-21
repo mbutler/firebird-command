@@ -53,9 +53,9 @@
               
                 
                 <li><a
-                  href='#weapons'
+                  href='#utils'
                   class=" toggle-sibling">
-                  Weapons
+                  Utils
                   <span class='icon'>▸</span>
                 </a>
                 
@@ -65,9 +65,21 @@
                     <li class='h5'><span>Static members</span></li>
                     
                       <li><a
-                        href='#weaponsgetweapon'
+                        href='#utilscreatebuttonset'
                         class='regular pre-open'>
-                        .getWeapon
+                        .createButtonSet
+                      </a></li>
+                    
+                      <li><a
+                        href='#utilspopulatecontrolpanel'
+                        class='regular pre-open'>
+                        .populateControlPanel
+                      </a></li>
+                    
+                      <li><a
+                        href='#utilsgetarmor'
+                        class='regular pre-open'>
+                        .getArmor
                       </a></li>
                     
                     </ul>
@@ -126,6 +138,12 @@
                         href='#gamefindneighbor'
                         class='regular pre-open'>
                         .findNeighbor
+                      </a></li>
+                    
+                      <li><a
+                        href='#gamegetunitsinradius'
+                        class='regular pre-open'>
+                        .getUnitsInRadius
                       </a></li>
                     
                       <li><a
@@ -271,46 +289,6 @@
               
                 
                 <li><a
-                  href='#utils'
-                  class=" toggle-sibling">
-                  Utils
-                  <span class='icon'>▸</span>
-                </a>
-                
-                <div class='toggle-target display-none'>
-                  
-                  <ul class='list-reset py1-ul pl1'>
-                    <li class='h5'><span>Static members</span></li>
-                    
-                      <li><a
-                        href='#utilscreatebuttonset'
-                        class='regular pre-open'>
-                        .createButtonSet
-                      </a></li>
-                    
-                      <li><a
-                        href='#utilspopulatecontrolpanel'
-                        class='regular pre-open'>
-                        .populateControlPanel
-                      </a></li>
-                    
-                      <li><a
-                        href='#utilsgetarmor'
-                        class='regular pre-open'>
-                        .getArmor
-                      </a></li>
-                    
-                    </ul>
-                  
-                  
-                  
-                  
-                </div>
-                
-                </li>
-              
-                
-                <li><a
                   href='#tables'
                   class=" toggle-sibling">
                   Tables
@@ -375,9 +353,9 @@
               
                 
                 <li><a
-                  href='#config'
+                  href='#listeners'
                   class="">
-                  Config
+                  Listeners
                   
                 </a>
                 
@@ -385,29 +363,11 @@
               
                 
                 <li><a
-                  href='#database'
-                  class=" toggle-sibling">
-                  Database
-                  <span class='icon'>▸</span>
+                  href='#config'
+                  class="">
+                  Config
+                  
                 </a>
-                
-                <div class='toggle-target display-none'>
-                  
-                  <ul class='list-reset py1-ul pl1'>
-                    <li class='h5'><span>Static members</span></li>
-                    
-                      <li><a
-                        href='#databasesingleunit'
-                        class='regular pre-open'>
-                        .singleUnit
-                      </a></li>
-                    
-                    </ul>
-                  
-                  
-                  
-                  
-                </div>
                 
                 </li>
               
@@ -428,6 +388,12 @@
                         href='#unitcreate'
                         class='regular pre-open'>
                         .create
+                      </a></li>
+                    
+                      <li><a
+                        href='#unitdistancebetweenunits'
+                        class='regular pre-open'>
+                        .distanceBetweenUnits
                       </a></li>
                     
                       <li><a
@@ -559,11 +525,29 @@
               
                 
                 <li><a
-                  href='#listeners'
-                  class="">
-                  Listeners
-                  
+                  href='#database'
+                  class=" toggle-sibling">
+                  Database
+                  <span class='icon'>▸</span>
                 </a>
+                
+                <div class='toggle-target display-none'>
+                  
+                  <ul class='list-reset py1-ul pl1'>
+                    <li class='h5'><span>Static members</span></li>
+                    
+                      <li><a
+                        href='#databasesingleunit'
+                        class='regular pre-open'>
+                        .singleUnit
+                      </a></li>
+                    
+                    </ul>
+                  
+                  
+                  
+                  
+                </div>
                 
                 </li>
               
@@ -584,6 +568,18 @@
                         href='#mapgethexfromcoords'
                         class='regular pre-open'>
                         .getHexFromCoords
+                      </a></li>
+                    
+                      <li><a
+                        href='#mapgethexfrompoint'
+                        class='regular pre-open'>
+                        .getHexFromPoint
+                      </a></li>
+                    
+                      <li><a
+                        href='#mapcoordsrange'
+                        class='regular pre-open'>
+                        .coordsRange
                       </a></li>
                     
                     </ul>
@@ -670,7 +666,7 @@
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>action(selection, uniqueDesignation, totalActions, msg)</span>
+            <span class='code strong strong truncate'>action(selection, uniqueDesignation, totalActions, msg, userID)</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -681,7 +677,7 @@
   <p>Map to the action functions in the Game module</p>
 
 
-  <div class='pre p1 fill-light mt0'>action(selection: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, totalActions: any, msg: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
+  <div class='pre p1 fill-light mt0'>action(selection: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, totalActions: any, msg: any, userID: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
   
   
 
@@ -725,6 +721,14 @@
         <div class='space-bottom0'>
           <div>
             <span class='code bold'>msg</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>userID</span> <code class='quiet'>(any)</code>
 	    
           </div>
           
@@ -776,18 +780,18 @@
   
   <div class='clearfix'>
     
-    <h3 class='fl m0' id='weapons'>
-      Weapons
+    <h3 class='fl m0' id='utils'>
+      Utils
     </h3>
     
     
   </div>
   
 
-  <p>This module handles weapon data</p>
+  <p>This module handles various utility functions</p>
 
 
-  <div class='pre p1 fill-light mt0'>Weapons</div>
+  <div class='pre p1 fill-light mt0'>Utils</div>
   
   
 
@@ -812,11 +816,11 @@
     <div class='py1 quiet mt1 prose-big'>Static Members</div>
     <div class="clearfix">
   
-    <div class='border-bottom' id='weaponsgetweapon'>
+    <div class='border-bottom' id='utilscreatebuttonset'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>getWeapon(weaponName)</span>
+            <span class='code strong strong truncate'>createButtonSet(uniqueDesignation)</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -824,10 +828,10 @@
 
   
 
-  <p>Gets the weapon of a given unit</p>
+  <p>Adds a set of buttons for the specified unit to control actions.</p>
 
 
-  <div class='pre p1 fill-light mt0'>getWeapon(weaponName: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></div>
+  <div class='pre p1 fill-light mt0'>createButtonSet(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
   
   
 
@@ -844,8 +848,144 @@
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>weaponName</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
-	     The unit's weapon name
+            <span class='code bold'>uniqueDesignation</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    The name of the unit
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></code>:
+        Modifies DOM directly
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='utilspopulatecontrolpanel'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>populateControlPanel(uniqueDesignation)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+
+  <p>Reads values from database and populates the control panel forms</p>
+
+
+  <div class='pre p1 fill-light mt0'>populateControlPanel(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>uniqueDesignation</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    The name of the unit
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></code>:
+        Inserts values directly into the DOM
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='utilsgetarmor'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getArmor(armorName)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+
+  <p>Gets armor data based on name</p>
+
+
+  <div class='pre p1 fill-light mt0'>getArmor(armorName: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>armorName</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    The name of the armor
 
           </div>
           
@@ -860,7 +1000,7 @@
     
       <div class='py1 quiet mt1 prose-big'>Returns</div>
       <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></code>:
-        The weapon object from the weapons list
+        The armor's data
 
       
     
@@ -1386,6 +1526,82 @@
       </div>
     </div>
   
+    <div class='border-bottom' id='gamegetunitsinradius'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getUnitsInRadius(coords, range)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+
+  <p>Gets a list of all all unit names in a radius from a coordinate</p>
+
+
+  <div class='pre p1 fill-light mt0'>getUnitsInRadius(coords: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a>, range: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>coords</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a>)</code>
+	    A point occupied by the target
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>range</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a></code>:
+        An array of unit names
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
     <div class='border-bottom' id='gameface1leftmoving'>
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
@@ -1535,7 +1751,7 @@
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>aiming(uniqueDesignation, totalActions, msg)</span>
+            <span class='code strong strong truncate'>aiming(uniqueDesignation, totalActions, msg, userID)</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -1546,7 +1762,7 @@
   <p>Calculates aiming and aim mods</p>
 
 
-  <div class='pre p1 fill-light mt0'>aiming(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, totalActions: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, msg: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
+  <div class='pre p1 fill-light mt0'>aiming(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, totalActions: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, msg: any, userID: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
   
   
 
@@ -1584,6 +1800,14 @@
             <span class='code bold'>msg</span> <code class='quiet'>(any)</code>
 	    A message from the submitAction execution
 
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>userID</span> <code class='quiet'>(any)</code>
+	    
           </div>
           
         </div>
@@ -1698,7 +1922,7 @@
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>medicalAid(uniqueDesignation, totalActions, msg)</span>
+            <span class='code strong strong truncate'>medicalAid(uniqueDesignation, totalActions, msg, userID)</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -1709,7 +1933,7 @@
   <p>Checks the recovery roll</p>
 
 
-  <div class='pre p1 fill-light mt0'>medicalAid(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, totalActions: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, msg: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
+  <div class='pre p1 fill-light mt0'>medicalAid(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, totalActions: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, msg: any, userID: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
   
   
 
@@ -1747,6 +1971,14 @@
             <span class='code bold'>msg</span> <code class='quiet'>(any)</code>
 	    A message from the submitAction execution
 
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>userID</span> <code class='quiet'>(any)</code>
+	    
           </div>
           
         </div>
@@ -1861,7 +2093,7 @@
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>moveToHex(uniqueDesignation, totalActions)</span>
+            <span class='code strong strong truncate'>moveToHex(uniqueDesignation, totalActions, msg, userID)</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -1872,7 +2104,7 @@
   <p>Moves a unit to a hex based on user input</p>
 
 
-  <div class='pre p1 fill-light mt0'>moveToHex(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, totalActions: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
+  <div class='pre p1 fill-light mt0'>moveToHex(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, totalActions: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, msg: any, userID: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
   
   
 
@@ -1901,6 +2133,22 @@
             <span class='code bold'>totalActions</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
 	    The number of actions used
 
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>msg</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>userID</span> <code class='quiet'>(any)</code>
+	    
           </div>
           
         </div>
@@ -1938,7 +2186,7 @@
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>toStanding(uniqueDesignation, totalActions)</span>
+            <span class='code strong strong truncate'>toStanding(uniqueDesignation, totalActions, msg, userID)</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -1949,7 +2197,7 @@
   <p>Changes the position to standing</p>
 
 
-  <div class='pre p1 fill-light mt0'>toStanding(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, totalActions: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
+  <div class='pre p1 fill-light mt0'>toStanding(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, totalActions: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, msg: any, userID: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
   
   
 
@@ -1978,6 +2226,22 @@
             <span class='code bold'>totalActions</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
 	     The amount of actions used
 
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>msg</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>userID</span> <code class='quiet'>(any)</code>
+	    
           </div>
           
         </div>
@@ -2015,7 +2279,7 @@
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>toKneeling(uniqueDesignation, totalActions)</span>
+            <span class='code strong strong truncate'>toKneeling(uniqueDesignation, totalActions, msg, userID)</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -2026,7 +2290,7 @@
   <p>Changes the position to kneeling</p>
 
 
-  <div class='pre p1 fill-light mt0'>toKneeling(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, totalActions: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
+  <div class='pre p1 fill-light mt0'>toKneeling(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, totalActions: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, msg: any, userID: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
   
   
 
@@ -2055,6 +2319,22 @@
             <span class='code bold'>totalActions</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
 	     The amount of actions used
 
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>msg</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>userID</span> <code class='quiet'>(any)</code>
+	    
           </div>
           
         </div>
@@ -2092,7 +2372,7 @@
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>toProne(uniqueDesignation, totalActions)</span>
+            <span class='code strong strong truncate'>toProne(uniqueDesignation, totalActions, msg, userID)</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -2103,7 +2383,7 @@
   <p>Changes the position to prone</p>
 
 
-  <div class='pre p1 fill-light mt0'>toProne(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, totalActions: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
+  <div class='pre p1 fill-light mt0'>toProne(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, totalActions: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, msg: any, userID: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
   
   
 
@@ -2132,6 +2412,22 @@
             <span class='code bold'>totalActions</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
 	     The amount of actions used
 
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>msg</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>userID</span> <code class='quiet'>(any)</code>
+	    
           </div>
           
         </div>
@@ -2237,7 +2533,7 @@
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>runningForward(uniqueDesignation)</span>
+            <span class='code strong strong truncate'>runningForward(uniqueDesignation, totalActions, msg, userID)</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -2248,7 +2544,7 @@
   <p>Moves the unit forward 1 hex</p>
 
 
-  <div class='pre p1 fill-light mt0'>runningForward(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
+  <div class='pre p1 fill-light mt0'>runningForward(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, totalActions: any, msg: any, userID: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
   
   
 
@@ -2268,6 +2564,30 @@
             <span class='code bold'>uniqueDesignation</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
 	    The name of the unit
 
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>totalActions</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>msg</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>userID</span> <code class='quiet'>(any)</code>
+	    
           </div>
           
         </div>
@@ -2305,7 +2625,7 @@
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>runningBackward(uniqueDesignation)</span>
+            <span class='code strong strong truncate'>runningBackward(uniqueDesignation, totalActions, msg, userID)</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -2316,7 +2636,7 @@
   <p>Moves the unit backward 1 hex</p>
 
 
-  <div class='pre p1 fill-light mt0'>runningBackward(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
+  <div class='pre p1 fill-light mt0'>runningBackward(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, totalActions: any, msg: any, userID: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
   
   
 
@@ -2336,6 +2656,30 @@
             <span class='code bold'>uniqueDesignation</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
 	    The name of the unit
 
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>totalActions</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>msg</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>userID</span> <code class='quiet'>(any)</code>
+	    
           </div>
           
         </div>
@@ -2373,7 +2717,7 @@
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>crawlingForward(uniqueDesignation)</span>
+            <span class='code strong strong truncate'>crawlingForward(uniqueDesignation, totalActions, msg, userID)</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -2384,7 +2728,7 @@
   <p>Moves the unit forward 1 hex if crawling</p>
 
 
-  <div class='pre p1 fill-light mt0'>crawlingForward(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
+  <div class='pre p1 fill-light mt0'>crawlingForward(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, totalActions: any, msg: any, userID: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
   
   
 
@@ -2404,6 +2748,30 @@
             <span class='code bold'>uniqueDesignation</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
 	    The name of the unit
 
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>totalActions</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>msg</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>userID</span> <code class='quiet'>(any)</code>
+	    
           </div>
           
         </div>
@@ -2441,7 +2809,7 @@
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>crawlingBackward(uniqueDesignation)</span>
+            <span class='code strong strong truncate'>crawlingBackward(uniqueDesignation, totalActions, msg, userID)</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -2452,7 +2820,7 @@
   <p>Moves the unit backward 1 hex if crawling</p>
 
 
-  <div class='pre p1 fill-light mt0'>crawlingBackward(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
+  <div class='pre p1 fill-light mt0'>crawlingBackward(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, totalActions: any, msg: any, userID: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
   
   
 
@@ -2472,6 +2840,30 @@
             <span class='code bold'>uniqueDesignation</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
 	    The name of the unit
 
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>totalActions</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>msg</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>userID</span> <code class='quiet'>(any)</code>
+	    
           </div>
           
         </div>
@@ -2509,7 +2901,7 @@
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>crouchingForward(uniqueDesignation)</span>
+            <span class='code strong strong truncate'>crouchingForward(uniqueDesignation, totalActions, msg, userID)</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -2520,7 +2912,7 @@
   <p>Moves the unit forward 1 hex if crouching</p>
 
 
-  <div class='pre p1 fill-light mt0'>crouchingForward(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
+  <div class='pre p1 fill-light mt0'>crouchingForward(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, totalActions: any, msg: any, userID: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
   
   
 
@@ -2540,6 +2932,30 @@
             <span class='code bold'>uniqueDesignation</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
 	    The name of the unit
 
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>totalActions</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>msg</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>userID</span> <code class='quiet'>(any)</code>
+	    
           </div>
           
         </div>
@@ -2577,7 +2993,7 @@
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>crouchingBackward(uniqueDesignation)</span>
+            <span class='code strong strong truncate'>crouchingBackward(uniqueDesignation, totalActions, msg, userID)</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -2588,7 +3004,7 @@
   <p>Moves the unit backward 1 hex if crouching</p>
 
 
-  <div class='pre p1 fill-light mt0'>crouchingBackward(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
+  <div class='pre p1 fill-light mt0'>crouchingBackward(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, totalActions: any, msg: any, userID: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
   
   
 
@@ -2608,6 +3024,30 @@
             <span class='code bold'>uniqueDesignation</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
 	    The name of the unit
 
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>totalActions</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>msg</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>userID</span> <code class='quiet'>(any)</code>
+	    
           </div>
           
         </div>
@@ -2645,7 +3085,7 @@
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>face1LeftImmobile(uniqueDesignation)</span>
+            <span class='code strong strong truncate'>face1LeftImmobile(uniqueDesignation, totalActions, msg, userID)</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -2656,7 +3096,7 @@
   <p>Changes facing 1 to the left if immobile</p>
 
 
-  <div class='pre p1 fill-light mt0'>face1LeftImmobile(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
+  <div class='pre p1 fill-light mt0'>face1LeftImmobile(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, totalActions: any, msg: any, userID: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
   
   
 
@@ -2676,6 +3116,30 @@
             <span class='code bold'>uniqueDesignation</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
 	    The name of the unit
 
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>totalActions</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>msg</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>userID</span> <code class='quiet'>(any)</code>
+	    
           </div>
           
         </div>
@@ -2713,7 +3177,7 @@
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>face1RightImmobile(uniqueDesignation)</span>
+            <span class='code strong strong truncate'>face1RightImmobile(uniqueDesignation, totalActions, msg, userID)</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -2724,7 +3188,7 @@
   <p>Changes facing 1 to the right if immobile</p>
 
 
-  <div class='pre p1 fill-light mt0'>face1RightImmobile(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
+  <div class='pre p1 fill-light mt0'>face1RightImmobile(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, totalActions: any, msg: any, userID: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
   
   
 
@@ -2744,6 +3208,30 @@
             <span class='code bold'>uniqueDesignation</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
 	    The name of the unit
 
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>totalActions</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>msg</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>userID</span> <code class='quiet'>(any)</code>
+	    
           </div>
           
         </div>
@@ -2781,7 +3269,7 @@
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>face2LeftImmobile(uniqueDesignation)</span>
+            <span class='code strong strong truncate'>face2LeftImmobile(uniqueDesignation, totalActions, msg, userID)</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -2792,7 +3280,7 @@
   <p>Changes facing 2 to the left if immobile</p>
 
 
-  <div class='pre p1 fill-light mt0'>face2LeftImmobile(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
+  <div class='pre p1 fill-light mt0'>face2LeftImmobile(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, totalActions: any, msg: any, userID: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
   
   
 
@@ -2812,6 +3300,30 @@
             <span class='code bold'>uniqueDesignation</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
 	    The name of the unit
 
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>totalActions</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>msg</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>userID</span> <code class='quiet'>(any)</code>
+	    
           </div>
           
         </div>
@@ -2849,7 +3361,7 @@
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>face2RightImmobile(uniqueDesignation)</span>
+            <span class='code strong strong truncate'>face2RightImmobile(uniqueDesignation, totalActions, msg, userID)</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -2860,7 +3372,7 @@
   <p>Changes facing 2 to the right if immobile</p>
 
 
-  <div class='pre p1 fill-light mt0'>face2RightImmobile(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
+  <div class='pre p1 fill-light mt0'>face2RightImmobile(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, totalActions: any, msg: any, userID: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
   
   
 
@@ -2880,6 +3392,30 @@
             <span class='code bold'>uniqueDesignation</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
 	    The name of the unit
 
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>totalActions</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>msg</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>userID</span> <code class='quiet'>(any)</code>
+	    
           </div>
           
         </div>
@@ -2917,7 +3453,7 @@
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>assumeFiringStance(uniqueDesignation)</span>
+            <span class='code strong strong truncate'>assumeFiringStance(uniqueDesignation, totalActions, msg, userID)</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -2928,7 +3464,7 @@
   <p>Changes unit's stance to firing</p>
 
 
-  <div class='pre p1 fill-light mt0'>assumeFiringStance(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
+  <div class='pre p1 fill-light mt0'>assumeFiringStance(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, totalActions: any, msg: any, userID: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
   
   
 
@@ -2948,6 +3484,30 @@
             <span class='code bold'>uniqueDesignation</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
 	    The name of the unit
 
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>totalActions</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>msg</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>userID</span> <code class='quiet'>(any)</code>
+	    
           </div>
           
         </div>
@@ -2962,263 +3522,6 @@
       <div class='py1 quiet mt1 prose-big'>Returns</div>
       <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></code>:
         Modifies the database directly
-
-      
-    
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-      </div>
-    </div>
-  
-</div>
-
-  
-
-  
-
-  
-</section>
-
-          
-        
-          
-            <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-  <div class='clearfix'>
-    
-    <h3 class='fl m0' id='utils'>
-      Utils
-    </h3>
-    
-    
-  </div>
-  
-
-  <p>This module handles various utility functions</p>
-
-
-  <div class='pre p1 fill-light mt0'>Utils</div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Static Members</div>
-    <div class="clearfix">
-  
-    <div class='border-bottom' id='utilscreatebuttonset'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>createButtonSet(uniqueDesignation)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-
-  <p>Adds a set of buttons for the specified unit to control actions.</p>
-
-
-  <div class='pre p1 fill-light mt0'>createButtonSet(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>uniqueDesignation</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
-	    The name of the unit
-
-          </div>
-          
-        </div>
-      
-    </div>
-  
-
-  
-
-  
-    
-      <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></code>:
-        Modifies DOM directly
-
-      
-    
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-      </div>
-    </div>
-  
-    <div class='border-bottom' id='utilspopulatecontrolpanel'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>populateControlPanel(uniqueDesignation)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-
-  <p>Reads values from database and populates the control panel forms</p>
-
-
-  <div class='pre p1 fill-light mt0'>populateControlPanel(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>uniqueDesignation</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
-	    The name of the unit
-
-          </div>
-          
-        </div>
-      
-    </div>
-  
-
-  
-
-  
-    
-      <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></code>:
-        Inserts values directly into the DOM
-
-      
-    
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-</section>
-
-      </div>
-    </div>
-  
-    <div class='border-bottom' id='utilsgetarmor'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>getArmor(armorName)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-
-  <p>Gets armor data based on name</p>
-
-
-  <div class='pre p1 fill-light mt0'>getArmor(armorName: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>armorName</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
-	    The name of the armor
-
-          </div>
-          
-        </div>
-      
-    </div>
-  
-
-  
-
-  
-    
-      <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></code>:
-        The armor's data
 
       
     
@@ -3306,7 +3609,7 @@
   <p>Calculates the force multiplier of shooting an automatic weaon burst</p>
 
 
-  <div class='pre p1 fill-light mt0'>autoFire(rof: rof, range: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></div>
+  <div class='pre p1 fill-light mt0'>autoFire(rof: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>, range: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></div>
   
   
 
@@ -3323,7 +3626,7 @@
       
         <div class='space-bottom0'>
           <div>
-            <span class='code bold'>rof</span> <code class='quiet'>(rof)</code>
+            <span class='code bold'>rof</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
 	     The weapon's rate of fire
 
           </div>
@@ -3855,18 +4158,18 @@
   
   <div class='clearfix'>
     
-    <h3 class='fl m0' id='config'>
-      Config
+    <h3 class='fl m0' id='listeners'>
+      Listeners
     </h3>
     
     
   </div>
   
 
-  <p>Configuration file for setting up the map, document, and database connection</p>
+  <p>This module handles all event listeners</p>
 
 
-  <div class='pre p1 fill-light mt0'>Config</div>
+  <div class='pre p1 fill-light mt0'>Listeners</div>
   
   
 
@@ -3902,58 +4205,18 @@
   
   <div class='clearfix'>
     
-    <h3 class='fl m0' id='database'>
-      Database
+    <h3 class='fl m0' id='config'>
+      Config
     </h3>
     
     
   </div>
   
 
-  <p>This module handles database interaction and database references</p>
+  <p>Configuration file for setting up the map, document, and database connection</p>
 
 
-  <div class='pre p1 fill-light mt0'>Database</div>
-  
-  
-
-  
-  
-  
-  
-  
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-
-  
-    <div class='py1 quiet mt1 prose-big'>Static Members</div>
-    <div class="clearfix">
-  
-    <div class='border-bottom' id='databasesingleunit'>
-      <div class="clearfix small pointer toggle-sibling">
-        <div class="py1 contain">
-            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>singleUnit(uniqueDesignation)</span>
-        </div>
-      </div>
-      <div class="clearfix display-none toggle-target">
-        <section class='p2 mb2 clearfix bg-white minishadow'>
-
-  
-
-  <p>A reference to a single unit in the database</p>
-
-
-  <div class='pre p1 fill-light mt0'>singleUnit(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></div>
+  <div class='pre p1 fill-light mt0'>Config</div>
   
   
 
@@ -3965,32 +4228,6 @@
   
 
   
-    <div class='py1 quiet mt1 prose-big'>Parameters</div>
-    <div class='prose'>
-      
-        <div class='space-bottom0'>
-          <div>
-            <span class='code bold'>uniqueDesignation</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
-	    The name of the unit
-
-          </div>
-          
-        </div>
-      
-    </div>
-  
-
-  
-
-  
-    
-      <div class='py1 quiet mt1 prose-big'>Returns</div>
-      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></code>:
-        A reference to the unit in the database
-
-      
-    
-  
 
   
 
@@ -3999,14 +4236,6 @@
   
 
   
-
-  
-</section>
-
-      </div>
-    </div>
-  
-</div>
 
   
 
@@ -4126,6 +4355,91 @@
       <div class='py1 quiet mt1 prose-big'>Returns</div>
       <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></code>:
         Modifies DOM directly
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='unitdistancebetweenunits'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>distanceBetweenUnits(sourceName, targetName, targetName-null)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+
+  <p>Gets the distance in number of hexes between units</p>
+
+
+  <div class='pre p1 fill-light mt0'>distanceBetweenUnits(sourceName: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, targetName: any, targetName-null: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>sourceName</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    The first unit's name
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>targetName</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>targetName-null</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    The second unit's name
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a></code>:
+        A number of hexes between sourceName and targetName
 
       
     
@@ -5260,7 +5574,7 @@
       <div class="clearfix small pointer toggle-sibling">
         <div class="py1 contain">
             <a class='icon pin-right py1 dark-link caret-right'>▸</a>
-            <span class='code strong strong truncate'>submitAction(actionName, uniqueDesignation, ca, msg)</span>
+            <span class='code strong strong truncate'>submitAction(actionName, uniqueDesignation, ca, msg, userID)</span>
         </div>
       </div>
       <div class="clearfix display-none toggle-target">
@@ -5271,7 +5585,7 @@
   <p>Constructs the proper object to submit to addToActionList</p>
 
 
-  <div class='pre p1 fill-light mt0'>submitAction(actionName: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, ca: any, msg: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
+  <div class='pre p1 fill-light mt0'>submitAction(actionName: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>, ca: any, msg: any, userID: any): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/undefined">undefined</a></div>
   
   
 
@@ -5315,6 +5629,14 @@
         <div class='space-bottom0'>
           <div>
             <span class='code bold'>msg</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>userID</span> <code class='quiet'>(any)</code>
 	    
           </div>
           
@@ -5366,28 +5688,26 @@
   
   <div class='clearfix'>
     
-    <h3 class='fl m0' id='listeners'>
-      Listeners
+    <h3 class='fl m0' id='database'>
+      Database
     </h3>
     
     
   </div>
   
 
-  <p>This module handles all event listeners</p>
+  <p>This module handles database interaction and database references</p>
 
 
-  <div class='pre p1 fill-light mt0'>Listeners</div>
-  
-  
-
-  
-  
-  
-  
+  <div class='pre p1 fill-light mt0'>Database</div>
   
   
 
+  
+  
+  
+  
+  
   
 
   
@@ -5397,6 +5717,82 @@
   
 
   
+
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Static Members</div>
+    <div class="clearfix">
+  
+    <div class='border-bottom' id='databasesingleunit'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>singleUnit(uniqueDesignation)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+
+  <p>A reference to a single unit in the database</p>
+
+
+  <div class='pre p1 fill-light mt0'>singleUnit(uniqueDesignation: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>uniqueDesignation</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/String">string</a>)</code>
+	    The name of the unit
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></code>:
+        A reference to the unit in the database
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+</div>
 
   
 
@@ -5507,6 +5903,159 @@
       <div class='py1 quiet mt1 prose-big'>Returns</div>
       <code>hex</code>:
         A Honeycomb hex object
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='mapgethexfrompoint'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>getHexFromPoint(point, point-null)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+
+  <p>Gets a hex object if given an point</p>
+
+
+  <div class='pre p1 fill-light mt0'>getHexFromPoint(point: any, point-null: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>point</span> <code class='quiet'>(any)</code>
+	    
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>point-null</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a>)</code>
+	    An array (or object) of coordinates
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Object">object</a></code>:
+        A hex
+
+      
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+</section>
+
+      </div>
+    </div>
+  
+    <div class='border-bottom' id='mapcoordsrange'>
+      <div class="clearfix small pointer toggle-sibling">
+        <div class="py1 contain">
+            <a class='icon pin-right py1 dark-link caret-right'>▸</a>
+            <span class='code strong strong truncate'>coordsRange(coords, range)</span>
+        </div>
+      </div>
+      <div class="clearfix display-none toggle-target">
+        <section class='p2 mb2 clearfix bg-white minishadow'>
+
+  
+
+  <p>Gets a list of all all hexes in a radius from a coordinate</p>
+
+
+  <div class='pre p1 fill-light mt0'>coordsRange(coords: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a>, range: <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>): <a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a></div>
+  
+  
+
+  
+  
+  
+  
+  
+  
+
+  
+    <div class='py1 quiet mt1 prose-big'>Parameters</div>
+    <div class='prose'>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>coords</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a>)</code>
+	    A point occupied by the target
+
+          </div>
+          
+        </div>
+      
+        <div class='space-bottom0'>
+          <div>
+            <span class='code bold'>range</span> <code class='quiet'>(<a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Number">number</a>)</code>
+	    A number of hexes as radius from coordinates
+
+          </div>
+          
+        </div>
+      
+    </div>
+  
+
+  
+
+  
+    
+      <div class='py1 quiet mt1 prose-big'>Returns</div>
+      <code><a href="https://developer.mozilla.org/docs/Web/JavaScript/Reference/Global_Objects/Array">array</a></code>:
+        An array of hex objects
 
       
     
