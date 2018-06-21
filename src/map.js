@@ -114,21 +114,6 @@ const grid = Grid.rectangle({
 })
 
 /**
- * Finds a hex given a coordinate
- *
- * @param {object} pageX - A pointer screen coordinates for X
- * @param {object} pageY - A pointer screen coordinates for Y
- * @memberof Map
- * @return {hex} - A Honeycomb hex object
- */
-function getHexFromCoords(pageX, pageY) {
-    let hexCoordinates = Grid.pointToHex([pageX, pageY])
-    let hex = grid.get(hexCoordinates)
-
-    return hex
-}
-
-/**
  * Gets a hex object if given an point
  *
  * @param {array} point- An array (or object) of coordinates
@@ -171,7 +156,6 @@ module.exports = {
     Hex: Hex,
     Grid: Grid,
     grid: grid,
-    getHexFromCoords: getHexFromCoords,
     getHexFromPoint: getHexFromPoint,
     coordsRange: coordsRange
 }

@@ -274,6 +274,11 @@ function oddsOfHitting(accuracy, range) {
     return odds
 }
 
+function hexOffsetForMissedShot (odds, accuracy) {
+    let hexes = _.round((odds - accuracy) / 10)
+    return hexes
+}
+
 /**
  * Gets the correct index for aim mods array
  *
@@ -478,5 +483,6 @@ module.exports = {
     glancingRoll: glancingRoll,
     hitResult: hitResult,
     autoFire: autoFire,
-    medical: medical
+    medical: medical,
+    hexOffsetForMissedShot: hexOffsetForMissedShot
 }

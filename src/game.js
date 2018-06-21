@@ -222,7 +222,7 @@ function aiming (uniqueDesignation, totalActions, msg, userID) {
     let aimTimeMods = weapon.aimTime
     let aimTime = totalActions
     let sal = unit.skillAccuracyLevel
-    let shotAccuracy
+    let shotAccuracy = 0
     let roll = _.random(1, 100)
     let odds
     let range = $('#range-dropdown').find('li.selected').val()
@@ -256,6 +256,10 @@ function aiming (uniqueDesignation, totalActions, msg, userID) {
       damageMultiplier = Tables.autoFire(rof, range)
     }
 
+    if (weapon.explosive === true) {
+      shotAccuracy += 12
+    }
+
     rounds -= rof
 
     if (weapon.automatic === true && sweep === true) {
@@ -269,7 +273,7 @@ function aiming (uniqueDesignation, totalActions, msg, userID) {
             if (_.includes(unitsHit, guy.name)) {              
               let newTarget = guy
               let targetArmor = Utils.getArmor(newTarget.bodyArmor)
-              shotAccuracy = aimTimeMods[aimTime] + sal + getShooterPositionModifier(unit.position) + penalty + getTargetModifiers(newTarget)
+              shotAccuracy += aimTimeMods[aimTime] + sal + getShooterPositionModifier(unit.position) + penalty + getTargetModifiers(newTarget)
               odds = Tables.oddsOfHitting(shotAccuracy, range)
               if (roll <= odds) {
                 response = "hit"
@@ -277,7 +281,7 @@ function aiming (uniqueDesignation, totalActions, msg, userID) {
                 damage.damage = damage.damage * damageMultiplier
                 applyDamage(newTarget.name, damage)
                 Database.messages.push(`${_.capitalize(unit.name)} hits ${_.capitalize(newTarget.name)}, ${damage.status}, ${damage.wound}\nlocation: ${damage.location}\ndamage: ${damage.damage}`)
-              } else {
+              } else if (weapon.explosive === true) {
                 Database.messages.push(`${_.capitalize(unit.name)}'s shot misses ${_.capitalize(newTarget.name)}!`)
               }          
             }
@@ -291,7 +295,7 @@ function aiming (uniqueDesignation, totalActions, msg, userID) {
         Unit.update({currentAmmo: rounds}, unit.name)
         let target = data.val()
         let targetArmor = Utils.getArmor(target.bodyArmor)
-        shotAccuracy = aimTimeMods[aimTime] + sal + getShooterPositionModifier(unit.position) + penalty + getTargetModifiers(target)
+        shotAccuracy += aimTimeMods[aimTime] + sal + getShooterPositionModifier(unit.position) + penalty + getTargetModifiers(target)
         odds = Tables.oddsOfHitting(shotAccuracy, range)    
         if (roll <= odds) {
           response = "hit"
@@ -299,9 +303,11 @@ function aiming (uniqueDesignation, totalActions, msg, userID) {
           damage.damage = damage.damage * damageMultiplier
           applyDamage(target.name, damage)
           Database.messages.push(`${_.capitalize(unit.name)} hits ${_.capitalize(target.name)}, ${damage.status}, ${damage.wound}\nlocation: ${damage.location}\ndamage: ${damage.damage}`)
+        } else if (weapon.explosive === true) {
+          //figure damage for everyone in blast radius, sort of like sweep
         } else {
           Database.messages.push(`${_.capitalize(unit.name)}'s shot misses ${_.capitalize(target.name)}!`)
-        }        
+        }   
       })
     }      
   })
