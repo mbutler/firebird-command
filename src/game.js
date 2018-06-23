@@ -148,6 +148,10 @@ function findNeighbor (currentCoords, facing, neighbor) {
  */
 function getUnitsInRadius(coords, range) {
   let neighbors = Map.coordsRange(coords, range)
+  _.forEach(neighbors, (hex) => {
+      hex.selected = true
+      hex.highlight()
+  })
   let unitList = []
 
   _.forEach(neighbors, (hex) => {
@@ -222,7 +226,7 @@ function aiming (uniqueDesignation, totalActions, msg, userID) {
     let aimTimeMods = weapon.aimTime
     let aimTime = totalActions
     let sal = unit.skillAccuracyLevel
-    let shotAccuracy = 0
+    let shotAccuracy
     let roll = _.random(1, 100)
     let odds
     let range = $('#range-dropdown').find('li.selected').val()
@@ -256,11 +260,18 @@ function aiming (uniqueDesignation, totalActions, msg, userID) {
       damageMultiplier = Tables.autoFire(rof, range)
     }
 
-    if (weapon.explosive === true) {
-      shotAccuracy += 12
-    }
-
     rounds -= rof
+
+    if (weapon.explosive === true) {
+      let success = false
+      Database.singleUnit(target).once('value').then((data) => {
+        shotAccuracy = aimTimeMods[aimTime] + sal + getShooterPositionModifier(unit.position) + penalty + 12
+        odds = Tables.oddsOfHitting(shotAccuracy, range)
+        if (odds <= roll) {success = true}
+        let constructedRoll = {success: success, odds: odds, accuracy: shotAccuracy}
+        explosion(target.currentHex, constructedRoll, 'frag-grenade')
+      })      
+    }
 
     if (weapon.automatic === true && sweep === true) {
       Database.singleUnit(target).once('value').then((data) => {
@@ -273,7 +284,7 @@ function aiming (uniqueDesignation, totalActions, msg, userID) {
             if (_.includes(unitsHit, guy.name)) {              
               let newTarget = guy
               let targetArmor = Utils.getArmor(newTarget.bodyArmor)
-              shotAccuracy += aimTimeMods[aimTime] + sal + getShooterPositionModifier(unit.position) + penalty + getTargetModifiers(newTarget)
+              shotAccuracy = aimTimeMods[aimTime] + sal + getShooterPositionModifier(unit.position) + penalty + getTargetModifiers(newTarget)
               odds = Tables.oddsOfHitting(shotAccuracy, range)
               if (roll <= odds) {
                 response = "hit"
@@ -281,7 +292,7 @@ function aiming (uniqueDesignation, totalActions, msg, userID) {
                 damage.damage = damage.damage * damageMultiplier
                 applyDamage(newTarget.name, damage)
                 Database.messages.push(`${_.capitalize(unit.name)} hits ${_.capitalize(newTarget.name)}, ${damage.status}, ${damage.wound}\nlocation: ${damage.location}\ndamage: ${damage.damage}`)
-              } else if (weapon.explosive === true) {
+              } else {
                 Database.messages.push(`${_.capitalize(unit.name)}'s shot misses ${_.capitalize(newTarget.name)}!`)
               }          
             }
@@ -290,12 +301,12 @@ function aiming (uniqueDesignation, totalActions, msg, userID) {
       })
     }
     
-    if (sweep === false) {
+    if (sweep === false && weapon.explosive === false) {
       Database.singleUnit(target).once('value').then((data) => {
         Unit.update({currentAmmo: rounds}, unit.name)
         let target = data.val()
         let targetArmor = Utils.getArmor(target.bodyArmor)
-        shotAccuracy += aimTimeMods[aimTime] + sal + getShooterPositionModifier(unit.position) + penalty + getTargetModifiers(target)
+        shotAccuracy = aimTimeMods[aimTime] + sal + getShooterPositionModifier(unit.position) + penalty + getTargetModifiers(target)
         odds = Tables.oddsOfHitting(shotAccuracy, range)    
         if (roll <= odds) {
           response = "hit"
@@ -304,12 +315,54 @@ function aiming (uniqueDesignation, totalActions, msg, userID) {
           applyDamage(target.name, damage)
           Database.messages.push(`${_.capitalize(unit.name)} hits ${_.capitalize(target.name)}, ${damage.status}, ${damage.wound}\nlocation: ${damage.location}\ndamage: ${damage.damage}`)
         } else if (weapon.explosive === true) {
-          //figure damage for everyone in blast radius, sort of like sweep
-        } else {
           Database.messages.push(`${_.capitalize(unit.name)}'s shot misses ${_.capitalize(target.name)}!`)
-        }   
+        }        
       })
     }      
+  })
+}
+
+// roll = {success: false, odds: 87, accuracy: 67 }
+function explosion (coords, roll, type) {
+  if (roll.success === false) {
+    let offset = Tables.hexOffsetForMissedShot(roll.odds, roll.accuracy)    
+    let offsetX = offset * _.sample([1, -1])
+    let offsetY = offset * _.sample([1, -1])
+    coords = [coords[0] + offsetX, coords[1] + offsetY]
+  }
+
+  let impact = Map.getHexFromPoint(coords)
+  
+  let unitsInBlast = getUnitsInRadius(coords, 6)
+  Database.allUnits.once('value').then((snapshot) => {
+    let allUnits = snapshot.val()
+    _.forEach(allUnits, (guy) => {
+      if (_.includes(unitsInBlast, guy.name)) {
+        let prone = false
+        let pd = guy.physicalDamage
+        let damageTotal = guy.damage
+        if (guy.position === 'prone') {prone = true}
+        let hex = Unit.getUnitHex(guy.name)
+        let distance = (Math.abs(impact.q - hex.q) + Math.abs(impact.s - hex.s) + Math.abs(impact.r - hex.r)) / 2        
+        let damage = Tables.concussion(type, distance, guy.cover, prone)
+        if ((pd + damage) >= 1000000) {
+          pd = 1000000
+          newInjuries = 'dead'
+          status = 'dead'
+          Database.messages.push(`${_.capitalize(guy.name)} is ${status}!`)
+        } else {
+          pd += damage
+          damageTotal += _.round((pd * 10) / guy.health)
+          if (checkIncapacitated(guy, pd) === true) {
+            status = 'incapacitated'
+            Database.messages.push(`${_.capitalize(guy.name)} is ${status}!`)
+          }
+          checkMedicalAid(guy, damageTotal, 'no aid')
+        }
+        console.log('damage', guy.name, damage)
+        Unit.update({physicalDamage: damage, status: status, damage: damageTotal}, guy.name)        
+      }
+    })
   })
 }
 
@@ -351,6 +404,7 @@ function applyDamage(uniqueDesignation, damage) {
       Unit.update({physicalDamage: pd, disablingInjuries: newInjuries, status: status, damage: damageTotal}, uniqueDesignation)
   })
 }
+
 
 /**
  * checks the medical aid and recovery chart and submits to action list if needed
@@ -780,5 +834,6 @@ module.exports = {
   takeCover: takeCover,
   moveToHex: moveToHex,
   medicalAid: medicalAid,
-  getUnitsInRadius: getUnitsInRadius
+  getUnitsInRadius: getUnitsInRadius,
+  explosion: explosion
 }

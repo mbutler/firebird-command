@@ -186,6 +186,40 @@ let autoFireTable = [
     [61, 1, 1, 1]
 ]
 
+let concussionTable = [
+    {name: 'frag-grenade', damage: [ [13000, 6000, 10000], [700, 350, 525], [180, 90, 135], [50, 25, 38], [30, 15, 22], [12, 6, 9], [4, 2, 3] ]},
+    {name: 'blast-grenade', damage: [[20000, 10000, 15000], [900, 450, 675], [220, 110, 165], [60, 30, 45], [32, 16, 25], [14, 7, 10], [4, 2, 3] ]},
+    {name: '40mm-grenade', damage: [[3200, 1600, 2400], [273, 136, 205], [80, 40, 60], [25, 12, 19], [13, 6, 10], [6, 3, 4], [1, 1, 1] ]}
+]
+
+function concussion(type, range, cover, prone) {
+    let grenade
+    let damage = 0
+    let damIndex = 0
+    let rangeIndex = 0
+    if (prone) {damIndex = 2}
+    if (cover) {damIndex = 1}
+
+    if (range > 10) {return damage}
+
+    if (range > 5 && range <= 10) {
+        rangeIndex = 6
+    } else {
+        rangeIndex = range
+    }    
+
+    _.forEach(concussionTable, (weapon) => {
+        if (weapon.name === type) {
+            grenade = weapon
+        }
+    })
+
+    console.log(grenade)
+
+    damage = grenade.damage[rangeIndex][damIndex]
+    return damage
+}
+
 /**
  * Calculates the force multiplier of shooting an automatic weaon burst
  *
@@ -484,5 +518,6 @@ module.exports = {
     hitResult: hitResult,
     autoFire: autoFire,
     medical: medical,
-    hexOffsetForMissedShot: hexOffsetForMissedShot
+    hexOffsetForMissedShot: hexOffsetForMissedShot,
+    concussion: concussion
 }

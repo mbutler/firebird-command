@@ -103,14 +103,15 @@ Database.actionList.on('child_added', (snapshot) => {
 
 $(document).keypress((e) => {
     if (e.which === 84) {
-        console.table(Game.getUnitsInRadius([4,4]))
-        console.table(Game.getUnitsInRadius([7,7]))
+        console.table(Tables.concussion('frag-grenade', 3, false, false))
     }
 })
 
 //testing with the space bar
 $(document).keypress((e) => {
     if (e.which === 32) {
-        console.log(Unit.distanceBetweenUnits('Gunner', 'Axe'))
+        let units = Game.explosion([9,5], {success: false, odds: 87, accuracy: 67 }, 'frag-grenade')
+        console.log(units)
+        
     }
 })
