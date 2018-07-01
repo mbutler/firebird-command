@@ -261,8 +261,10 @@ function aiming (uniqueDesignation, totalActions, msg, userID) {
     }
 
     rounds -= rof
+    console.log(weapon)
 
     if (weapon.explosive === true) {
+      console.log('explosive true')
       let success = false
       Database.singleUnit(target).once('value').then((data) => {
         shotAccuracy = aimTimeMods[aimTime] + sal + getShooterPositionModifier(unit.position) + penalty + 12
@@ -274,6 +276,7 @@ function aiming (uniqueDesignation, totalActions, msg, userID) {
     }
 
     if (weapon.automatic === true && sweep === true) {
+      console.log('auto true sweep true')
       Database.singleUnit(target).once('value').then((data) => {
         Unit.update({currentAmmo: rounds}, unit.name)
         let victim = data.val()
@@ -301,7 +304,8 @@ function aiming (uniqueDesignation, totalActions, msg, userID) {
       })
     }
     
-    if (sweep === false && weapon.explosive === false) {
+    if (sweep === false && weapon.explosive !== true) {
+      console.log('sweep false and explosive false')
       Database.singleUnit(target).once('value').then((data) => {
         Unit.update({currentAmmo: rounds}, unit.name)
         let target = data.val()

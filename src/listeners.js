@@ -110,7 +110,7 @@ $(document).keypress((e) => {
 //testing with the space bar
 $(document).keypress((e) => {
     if (e.which === 32) {
-        let units = Game.explosion([9,5], {success: false, odds: 87, accuracy: 67 }, 'frag-grenade')
+        let units = Game.explosion([6,8], {success: true, odds: 87, accuracy: 67 }, 'frag-grenade')
         console.log(units)
         
     }

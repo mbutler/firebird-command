@@ -63126,6 +63126,10 @@ function findNeighbor (currentCoords, facing, neighbor) {
  */
 function getUnitsInRadius(coords, range) {
   let neighbors = Map.coordsRange(coords, range)
+  _.forEach(neighbors, (hex) => {
+      hex.selected = true
+      hex.highlight()
+  })
   let unitList = []
 
   _.forEach(neighbors, (hex) => {
@@ -63235,8 +63239,22 @@ function aiming (uniqueDesignation, totalActions, msg, userID) {
     }
 
     rounds -= rof
+    console.log(weapon)
+
+    if (weapon.explosive === true) {
+      console.log('explosive true')
+      let success = false
+      Database.singleUnit(target).once('value').then((data) => {
+        shotAccuracy = aimTimeMods[aimTime] + sal + getShooterPositionModifier(unit.position) + penalty + 12
+        odds = Tables.oddsOfHitting(shotAccuracy, range)
+        if (odds <= roll) {success = true}
+        let constructedRoll = {success: success, odds: odds, accuracy: shotAccuracy}
+        explosion(target.currentHex, constructedRoll, 'frag-grenade')
+      })      
+    }
 
     if (weapon.automatic === true && sweep === true) {
+      console.log('auto true sweep true')
       Database.singleUnit(target).once('value').then((data) => {
         Unit.update({currentAmmo: rounds}, unit.name)
         let victim = data.val()
@@ -63264,7 +63282,8 @@ function aiming (uniqueDesignation, totalActions, msg, userID) {
       })
     }
     
-    if (sweep === false) {
+    if (sweep === false && weapon.explosive !== true) {
+      console.log('sweep false and explosive false')
       Database.singleUnit(target).once('value').then((data) => {
         Unit.update({currentAmmo: rounds}, unit.name)
         let target = data.val()
@@ -63277,11 +63296,55 @@ function aiming (uniqueDesignation, totalActions, msg, userID) {
           damage.damage = damage.damage * damageMultiplier
           applyDamage(target.name, damage)
           Database.messages.push(`${_.capitalize(unit.name)} hits ${_.capitalize(target.name)}, ${damage.status}, ${damage.wound}\nlocation: ${damage.location}\ndamage: ${damage.damage}`)
-        } else {
+        } else if (weapon.explosive === true) {
           Database.messages.push(`${_.capitalize(unit.name)}'s shot misses ${_.capitalize(target.name)}!`)
         }        
       })
     }      
+  })
+}
+
+// roll = {success: false, odds: 87, accuracy: 67 }
+function explosion (coords, roll, type) {
+  if (roll.success === false) {
+    let offset = Tables.hexOffsetForMissedShot(roll.odds, roll.accuracy)    
+    let offsetX = offset * _.sample([1, -1])
+    let offsetY = offset * _.sample([1, -1])
+    coords = [coords[0] + offsetX, coords[1] + offsetY]
+  }
+
+  let impact = Map.getHexFromPoint(coords)
+  
+  let unitsInBlast = getUnitsInRadius(coords, 6)
+  Database.allUnits.once('value').then((snapshot) => {
+    let allUnits = snapshot.val()
+    _.forEach(allUnits, (guy) => {
+      if (_.includes(unitsInBlast, guy.name)) {
+        let prone = false
+        let pd = guy.physicalDamage
+        let damageTotal = guy.damage
+        if (guy.position === 'prone') {prone = true}
+        let hex = Unit.getUnitHex(guy.name)
+        let distance = (Math.abs(impact.q - hex.q) + Math.abs(impact.s - hex.s) + Math.abs(impact.r - hex.r)) / 2        
+        let damage = Tables.concussion(type, distance, guy.cover, prone)
+        if ((pd + damage) >= 1000000) {
+          pd = 1000000
+          newInjuries = 'dead'
+          status = 'dead'
+          Database.messages.push(`${_.capitalize(guy.name)} is ${status}!`)
+        } else {
+          pd += damage
+          damageTotal += _.round((pd * 10) / guy.health)
+          if (checkIncapacitated(guy, pd) === true) {
+            status = 'incapacitated'
+            Database.messages.push(`${_.capitalize(guy.name)} is ${status}!`)
+          }
+          checkMedicalAid(guy, damageTotal, 'no aid')
+        }
+        console.log('damage', guy.name, damage)
+        Unit.update({physicalDamage: damage, status: status, damage: damageTotal}, guy.name)        
+      }
+    })
   })
 }
 
@@ -63323,6 +63386,7 @@ function applyDamage(uniqueDesignation, damage) {
       Unit.update({physicalDamage: pd, disablingInjuries: newInjuries, status: status, damage: damageTotal}, uniqueDesignation)
   })
 }
+
 
 /**
  * checks the medical aid and recovery chart and submits to action list if needed
@@ -63752,9 +63816,9 @@ module.exports = {
   takeCover: takeCover,
   moveToHex: moveToHex,
   medicalAid: medicalAid,
-  getUnitsInRadius: getUnitsInRadius
+  getUnitsInRadius: getUnitsInRadius,
+  explosion: explosion
 }
-
 },{"./config":39,"./database":40,"./map":44,"./tables":45,"./unit":48,"./utils":49,"lodash":22}],42:[function(require,module,exports){
 /**
  * @author Matthew Butler <matthewtbutler@gmail.com>
@@ -63896,15 +63960,16 @@ Database.actionList.on('child_added', (snapshot) => {
 
 $(document).keypress((e) => {
     if (e.which === 84) {
-        console.table(Game.getUnitsInRadius([4,4]))
-        console.table(Game.getUnitsInRadius([7,7]))
+        console.table(Tables.concussion('frag-grenade', 3, false, false))
     }
 })
 
 //testing with the space bar
 $(document).keypress((e) => {
     if (e.which === 32) {
-        console.log(Unit.distanceBetweenUnits('Gunner', 'Axe'))
+        let units = Game.explosion([6,8], {success: true, odds: 87, accuracy: 67 }, 'frag-grenade')
+        console.log(units)
+        
     }
 })
 },{"./database":40,"./game":41,"./map":44,"./timer":46,"./unit":48,"./utils":49,"lodash":22,"panzoom":24,"slideout":32}],44:[function(require,module,exports){
@@ -64024,21 +64089,6 @@ const grid = Grid.rectangle({
 })
 
 /**
- * Finds a hex given a coordinate
- *
- * @param {object} pageX - A pointer screen coordinates for X
- * @param {object} pageY - A pointer screen coordinates for Y
- * @memberof Map
- * @return {hex} - A Honeycomb hex object
- */
-function getHexFromCoords(pageX, pageY) {
-    let hexCoordinates = Grid.pointToHex([pageX, pageY])
-    let hex = grid.get(hexCoordinates)
-
-    return hex
-}
-
-/**
  * Gets a hex object if given an point
  *
  * @param {array} point- An array (or object) of coordinates
@@ -64081,7 +64131,6 @@ module.exports = {
     Hex: Hex,
     Grid: Grid,
     grid: grid,
-    getHexFromCoords: getHexFromCoords,
     getHexFromPoint: getHexFromPoint,
     coordsRange: coordsRange
 }
@@ -64274,6 +64323,40 @@ let autoFireTable = [
     [61, 1, 1, 1]
 ]
 
+let concussionTable = [
+    {name: 'frag-grenade', damage: [ [13000, 6000, 10000], [700, 350, 525], [180, 90, 135], [50, 25, 38], [30, 15, 22], [12, 6, 9], [4, 2, 3] ]},
+    {name: 'blast-grenade', damage: [[20000, 10000, 15000], [900, 450, 675], [220, 110, 165], [60, 30, 45], [32, 16, 25], [14, 7, 10], [4, 2, 3] ]},
+    {name: '40mm-grenade', damage: [[3200, 1600, 2400], [273, 136, 205], [80, 40, 60], [25, 12, 19], [13, 6, 10], [6, 3, 4], [1, 1, 1] ]}
+]
+
+function concussion(type, range, cover, prone) {
+    let grenade
+    let damage = 0
+    let damIndex = 0
+    let rangeIndex = 0
+    if (prone) {damIndex = 2}
+    if (cover) {damIndex = 1}
+
+    if (range > 10) {return damage}
+
+    if (range > 5 && range <= 10) {
+        rangeIndex = 6
+    } else {
+        rangeIndex = range
+    }    
+
+    _.forEach(concussionTable, (weapon) => {
+        if (weapon.name === type) {
+            grenade = weapon
+        }
+    })
+
+    console.log(grenade)
+
+    damage = grenade.damage[rangeIndex][damIndex]
+    return damage
+}
+
 /**
  * Calculates the force multiplier of shooting an automatic weaon burst
  *
@@ -64360,6 +64443,11 @@ function oddsOfHitting(accuracy, range) {
     })
 
     return odds
+}
+
+function hexOffsetForMissedShot (odds, accuracy) {
+    let hexes = _.round((odds - accuracy) / 10)
+    return hexes
 }
 
 /**
@@ -64566,7 +64654,9 @@ module.exports = {
     glancingRoll: glancingRoll,
     hitResult: hitResult,
     autoFire: autoFire,
-    medical: medical
+    medical: medical,
+    hexOffsetForMissedShot: hexOffsetForMissedShot,
+    concussion: concussion
 }
 },{"lodash":22}],46:[function(require,module,exports){
 /**
